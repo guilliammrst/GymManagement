@@ -1,0 +1,6 @@
+﻿@rendermode InteractiveServer
+
+@if (_authenticatedUser.IsAuthenticated)
+{
+    <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="_authManager.Logout">Log out</RadzenButton>
+}

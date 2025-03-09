@@ -1,0 +1,49 @@
+﻿@page "/login"
+
+<PageTitle>Login</PageTitle>
+
+<h3>Connexion</h3>
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color: red">@errorMessage</p>
+}
+
+<EditForm Model="_loginDto" OnValidSubmit="HandleLogin" FormName="Login">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Email</label>
+        <InputText @bind-Value="_loginDto!.Email" />
+    </div>
+    <div>
+        <label>Mot de passe</label>
+        <InputText @bind-Value="_loginDto!.Password" type="password" />
+    </div>
+    <RadzenButton ButtonStyle="ButtonStyle.Primary" type="submit">Log in</RadzenButton>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm(FormName = "Login")]
+    private LoginDto _loginDto { get; set; } = new();
+
+    private string errorMessage = "";
+
+    private async Task HandleLogin()
+    {
+        var token = await _authApiClient.Login(_loginDto);
+        if (token != null)
+        {
+            if (_authManager.Login(token))
+			{
+				_authManager.RedirectToHome();
+			}
+			else
+			{
+				errorMessage = "Vous n'avez pas les permissions.";
+			}
+        }
+        else
+        {
+            errorMessage = "Identifiants incorrects.";
+        }
+    }
+}

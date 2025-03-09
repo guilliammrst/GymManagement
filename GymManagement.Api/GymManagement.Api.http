@@ -1,0 +1,25 @@
+@GymManagement.Api_HostAddress = http://localhost:5217/api
+@userId = 1
+
+### Get user by id
+GET {{GymManagement.Api_HostAddress}}/users/{{userId}}
+Accept: application/json
+
+### Get all users
+GET {{GymManagement.Api_HostAddress}}/users/
+Accept: application/json
+
+### Create user
+POST {{GymManagement.Api_HostAddress}}/users/
+Content-Type: application/json
+Accept: application/json
+{
+    "name": "Test",
+    "surname": "TEST",
+    "birthdate": "2006-08-22T00:00:00Z",
+    "password": "test",
+    "role": 1,
+    "email": "test@gmail.com",
+    "phoneNumber": "0657421798",
+    "gender": 3
+}

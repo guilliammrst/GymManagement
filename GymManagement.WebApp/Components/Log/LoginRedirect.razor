@@ -1,0 +1,12 @@
+﻿@rendermode InteractiveServer
+
+@if (_authenticatedUser.IsAuthenticated)
+{
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+}
+else if (!_navigationManager.Uri.Contains("/login"))
+{
+    _authManager.RedirectToLogin();
+}
