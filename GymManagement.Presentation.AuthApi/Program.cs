@@ -2,6 +2,7 @@ using GymManagement.Shared.Core.CacheManager;
 using GymManagement.Shared.Core.KeyVaultService;
 using GymManagement.Application.Services;
 using GymManagement.Infrastructure.Repositories;
+using GymManagement.Presentation.AuthApi.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddInfrastructure();
 
 builder.Services.RegisterKeyVaultService(builder.Configuration);
 builder.Services.RegisterCachingOptions(builder.Configuration);
+
+builder.Services.ConfigureSecurity(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

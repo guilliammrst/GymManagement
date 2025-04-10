@@ -25,6 +25,15 @@ namespace GymManagement.Infrastructure.Repositories.Users
             return userResult;
         }
 
+        public async Task<ModelActionResult<UserDetailsDao>> GetUserByEmailAsync(string email)
+        {
+            var userResult = await _userRepository.GetUserByEmailAsync(email);
+            if (userResult.Success)
+                Cache(userResult.Results);
+
+            return userResult;
+        }
+
         public async Task<ModelActionResult<List<UserDao>>> GetUsersAsync()
         {
             return await _userRepository.GetUsersAsync();

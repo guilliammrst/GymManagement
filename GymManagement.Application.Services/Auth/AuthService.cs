@@ -14,6 +14,7 @@ using GymManagement.Application.Interfaces.Repositories.Auth;
 using GymManagement.Domain;
 using GymManagement.Application.Interfaces.Repositories.Users;
 using GymManagement.Application.Services.Converters;
+using GymManagement.Application.Interfaces.Services.Users;
 
 namespace GymManagement.Application.Services.Auth
 {
@@ -64,6 +65,18 @@ namespace GymManagement.Application.Services.Auth
             var token = tokenResult.Results;
 
             return ModelActionResult<string>.Ok(token);
+        }
+
+        public async Task<ModelActionResult<UserDto>> MeAsync(string email)
+        {
+            var userResult = await _userRepository.GetUserByEmailAsync(email);
+            if (!userResult.Success)
+                return ModelActionResult<UserDto>.Fail(userResult);
+
+            var userDao = userResult.Results;
+            var userDto = userDao.ToDto();
+            
+            return ModelActionResult<UserDto>.Ok(userDto);
         }
 
         private async Task<ModelActionResult<string>> GenerateTokenAsync(string? email)

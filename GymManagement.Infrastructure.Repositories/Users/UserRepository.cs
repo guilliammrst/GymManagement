@@ -23,7 +23,18 @@ namespace GymManagement.Infrastructure.Repositories.Users
             const string query = "SELECT * FROM users WHERE id = @Id";
             var user = await connection.QueryFirstOrDefaultAsync<UserDetailsDao>(query, new { Id = id });
             if (user == null)
-                return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserNotFound, "User not found.");
+                return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserNotFound, "Get user failed: user not found.");
+            return ModelActionResult<UserDetailsDao>.Ok(user);
+        }
+
+        public async Task<ModelActionResult<UserDetailsDao>> GetUserByEmailAsync(string email)
+        {
+            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb));
+
+            const string query = "SELECT * FROM users WHERE email = @Email";
+            var user = await connection.QueryFirstOrDefaultAsync<UserDetailsDao>(query, new { Email = email });
+            if (user == null)
+                return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserNotFound, "Get user failed: user not found.");
             return ModelActionResult<UserDetailsDao>.Ok(user);
         }
 

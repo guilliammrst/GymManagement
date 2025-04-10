@@ -1,6 +1,9 @@
 ﻿using GymManagement.Application.Interfaces.Services.Auth;
 using GymManagement.Presentation.AuthApi.DTOs;
+using GymManagement.Shared.Core.ClaimsHelper;
+using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagement.Presentation.AuthApi.Controllers
@@ -44,6 +47,25 @@ namespace GymManagement.Presentation.AuthApi.Controllers
             var token = registerResult.Results;
 
             return StatusCode(StatusCodes.Status201Created, token);
+        }
+
+        [HttpGet("me")]
+        [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
+        public async Task<ActionResult> Me()
+        {
+            var emailResult = User.GetEmail();
+            if (!emailResult.Success)
+                return ConvertActionResult(emailResult);
+
+            var email = emailResult.Results;
+
+            var userResult = await _authService.MeAsync(email);
+            if (!userResult.Success)
+                return ConvertActionResult(userResult);
+
+            var user = userResult.Results;
+            
+            return Ok(user);
         }
     }
 }

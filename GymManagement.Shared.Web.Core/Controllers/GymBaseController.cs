@@ -16,7 +16,7 @@ namespace GymManagement.Shared.Web.Core.Controllers
             return ConvertActionResult(faultType, string.Empty);
         }
 
-        private ActionResult ConvertActionResult(GymFaultType faultType, string errorMessage)
+        protected ActionResult ConvertActionResult(GymFaultType faultType, string errorMessage)
         {
             var error = new ErrorDto(faultType, errorMessage);
             switch (faultType)
@@ -25,6 +25,7 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.InvalidEmailOrPassword:
                 case GymFaultType.UserCreationFailed:
                 case GymFaultType.UserAlreadyExists:
+                case GymFaultType.GetEmailFromTokenFailed:
                     return BadRequest(error);
                 case GymFaultType.UserNotFound:
                     return NotFound(error);
