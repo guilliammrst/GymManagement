@@ -1,6 +1,6 @@
 ﻿using GymManagement.Shared.Core.Enums;
 
-namespace GymManagement.Presentation.Api.Controllers.Users
+namespace GymManagement.Presentation.Api.DTOs
 {
     public class CreateUserDto
     {

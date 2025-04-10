@@ -4,7 +4,6 @@ namespace GymManagement.Application.Interfaces.Services.Auth
 {
     public interface IAuthService
     {
-        Task<ModelActionResult> Login(LoginDto loginDto);
-        Task<ModelActionResult<string>> GenerateToken(string? email);
+        Task<ModelActionResult<string>> Login(LoginDto loginDto);
     }
 }

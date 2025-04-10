@@ -8,7 +8,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Auth
         {
             var body = new { loginDto.Email, loginDto.Password };
 
-            var response = await _httpClient.PostAsJsonAsync("api/token", body);
+            var response = await _httpClient.PostAsJsonAsync("api/login", body);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return null;

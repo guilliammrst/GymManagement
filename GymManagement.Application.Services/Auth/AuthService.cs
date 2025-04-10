@@ -18,22 +18,27 @@ namespace GymManagement.Application.Services.Auth
     {
         private readonly IssuerOptions _issuerOptions = options.Value;
 
-        public async Task<ModelActionResult> Login(LoginDto loginDto)
+        public async Task<ModelActionResult<string>> Login(LoginDto loginDto)
         {
             var userPasswordResult = await _authRepository.GetUserPasswordByEmail(loginDto.Email);
-
             if (!userPasswordResult.Success)
-                return ModelActionResult.Fail(GymFaultType.InvalidEmailOrPassword, "Invalid email or password.");
+                return ModelActionResult<string>.Fail(GymFaultType.InvalidEmailOrPassword, "Invalid email or password.");
 
             var userPassword = userPasswordResult.Results;
 
             if (!loginDto.Password.Verify(userPassword))
-                return ModelActionResult.Fail(GymFaultType.InvalidEmailOrPassword, "Invalid email or password.");
+                return ModelActionResult<string>.Fail(GymFaultType.InvalidEmailOrPassword, "Invalid email or password.");
 
-            return ModelActionResult.Ok;
+            var tokenResult = await GenerateToken(loginDto.Email);
+            if (!tokenResult.Success)
+                return ModelActionResult<string>.Fail(tokenResult);
+
+            var token = tokenResult.Results;
+
+            return ModelActionResult<string>.Ok(token);
         }
 
-        public async Task<ModelActionResult<string>> GenerateToken(string? email)
+        private async Task<ModelActionResult<string>> GenerateToken(string? email)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_keyVaultService.GetValue(_issuerOptions.SecretKey)));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
