@@ -8,9 +8,9 @@ namespace GymManagement.Application.Services.Users
 {
     public class UserService(IUserRepository _userRepository) : IUserService
     {
-        public async Task<ModelActionResult<UserDto>> GetUserById(int id)
+        public async Task<ModelActionResult<UserDto>> GetUserByIdAsync(int id)
         {
-            var userResult = await _userRepository.GetUserById(id);
+            var userResult = await _userRepository.GetUserByIdAsync(id);
             if (!userResult.Success)
                 return ModelActionResult<UserDto>.Fail(userResult);
 
@@ -19,9 +19,9 @@ namespace GymManagement.Application.Services.Users
             return ModelActionResult<UserDto>.Ok(user.ToDto());
         }
 
-        public async Task<ModelActionResult<List<UserDto>>> GetUsers()
+        public async Task<ModelActionResult<List<UserDto>>> GetUsersAsync()
         {
-            var usersResult = await _userRepository.GetUsers();
+            var usersResult = await _userRepository.GetUsersAsync();
             if (!usersResult.Success)
                 return ModelActionResult<List<UserDto>>.Fail(usersResult);
 
@@ -30,7 +30,7 @@ namespace GymManagement.Application.Services.Users
             return ModelActionResult<List<UserDto>>.Ok(users.ToDto());
         }
 
-        public async Task<ModelActionResult<UserDto>> CreateUser (UserCreateDto userCreateDto)
+        public async Task<ModelActionResult<UserDto>> CreateUserAsync (UserCreateDto userCreateDto)
         {
             var userCreateResult = User.Create(userCreateDto.Name, userCreateDto.Surname, userCreateDto.Birthdate, userCreateDto.Password,
                 userCreateDto.Role, userCreateDto.Email, userCreateDto.PhoneNumber, userCreateDto.Gender);
@@ -39,7 +39,7 @@ namespace GymManagement.Application.Services.Users
 
             var user = userCreateResult.Results;
 
-            var newUserResult = await _userRepository.CreateUser(user.ToCreateDao());
+            var newUserResult = await _userRepository.CreateUserAsync(user.ToCreateDao());
             if (!newUserResult.Success)
                 return ModelActionResult<UserDto>.Fail(newUserResult);
 

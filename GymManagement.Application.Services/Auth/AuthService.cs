@@ -11,16 +11,19 @@ using GymManagement.Shared.Core.Results;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using GymManagement.Application.Interfaces.Repositories.Auth;
+using GymManagement.Domain;
+using GymManagement.Application.Interfaces.Repositories.Users;
+using GymManagement.Application.Services.Converters;
 
 namespace GymManagement.Application.Services.Auth
 {
-    public class AuthService(IAuthRepository _authRepository, IKeyVaultService _keyVaultService, IOptions<IssuerOptions> options) : IAuthService
+    public class AuthService(IAuthRepository _authRepository, IUserRepository _userRepository, IKeyVaultService _keyVaultService, IOptions<IssuerOptions> options) : IAuthService
     {
         private readonly IssuerOptions _issuerOptions = options.Value;
 
-        public async Task<ModelActionResult<string>> Login(LoginDto loginDto)
+        public async Task<ModelActionResult<string>> LoginAsync(LoginDto loginDto)
         {
-            var userPasswordResult = await _authRepository.GetUserPasswordByEmail(loginDto.Email);
+            var userPasswordResult = await _authRepository.GetUserPasswordByEmailAsync(loginDto.Email);
             if (!userPasswordResult.Success)
                 return ModelActionResult<string>.Fail(GymFaultType.InvalidEmailOrPassword, "Invalid email or password.");
 
@@ -29,7 +32,7 @@ namespace GymManagement.Application.Services.Auth
             if (!loginDto.Password.Verify(userPassword))
                 return ModelActionResult<string>.Fail(GymFaultType.InvalidEmailOrPassword, "Invalid email or password.");
 
-            var tokenResult = await GenerateToken(loginDto.Email);
+            var tokenResult = await GenerateTokenAsync(loginDto.Email);
             if (!tokenResult.Success)
                 return ModelActionResult<string>.Fail(tokenResult);
 
@@ -38,12 +41,37 @@ namespace GymManagement.Application.Services.Auth
             return ModelActionResult<string>.Ok(token);
         }
 
-        private async Task<ModelActionResult<string>> GenerateToken(string? email)
+        public async Task<ModelActionResult<string>> RegisterAsync(RegisterDto registerDto)
+        {
+            var userResult = User.Create(registerDto.Name, registerDto.Surname, registerDto.Birthdate, 
+                registerDto.Password, Role.None, registerDto.Email, registerDto.PhoneNumber, registerDto.Gender);
+            if (!userResult.Success)
+                return ModelActionResult<string>.Fail(userResult);
+
+            var user = userResult.Results;
+            var userCreateDao = user.ToCreateDao();
+
+            var createUserResult = await _userRepository.CreateUserAsync(userCreateDao);
+            if (!createUserResult.Success)
+                return ModelActionResult<string>.Fail(createUserResult);
+
+            var userDao = createUserResult.Results;
+
+            var tokenResult = await GenerateTokenAsync(userDao.Email);
+            if (!tokenResult.Success)
+                return ModelActionResult<string>.Fail(tokenResult);
+
+            var token = tokenResult.Results;
+
+            return ModelActionResult<string>.Ok(token);
+        }
+
+        private async Task<ModelActionResult<string>> GenerateTokenAsync(string? email)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_keyVaultService.GetValue(_issuerOptions.SecretKey)));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var roleResult = await _authRepository.GetUserRoleByEmail(email);
+            var roleResult = await _authRepository.GetUserRoleByEmailAsync(email);
             if (!roleResult.Success)
                 return ModelActionResult<string>.Fail(roleResult);
 

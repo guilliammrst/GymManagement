@@ -4,8 +4,8 @@ namespace GymManagement.Application.Interfaces.Services.Users
 {
     public interface IUserService
     {
-        Task<ModelActionResult<UserDto>> GetUserById(int id);
-        Task<ModelActionResult<List<UserDto>>> GetUsers();
-        Task<ModelActionResult<UserDto>> CreateUser(UserCreateDto userCreateDto);
+        Task<ModelActionResult<UserDto>> GetUserByIdAsync(int id);
+        Task<ModelActionResult<List<UserDto>>> GetUsersAsync();
+        Task<ModelActionResult<UserDto>> CreateUserAsync(UserCreateDto userCreateDto);
     }
 }

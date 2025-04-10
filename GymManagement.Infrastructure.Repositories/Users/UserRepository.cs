@@ -16,26 +16,31 @@ namespace GymManagement.Infrastructure.Repositories.Users
     {
         private readonly KeyVaultOptions _keyVaultSettings = options.Value;
 
-        public async Task<ModelActionResult<UserDetailsDao>> GetUserById(int id)
+        public async Task<ModelActionResult<UserDetailsDao>> GetUserByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb));
+
+            const string query = "SELECT * FROM users WHERE id = @Id";
+            var user = await connection.QueryFirstOrDefaultAsync<UserDetailsDao>(query, new { Id = id });
+            if (user == null)
+                return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserNotFound, "User not found.");
+            return ModelActionResult<UserDetailsDao>.Ok(user);
         }
 
-        public async Task<ModelActionResult<List<UserDao>>> GetUsers()
+        public async Task<ModelActionResult<List<UserDao>>> GetUsersAsync()
         {
-            await using (var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb)))
-            {
-                const string query = "SELECT * FROM users";
-                var users = await connection.QueryAsync<UserDao>(query);
-                return ModelActionResult<List<UserDao>>.Ok([.. users]);
-            }
+            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb));
+
+            const string query = "SELECT * FROM users";
+            var users = await connection.QueryAsync<UserDao>(query);
+            return ModelActionResult<List<UserDao>>.Ok([.. users]);
         }
 
-        public async Task<ModelActionResult<UserDao>> CreateUser(UserCreateDao userCreate)
+        public async Task<ModelActionResult<UserDao>> CreateUserAsync(UserCreateDao userCreate)
         {
             try
             {
-                if (_context.Users.All(u => u.Email != userCreate.Email))
+                if (_context.Users.Any(u => u.Email == userCreate.Email))
                     return ModelActionResult<UserDao>.Fail(GymFaultType.UserAlreadyExists, "User creation failed: user already exists.");
 
                 var userModel = userCreate.ToModel();

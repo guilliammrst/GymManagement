@@ -9,32 +9,30 @@ using Npgsql;
 
 namespace GymManagement.Infrastructure.Repositories.Auth
 {
-    public class AuthRepository (IKeyVaultService _keyVaultService, IOptions<KeyVaultOptions> options) : IAuthRepository
+    public class AuthRepository(IKeyVaultService _keyVaultService, IOptions<KeyVaultOptions> options) : IAuthRepository
     {
         private readonly KeyVaultOptions _keyVaultOptions = options.Value;
 
-        public async Task<ModelActionResult<string>> GetUserPasswordByEmail(string? email)
+        public async Task<ModelActionResult<string>> GetUserPasswordByEmailAsync(string? email)
         {
-            await using (var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultOptions.GymDb)))
-            {
-                const string query = "SELECT password FROM users WHERE email = @Email";
-                var userPassword = await connection.QueryFirstOrDefaultAsync<string>(query, new { Email = email });
-                if (userPassword == null)
-                    return ModelActionResult<string>.Fail(GymFaultType.UserNotFound, "User not found.");
-                return ModelActionResult<string>.Ok(userPassword);
-            }
+            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultOptions.GymDb));
+
+            const string query = "SELECT password FROM users WHERE email = @Email";
+            var userPassword = await connection.QueryFirstOrDefaultAsync<string>(query, new { Email = email });
+            if (userPassword == null)
+                return ModelActionResult<string>.Fail(GymFaultType.UserNotFound, "User not found.");
+            return ModelActionResult<string>.Ok(userPassword);
         }
 
-        public async Task<ModelActionResult<Role>> GetUserRoleByEmail(string? email)
+        public async Task<ModelActionResult<Role>> GetUserRoleByEmailAsync(string? email)
         {
-            await using (var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultOptions.GymDb)))
-            {
-                const string query = "SELECT role FROM users WHERE email = @Email";
-                var userRole = await connection.QueryFirstOrDefaultAsync<Role?>(query, new { Email = email });
-                if (userRole == null)
-                    return ModelActionResult<Role>.Fail(GymFaultType.UserNotFound, "User not found.");
-                return ModelActionResult<Role>.Ok((Role)userRole);
-            }
+            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultOptions.GymDb));
+
+            const string query = "SELECT role FROM users WHERE email = @Email";
+            var userRole = await connection.QueryFirstOrDefaultAsync<Role?>(query, new { Email = email });
+            if (userRole == null)
+                return ModelActionResult<Role>.Fail(GymFaultType.UserNotFound, "User not found.");
+            return ModelActionResult<Role>.Ok((Role)userRole);
         }
     }
 }

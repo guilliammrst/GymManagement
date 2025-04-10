@@ -15,7 +15,7 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         [HttpGet("{userId}")]
         public async Task<ActionResult> GetUserById(int userId)
         {
-            var userResult = await _userService.GetUserById(userId);
+            var userResult = await _userService.GetUserByIdAsync(userId);
 
             if (!userResult.Success)
                 return ConvertActionResult(userResult);
@@ -30,7 +30,7 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         {
             var user = User.Claims.FirstOrDefault(x => x.Type == ClaimsTypes.Email)?.Value;
 
-            var usersResult = await _userService.GetUsers();
+            var usersResult = await _userService.GetUsersAsync();
 
             if (!usersResult.Success)
                 return ConvertActionResult(usersResult);
@@ -43,7 +43,7 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         [HttpPost]
         public async Task<ActionResult> CreateUser([FromBody] CreateUserDto userDto)
         {
-            var userResult = await _userService.CreateUser(new UserCreateDto
+            var userResult = await _userService.CreateUserAsync(new UserCreateDto
             {
                 Name = userDto.Name,
                 Surname = userDto.Surname,

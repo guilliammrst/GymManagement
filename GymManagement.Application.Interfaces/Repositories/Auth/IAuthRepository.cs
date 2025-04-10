@@ -5,7 +5,7 @@ namespace GymManagement.Application.Interfaces.Repositories.Auth
 {
     public interface IAuthRepository
     {
-        Task<ModelActionResult<string>> GetUserPasswordByEmail(string? email);
-        Task<ModelActionResult<Role>> GetUserRoleByEmail(string? email);
+        Task<ModelActionResult<string>> GetUserPasswordByEmailAsync(string? email);
+        Task<ModelActionResult<Role>> GetUserRoleByEmailAsync(string? email);
     }
 }

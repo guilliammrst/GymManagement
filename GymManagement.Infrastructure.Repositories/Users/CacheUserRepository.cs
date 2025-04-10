@@ -12,27 +12,27 @@ namespace GymManagement.Infrastructure.Repositories.Users
     {
         protected override string CacheKey => CacheKeys.Users;
 
-        public async Task<ModelActionResult<UserDetailsDao>> GetUserById(int id)
+        public async Task<ModelActionResult<UserDetailsDao>> GetUserByIdAsync(int id)
         {
             var cachedUser = GetCached(id);
             if (cachedUser != null)
                 return ModelActionResult<UserDetailsDao>.Ok(cachedUser);
 
-            var userResult = await _userRepository.GetUserById(id);
+            var userResult = await _userRepository.GetUserByIdAsync(id);
             if (userResult.Success)
                 Cache(userResult.Results);
 
             return userResult;
         }
 
-        public async Task<ModelActionResult<List<UserDao>>> GetUsers()
+        public async Task<ModelActionResult<List<UserDao>>> GetUsersAsync()
         {
-            return await _userRepository.GetUsers();
+            return await _userRepository.GetUsersAsync();
         }
 
-        public async Task<ModelActionResult<UserDao>> CreateUser(UserCreateDao userCreate)
+        public async Task<ModelActionResult<UserDao>> CreateUserAsync(UserCreateDao userCreate)
         {
-            var userResult = await _userRepository.CreateUser(userCreate);
+            var userResult = await _userRepository.CreateUserAsync(userCreate);
             if (userResult.Success)
                 Cache(userResult.Results.ToDetailsDao());
 
