@@ -12,10 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GymManagement.AuthApi\GymManagement.AuthApi.csproj" />
-    <ProjectReference Include="..\GymManagement.WebApp\GymManagement.WebApp.csproj" />
-    <ProjectReference Include="..\GymManagement.Api\GymManagement.Api.csproj" />
-    <ProjectReference Include="..\GymManagement.Core\GymManagement.Core.csproj" />
+    <ProjectReference Include="..\GymManagement.Presentation.AuthApi\GymManagement.Presentation.AuthApi.csproj" />
+    <ProjectReference Include="..\GymManagement.Presentation.WebApp\GymManagement.Presentation.WebApp.csproj" />
+    <ProjectReference Include="..\GymManagement.Presentation.Api\GymManagement.Presentation.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

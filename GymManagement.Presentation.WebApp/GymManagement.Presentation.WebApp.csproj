@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.2" />
+    <PackageReference Include="Radzen.Blazor" Version="6.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GymManagement.Aspire.ServiceDefaults\GymManagement.Aspire.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\GymManagement.Shared.Core\GymManagement.Shared.Core.csproj" />
+  </ItemGroup>
+
+</Project>

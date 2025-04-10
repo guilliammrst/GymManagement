@@ -3,35 +3,41 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Api", "GymManagement.Api\GymManagement.Api.csproj", "{6F067067-5EA2-48F9-88FF-1D568A13287E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Presentation.Api", "GymManagement.Presentation.Api\GymManagement.Presentation.Api.csproj", "{6F067067-5EA2-48F9-88FF-1D568A13287E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.DAL", "GymManagement.DAL\GymManagement.DAL.csproj", "{A13721D8-DC26-4B07-B3F1-CAE271E574AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Infrastructure.Persistence", "GymManagement.Infrastructure.Persistence\GymManagement.Infrastructure.Persistence.csproj", "{A13721D8-DC26-4B07-B3F1-CAE271E574AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Core", "GymManagement.Core\GymManagement.Core.csproj", "{42857EE1-C0AE-4574-91D4-B546293D17F5}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{7765575E-2D77-4A34-B984-6A5C36B01D81}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Shared.Core", "GymManagement.Shared.Core\GymManagement.Shared.Core.csproj", "{42857EE1-C0AE-4574-91D4-B546293D17F5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{52CBF253-2A67-4D21-B2CB-F8788E934C78}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{210F936E-A7D1-4319-B3A9-3D5EE4DDCDBA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{210F936E-A7D1-4319-B3A9-3D5EE4DDCDBA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repositories", "Repositories", "{639D5D43-94DD-47ED-98C0-E7290CB9CC75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Infrastructure.Repositories", "GymManagement.Infrastructure.Repositories\GymManagement.Infrastructure.Repositories.csproj", "{57E622AB-AF35-4776-ACB0-9CF6B4D73038}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Repositories", "GymManagement.Repositories\GymManagement.Repositories.csproj", "{57E622AB-AF35-4776-ACB0-9CF6B4D73038}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Services", "GymManagement.Services\GymManagement.Services.csproj", "{717FE9A6-F219-4D7D-9FDD-7A4A0DCBA736}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Application.Services", "GymManagement.Application.Services\GymManagement.Application.Services.csproj", "{717FE9A6-F219-4D7D-9FDD-7A4A0DCBA736}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Domain", "GymManagement.Domain\GymManagement.Domain.csproj", "{9B4C17C2-DE56-4995-9F70-D2CE312B75FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Web.Core", "GymManagement.Web.Core\GymManagement.Web.Core.csproj", "{74392C0E-ACD7-464C-A2B9-DFE27465391E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Shared.Web.Core", "GymManagement.Shared.Web.Core\GymManagement.Shared.Web.Core.csproj", "{74392C0E-ACD7-464C-A2B9-DFE27465391E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Aspire.AppHost", "GymManagement.Aspire.AppHost\GymManagement.Aspire.AppHost.csproj", "{B49CD820-51F3-4F8A-B103-B2641F5029E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Aspire.ServiceDefaults", "GymManagement.Aspire.ServiceDefaults\GymManagement.Aspire.ServiceDefaults.csproj", "{25BB4344-EE86-46E0-8F86-34216D7A660F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.WebApp", "GymManagement.WebApp\GymManagement.WebApp.csproj", "{4EC3C34C-8159-47EE-9AD5-D873F0F87DB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Presentation.WebApp", "GymManagement.Presentation.WebApp\GymManagement.Presentation.WebApp.csproj", "{4EC3C34C-8159-47EE-9AD5-D873F0F87DB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.AuthApi", "GymManagement.AuthApi\GymManagement.AuthApi.csproj", "{4BE5EB40-9D93-4B38-871A-167F9B52EAA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Presentation.AuthApi", "GymManagement.Presentation.AuthApi\GymManagement.Presentation.AuthApi.csproj", "{4BE5EB40-9D93-4B38-871A-167F9B52EAA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{08EDCE23-29EF-4217-A5E7-9A5CDEE4747D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Application.Interfaces", "GymManagement.Application.Interfaces\GymManagement.Application.Interfaces.csproj", "{45077477-70FF-4E49-A134-C9BE056AD408}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{FA9BBE57-7716-42FF-A1EF-E566651EEF94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{030EC1FD-B58A-4803-B61B-E8531543977B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{E8C255DD-D07B-408F-8059-A2D27F1EB99E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,14 +89,26 @@ Global
 		{4BE5EB40-9D93-4B38-871A-167F9B52EAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BE5EB40-9D93-4B38-871A-167F9B52EAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BE5EB40-9D93-4B38-871A-167F9B52EAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45077477-70FF-4E49-A134-C9BE056AD408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45077477-70FF-4E49-A134-C9BE056AD408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45077477-70FF-4E49-A134-C9BE056AD408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45077477-70FF-4E49-A134-C9BE056AD408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A13721D8-DC26-4B07-B3F1-CAE271E574AC} = {7765575E-2D77-4A34-B984-6A5C36B01D81}
-		{57E622AB-AF35-4776-ACB0-9CF6B4D73038} = {639D5D43-94DD-47ED-98C0-E7290CB9CC75}
+		{6F067067-5EA2-48F9-88FF-1D568A13287E} = {FA9BBE57-7716-42FF-A1EF-E566651EEF94}
+		{A13721D8-DC26-4B07-B3F1-CAE271E574AC} = {08EDCE23-29EF-4217-A5E7-9A5CDEE4747D}
+		{42857EE1-C0AE-4574-91D4-B546293D17F5} = {030EC1FD-B58A-4803-B61B-E8531543977B}
+		{57E622AB-AF35-4776-ACB0-9CF6B4D73038} = {08EDCE23-29EF-4217-A5E7-9A5CDEE4747D}
 		{717FE9A6-F219-4D7D-9FDD-7A4A0DCBA736} = {210F936E-A7D1-4319-B3A9-3D5EE4DDCDBA}
 		{9B4C17C2-DE56-4995-9F70-D2CE312B75FC} = {52CBF253-2A67-4D21-B2CB-F8788E934C78}
+		{74392C0E-ACD7-464C-A2B9-DFE27465391E} = {030EC1FD-B58A-4803-B61B-E8531543977B}
+		{B49CD820-51F3-4F8A-B103-B2641F5029E7} = {E8C255DD-D07B-408F-8059-A2D27F1EB99E}
+		{25BB4344-EE86-46E0-8F86-34216D7A660F} = {E8C255DD-D07B-408F-8059-A2D27F1EB99E}
+		{4EC3C34C-8159-47EE-9AD5-D873F0F87DB8} = {FA9BBE57-7716-42FF-A1EF-E566651EEF94}
+		{4BE5EB40-9D93-4B38-871A-167F9B52EAA5} = {FA9BBE57-7716-42FF-A1EF-E566651EEF94}
+		{45077477-70FF-4E49-A134-C9BE056AD408} = {210F936E-A7D1-4319-B3A9-3D5EE4DDCDBA}
 	EndGlobalSection
 EndGlobal

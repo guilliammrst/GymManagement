@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using GymManagement.Core.BaseObjects;
-using GymManagement.Core.Enums;
-using GymManagement.Core.PasswordExt;
-using GymManagement.Web.Core.Results;
+using GymManagement.Shared.Core.BaseObjects;
+using GymManagement.Shared.Core.Enums;
+using GymManagement.Shared.Core.PasswordExt;
+using GymManagement.Shared.Core.Results;
 
 namespace GymManagement.Domain
 {
