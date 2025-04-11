@@ -3,19 +3,18 @@ using System.Security.Claims;
 using System.Text;
 using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.Constants;
-using GymManagement.Shared.Core.KeyVaultService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace GymManagement.Shared.Core.Identity
+namespace GymManagement.Shared.Web.Core.Identity
 {
-    public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IKeyVaultService _keyVaultService, IOptions<IssuerOptions> options) : IAuthorizationHandler
+    public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IOptions<IssuerOptions> options) : IAuthorizationHandler
     {
         private readonly IssuerOptions _issuerOptions = options.Value;
-        
+
         private static void ValidateRequirements(AuthorizationHandlerContext context, ClaimsPrincipal principal)
         {
             var validateRequirements = new List<IAuthorizationRequirement>();
@@ -49,15 +48,15 @@ namespace GymManagement.Shared.Core.Identity
                 return Task.CompletedTask;
             }
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_keyVaultService.GetValue(_issuerOptions.SecretKey)));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_issuerOptions.SecretKey));
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _keyVaultService.GetValue(_issuerOptions.Issuer),
-                ValidAudience = _keyVaultService.GetValue(_issuerOptions.Audience),
+                ValidIssuer = _issuerOptions.Issuer,
+                ValidAudience = _issuerOptions.Audience,
                 IssuerSigningKey = key,
                 RoleClaimType = ClaimsTypes.Role
             };

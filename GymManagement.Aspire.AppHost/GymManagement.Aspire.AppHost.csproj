@@ -15,6 +15,7 @@
     <ProjectReference Include="..\GymManagement.Presentation.AuthApi\GymManagement.Presentation.AuthApi.csproj" />
     <ProjectReference Include="..\GymManagement.Presentation.WebApp\GymManagement.Presentation.WebApp.csproj" />
     <ProjectReference Include="..\GymManagement.Presentation.Api\GymManagement.Presentation.Api.csproj" />
+    <ProjectReference Include="..\GymManagement.Shared.Core\GymManagement.Shared.Core.csproj" IsAspireProjectResource="false" />
   </ItemGroup>
 
   <ItemGroup>

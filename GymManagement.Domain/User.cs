@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using GymManagement.Shared.Core.BaseObjects;
+﻿using GymManagement.Shared.Core.BaseObjects;
 using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.PasswordExt;
+using GymManagement.Shared.Core.Regexs;
 using GymManagement.Shared.Core.Results;
 
 namespace GymManagement.Domain
@@ -43,6 +43,9 @@ namespace GymManagement.Domain
             if (string.IsNullOrWhiteSpace(password))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Password is required.");
 
+            if (!password.IsValidPassword())
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, $"User creation failed: field Password wrong format. Expected: at least 8 characters, at least 1 uppercase letter, at least 1 lowercase letter, at least 1 number, at least 1 special character in : '{PasswordExt.SPECIAL_CHARS}'.");
+
             if (role == null)
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Role is required.");
 
@@ -52,13 +55,13 @@ namespace GymManagement.Domain
             if (string.IsNullOrWhiteSpace(email))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Email is required.");
 
-            if (!IsValidEmail(email))
+            if (!UserRegexs.ValidEmail().IsMatch(email))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Email wrong format (expected: xx@xx.xx).");
 
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field PhoneNumber is required.");
 
-            if (!IsValidPhoneNumber(phoneNumber))
+            if (!UserRegexs.ValidPhoneNumber().IsMatch(phoneNumber))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field PhoneNumber wrong format (expected: 0123456789).");
 
             if (gender == null)
@@ -70,18 +73,6 @@ namespace GymManagement.Domain
             var hashedPassword = password.Hash();
 
             return ModelActionResult<User>.Ok(new User(name, surname, (DateTime)birthdate, hashedPassword, (Role)role, email, phoneNumber, (Gender)gender));
-        }
-
-        private static bool IsValidEmail(string email)
-        {
-            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            return Regex.IsMatch(email, emailPattern);
-        }
-
-        private static bool IsValidPhoneNumber(string phoneNumber)
-        {
-            string phonePattern = @"^\d{10}$";
-            return Regex.IsMatch(phoneNumber, phonePattern);
         }
     }
 }

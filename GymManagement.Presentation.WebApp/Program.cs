@@ -2,6 +2,7 @@ using GymManagement.Presentation.WebApp;
 using GymManagement.Presentation.WebApp.ApiClients.Auth;
 using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
+using GymManagement.Shared.Core.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,14 +19,14 @@ builder.Services.AddHttpClient<GymApiClient>(client =>
 {
     // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
     // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
-    client.BaseAddress = new("https+http://gym-api");
+    client.BaseAddress = new("https+http://" + ProjectNames.GymApi);
 });
 
 builder.Services.AddHttpClient<AuthApiClient>(client =>
 {
     // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
     // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
-    client.BaseAddress = new("https+http://auth-api");
+    client.BaseAddress = new("https+http://" + ProjectNames.AuthApi);
 });
 
 builder.Services.AddScoped<IAuthManager, AuthManager>();

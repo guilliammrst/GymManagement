@@ -4,7 +4,6 @@ using System.Text;
 using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Core.Enums;
-using GymManagement.Shared.Core.KeyVaultService;
 using GymManagement.Shared.Core.PasswordExt;
 using GymManagement.Application.Interfaces.Services.Auth;
 using GymManagement.Shared.Core.Results;
@@ -18,7 +17,7 @@ using GymManagement.Application.Interfaces.Services.Users;
 
 namespace GymManagement.Application.Services.Auth
 {
-    public class AuthService(IAuthRepository _authRepository, IUserRepository _userRepository, IKeyVaultService _keyVaultService, IOptions<IssuerOptions> options) : IAuthService
+    public class AuthService(IAuthRepository _authRepository, IUserRepository _userRepository, IOptions<IssuerOptions> options) : IAuthService
     {
         private readonly IssuerOptions _issuerOptions = options.Value;
 
@@ -81,7 +80,7 @@ namespace GymManagement.Application.Services.Auth
 
         private async Task<ModelActionResult<string>> GenerateTokenAsync(string? email)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_keyVaultService.GetValue(_issuerOptions.SecretKey)));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_issuerOptions.SecretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var roleResult = await _authRepository.GetUserRoleByEmailAsync(email);
@@ -98,8 +97,8 @@ namespace GymManagement.Application.Services.Auth
             };
 
             var token = new JwtSecurityToken(
-                issuer: _keyVaultService.GetValue(_issuerOptions.Issuer),
-                audience: _keyVaultService.GetValue(_issuerOptions.Audience),
+                issuer: _issuerOptions.Issuer,
+                audience: _issuerOptions.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials

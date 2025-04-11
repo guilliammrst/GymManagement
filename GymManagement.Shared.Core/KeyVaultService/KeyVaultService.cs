@@ -1,29 +1,23 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using GymManagement.Shared.Core.Configurations;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace GymManagement.Shared.Core.KeyVaultService
 {
-    public class KeyVaultService (IOptions<KeyVaultOptions> keyVaultOptions, IOptions<CachingOptions> cachingOptions, IMemoryCache _cache) : IKeyVaultService
+    public class KeyVaultService(IOptions<KeyVaultOptions> keyVaultOptions, ILogger<KeyVaultService> _logger)
     {
-        private readonly KeyVaultOptions _keyVaultOptions = keyVaultOptions.Value;
-        private readonly CachingOptions _cachingOptions = cachingOptions.Value;
+        private readonly string _keyVaultUrl = keyVaultOptions.Value.Url;
 
         public string GetValue(string key)
         {
-            if (_cache.TryGetValue(key, out string? value) && !string.IsNullOrWhiteSpace(value))
-                return value;
-
             try
             {
-                var secretClient = new SecretClient(new Uri(_keyVaultOptions.Url), new DefaultAzureCredential(true));
+                var secretClient = new SecretClient(new Uri(_keyVaultUrl), new DefaultAzureCredential(true));
                 KeyVaultSecret secret = secretClient.GetSecret(key);
                 var secretValue = secret.Value;
-                
-                if (!string.IsNullOrWhiteSpace(secretValue))
-                    _cache.Set(key, secretValue, TimeSpan.FromSeconds(_cachingOptions.CacheDurationInSeconds));
+                _logger.LogInformation($"Secret successfully retrieved from KeyVault: {key}");
 
                 return secretValue;
             }
@@ -31,6 +25,27 @@ namespace GymManagement.Shared.Core.KeyVaultService
             {
                 throw new Exception($"Error while getting value from KeyVault: {ex.Message}");
             }
+        }
+
+        public Dictionary<string, string> GetValues(List<string> keys)
+        {
+            var secretClient = new SecretClient(new Uri(_keyVaultUrl), new DefaultAzureCredential(true));
+            var secrets = new Dictionary<string, string>();
+            foreach (var key in keys)
+            {
+                try
+                {
+                    KeyVaultSecret secret = secretClient.GetSecret(key);
+                    secrets.Add(key, secret.Value);
+                    _logger.LogInformation($"Secret successfully retrieved from KeyVault: {key}");
+                }
+                catch (Exception ex)
+                {
+                    secrets.Add(key, string.Empty);
+                    _logger.LogError($"Error while getting value from KeyVault: {ex.Message}");
+                }
+            }
+            return secrets;
         }
     }
 }

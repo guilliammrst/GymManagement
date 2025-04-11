@@ -1,8 +1,7 @@
 using GymManagement.Shared.Core.CacheManager;
-using GymManagement.Shared.Core.KeyVaultService;
 using GymManagement.Application.Services;
 using GymManagement.Infrastructure.Repositories;
-using GymManagement.Presentation.AuthApi.Configurations;
+using GymManagement.Shared.Web.Core.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +11,7 @@ builder.AddServiceDefaults();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure();
 
-builder.Services.RegisterKeyVaultService(builder.Configuration);
-builder.Services.RegisterCachingOptions(builder.Configuration);
-
+builder.Services.ConfigureCachingOptions(builder.Configuration);
 builder.Services.ConfigureSecurity(builder.Configuration);
 
 builder.Services.AddControllers();

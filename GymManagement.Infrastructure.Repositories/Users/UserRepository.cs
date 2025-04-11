@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.Enums;
-using GymManagement.Shared.Core.KeyVaultService;
 using GymManagement.Infrastructure.Repositories.Converters;
 using GymManagement.Infrastructure.Repositories.DbContexts;
 using GymManagement.Shared.Core.Results;
@@ -12,13 +11,13 @@ using GymManagement.Application.Interfaces.Repositories.Users;
 
 namespace GymManagement.Infrastructure.Repositories.Users
 {
-    public class UserRepository(GymDbContext _context, IKeyVaultService _keyVaultService, IOptions<KeyVaultOptions> options) : IUserRepository
+    public class UserRepository(GymDbContext _context, IOptions<DbSettings> _options) : IUserRepository
     {
-        private readonly KeyVaultOptions _keyVaultSettings = options.Value;
+        private readonly string _connectionString = _options.Value.ConnectionString;
 
         public async Task<ModelActionResult<UserDetailsDao>> GetUserByIdAsync(int id)
         {
-            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb));
+            await using var connection = new NpgsqlConnection(_connectionString);
 
             const string query = "SELECT * FROM users WHERE id = @Id";
             var user = await connection.QueryFirstOrDefaultAsync<UserDetailsDao>(query, new { Id = id });
@@ -29,7 +28,7 @@ namespace GymManagement.Infrastructure.Repositories.Users
 
         public async Task<ModelActionResult<UserDetailsDao>> GetUserByEmailAsync(string email)
         {
-            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb));
+            await using var connection = new NpgsqlConnection(_connectionString);
 
             const string query = "SELECT * FROM users WHERE email = @Email";
             var user = await connection.QueryFirstOrDefaultAsync<UserDetailsDao>(query, new { Email = email });
@@ -40,7 +39,7 @@ namespace GymManagement.Infrastructure.Repositories.Users
 
         public async Task<ModelActionResult<List<UserDao>>> GetUsersAsync()
         {
-            await using var connection = new NpgsqlConnection(_keyVaultService.GetValue(_keyVaultSettings.GymDb));
+            await using var connection = new NpgsqlConnection(_connectionString);
 
             const string query = "SELECT * FROM users";
             var users = await connection.QueryAsync<UserDao>(query);

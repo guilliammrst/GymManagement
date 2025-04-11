@@ -1,19 +1,27 @@
 ﻿using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.Constants;
-using GymManagement.Shared.Core.Identity;
+using GymManagement.Shared.Core.Environments;
+using GymManagement.Shared.Web.Core.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace GymManagement.Presentation.Api.Configurations
+namespace GymManagement.Shared.Web.Core.Configurations
 {
     public static class ServiceConfiguration
     {
         public static IServiceCollection ConfigureSecurity(this IServiceCollection services, IConfiguration configuration)
         {
-            var section = configuration.GetSection(AppSettings.IssuerOptions);
-            if (section == null)
-                throw new ApplicationException($"Section '{AppSettings.IssuerOptions}' not found in appsettings.json.");
-            
-            services.Configure<IssuerOptions>(section.Bind);
+            var issuer = EnvironmentVariables.GetEnvironmentVariable(KeyVaultKeyNames.JwtIssuer);
+            var audience = EnvironmentVariables.GetEnvironmentVariable(KeyVaultKeyNames.JwtAudience);
+            var secretKey = EnvironmentVariables.GetEnvironmentVariable(KeyVaultKeyNames.JwtSecretKey);
+
+            services.Configure<IssuerOptions>(options =>
+            {
+                options.Issuer = issuer;
+                options.Audience = audience;
+                options.SecretKey = secretKey;
+            });
 
             services.AddAuthentication().AddJwtBearer();
 
