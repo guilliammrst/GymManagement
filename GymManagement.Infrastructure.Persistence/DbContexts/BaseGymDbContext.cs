@@ -18,6 +18,7 @@ namespace GymManagement.Infrastructure.Persistence.DbContexts
         public DbSet<MembershipModel> Memberships { get; set; }
         public DbSet<MembershipPlanModel> MembershipPlans { get; set; }
         public DbSet<PaymentDetailModel> PaymentDetails { get; set; }
+        public DbSet<AttendanceModel> Attendances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
