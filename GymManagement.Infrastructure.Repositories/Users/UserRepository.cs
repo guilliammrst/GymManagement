@@ -51,7 +51,10 @@ namespace GymManagement.Infrastructure.Repositories.Users
             try
             {
                 if (_context.Users.Any(u => u.Email == userCreate.Email))
-                    return ModelActionResult<UserDao>.Fail(GymFaultType.UserAlreadyExists, "User creation failed: user already exists.");
+                    return ModelActionResult<UserDao>.Fail(GymFaultType.UserEmailAlreadyUsed, "User creation failed: user email already used.");
+
+                if (_context.Users.Any(u => u.PhoneNumber == userCreate.PhoneNumber))
+                    return ModelActionResult<UserDao>.Fail(GymFaultType.UserPhoneNumberAlreadyUsed, "User creation failed: user phone number already used.");
 
                 var userModel = userCreate.ToModel();
 

@@ -28,6 +28,14 @@ namespace GymManagement.Infrastructure.Persistence.Models
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Column("gender")]
-        public Gender Gender { get; set; } = Gender.None;   
+        public Gender Gender { get; set; } = Gender.None;
+
+        [Column("address_id")]
+        public int? AddressId { get; set; }
+        public AddressModel? Address { get; set; }
+
+        public ICollection<MembershipModel> Memberships { get; set; } = [];
+
+        public ICollection<AttendanceModel> Attendances { get; set; } = [];
     }
 }

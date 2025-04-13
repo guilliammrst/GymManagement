@@ -11,6 +11,7 @@
         // User
         UserNotFound = 100,
         UserCreationFailed = 101,
-        UserAlreadyExists = 102,
+        UserEmailAlreadyUsed = 102,
+        UserPhoneNumberAlreadyUsed = 103,
     }
 }

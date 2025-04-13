@@ -3,6 +3,7 @@ using System;
 using GymManagement.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymManagement.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(BaseGymDbContext))]
-    partial class BaseGymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250413170522_AddPaymentDetailTable")]
+    partial class AddPaymentDetailTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,44 +69,6 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("addresses");
-                });
-
-            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.AttendanceModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CheckInTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("check_in_time");
-
-                    b.Property<int>("ClubId")
-                        .HasColumnType("integer")
-                        .HasColumnName("club_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("MemberId")
-                        .HasColumnType("integer")
-                        .HasColumnName("member_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClubId");
-
-                    b.HasIndex("MemberId");
-
-                    b.ToTable("attendances");
                 });
 
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.ClubModel", b =>
@@ -366,25 +331,6 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.AttendanceModel", b =>
-                {
-                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.ClubModel", "Club")
-                        .WithMany("Attendances")
-                        .HasForeignKey("ClubId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.UserModel", "Member")
-                        .WithMany("Attendances")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Club");
-
-                    b.Navigation("Member");
-                });
-
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.ClubModel", b =>
                 {
                     b.HasOne("GymManagement.Infrastructure.Persistence.Models.AddressModel", "Address")
@@ -406,7 +352,7 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.MembershipModel", b =>
                 {
                     b.HasOne("GymManagement.Infrastructure.Persistence.Models.ClubModel", "HomeClub")
-                        .WithMany("Memberships")
+                        .WithMany()
                         .HasForeignKey("HomeClubId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
@@ -418,7 +364,7 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("GymManagement.Infrastructure.Persistence.Models.MembershipPlanModel", "MembershipPlan")
-                        .WithMany("Memberships")
+                        .WithMany()
                         .HasForeignKey("MembershipPlanId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
@@ -448,18 +394,6 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.ClubModel", b =>
-                {
-                    b.Navigation("Attendances");
-
-                    b.Navigation("Memberships");
-                });
-
-            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.MembershipPlanModel", b =>
-                {
-                    b.Navigation("Memberships");
-                });
-
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.PaymentDetailModel", b =>
                 {
                     b.Navigation("Membership");
@@ -467,8 +401,6 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.UserModel", b =>
                 {
-                    b.Navigation("Attendances");
-
                     b.Navigation("Memberships");
                 });
 #pragma warning restore 612, 618
