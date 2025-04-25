@@ -28,8 +28,6 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         [HttpGet]
         public async Task<ActionResult> GetAccounts()
         {
-            var user = User.Claims.FirstOrDefault(x => x.Type == ClaimsTypes.Email)?.Value;
-
             var usersResult = await _userService.GetUsersAsync();
 
             if (!usersResult.Success)
