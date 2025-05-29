@@ -1,4 +1,5 @@
-﻿using GymManagement.Application.Interfaces.Repositories.Users;
+﻿using GymManagement.Application.Interfaces.Repositories.Addresses;
+using GymManagement.Application.Interfaces.Repositories.Users;
 using GymManagement.Infrastructure.Persistence.Models;
 
 namespace GymManagement.Infrastructure.Repositories.Converters
@@ -35,6 +36,26 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Gender = user.Gender
+            };
+        }
+        public static UserDetailsDao ToDetailsDao(this UserModel user)
+        {
+            return new UserDetailsDao
+            {
+                Id = user.Id,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt,
+                Name = user.Name,
+                Surname = user.Surname,
+                Birthdate = user.Birthdate,
+                Password = user.Password,
+                Role = user.Role,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Gender = user.Gender,
+                Address = user.Address==null?new AddressDao():user.Address.ToDao(),
+                Memberships = user.Memberships.ToDao(),
+                Attendances = user.Attendances.ToDao()
             };
         }
 

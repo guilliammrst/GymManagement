@@ -8,15 +8,15 @@ namespace GymManagement.Application.Services.Users
 {
     public class UserService(IUserRepository _userRepository) : IUserService
     {
-        public async Task<ModelActionResult<UserDto>> GetUserByIdAsync(int id)
+        public async Task<ModelActionResult<UserDetailsDto>> GetUserByIdAsync(int id)
         {
             var userResult = await _userRepository.GetUserByIdAsync(id);
             if (!userResult.Success)
-                return ModelActionResult<UserDto>.Fail(userResult);
+                return ModelActionResult<UserDetailsDto>.Fail(userResult);
 
             var user = userResult.Results;
 
-            return ModelActionResult<UserDto>.Ok(user.ToDto());
+            return ModelActionResult<UserDetailsDto>.Ok(user.ToDetailsDto());
         }
 
         public async Task<ModelActionResult<List<UserDto>>> GetUsersAsync()
