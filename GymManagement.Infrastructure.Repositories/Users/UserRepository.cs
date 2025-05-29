@@ -17,12 +17,15 @@ namespace GymManagement.Infrastructure.Repositories.Users
 
         public async Task<ModelActionResult<UserDetailsDao>> GetUserByIdAsync(int id)
         {
-            await using var connection = new NpgsqlConnection(_connectionString);
+            var userModel = await _context.Users.Include(u => u.Address)
+                                                .Include(u => u.Memberships)
+                                                .Include(u => u.Attendances)
+                                                .FirstOrDefaultAsync(u => u.Id == id);
 
-            const string query = "SELECT * FROM users WHERE id = @Id";
-            var user = await connection.QueryFirstOrDefaultAsync<UserDetailsDao>(query, new { Id = id });
-            if (user == null)
+            if (userModel == null)
                 return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserNotFound, "Get user failed: user not found.");
+
+            var user = userModel.ToDetailsDao();
             return ModelActionResult<UserDetailsDao>.Ok(user);
         }
 

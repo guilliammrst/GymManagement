@@ -39,6 +39,27 @@ namespace GymManagement.Application.Services.Converters
             };
         }
 
+        public static UserDetailsDto ToDetailsDto(this UserDetailsDao user)
+        {
+            return new UserDetailsDto
+            {
+                Id = user.Id,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt,
+                Name = user.Name,
+                Surname = user.Surname,
+                Birthdate = user.Birthdate,
+                Password = user.Password,
+                Role = user.Role,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Gender = user.Gender,
+                Address = user.Address.ToDto(),
+                Memberships = user.Memberships.ToDto(),
+                Attendances = user.Attendances.ToDto()
+            };
+        }
+
         public static List<UserDto> ToDto(this List<UserDao> users)
         {
             return users.Select(ToDto).ToList();
