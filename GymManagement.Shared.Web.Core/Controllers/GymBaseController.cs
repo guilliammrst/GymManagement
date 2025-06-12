@@ -24,11 +24,16 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.BadParameter:
                 case GymFaultType.InvalidEmailOrPassword:
                 case GymFaultType.UserCreationFailed:
+                case GymFaultType.ClubCreationFailed:
+                case GymFaultType.AddressCreationFailed:
                 case GymFaultType.UserEmailAlreadyUsed:
                 case GymFaultType.UserPhoneNumberAlreadyUsed:
                 case GymFaultType.GetEmailFromTokenFailed:
                     return BadRequest(error);
                 case GymFaultType.UserNotFound:
+                case GymFaultType.ClubNotFound:
+                case GymFaultType.ClubManagerNotFound:
+                case GymFaultType.AddressNotFound:
                     return NotFound(error);
                 case GymFaultType.DatabaseUnavailable:
                     return StatusCode(503, error);
