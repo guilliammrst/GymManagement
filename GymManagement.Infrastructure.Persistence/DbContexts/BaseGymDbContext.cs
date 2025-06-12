@@ -14,6 +14,7 @@ namespace GymManagement.Infrastructure.Persistence.DbContexts
         }
 
         public DbSet<UserModel> Users { get; set; }
+        public DbSet<AddressModel> Addresses { get; set; }
         public DbSet<ClubModel> Clubs { get; set; }
         public DbSet<MembershipModel> Memberships { get; set; }
         public DbSet<MembershipPlanModel> MembershipPlans { get; set; }

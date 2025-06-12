@@ -19,5 +19,17 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 Number = address.Number
             };
         }
+
+        public static AddressModel ToModel(this AddressCreateDao address)
+        {
+            return new AddressModel()
+            {
+                Country = address.Country,
+                City = address.City,
+                Street = address.Street,
+                PostalCode = address.PostalCode,
+                Number = address.Number
+            };
+        }
     }
 }

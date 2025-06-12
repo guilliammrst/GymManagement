@@ -7,6 +7,10 @@ using GymManagement.Infrastructure.Repositories.Users;
 using GymManagement.Shared.Core.Environments;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Core.Configurations;
+using GymManagement.Application.Interfaces.Repositories.Clubs;
+using GymManagement.Infrastructure.Repositories.Clubs;
+using GymManagement.Application.Interfaces.Repositories.Addresses;
+using GymManagement.Infrastructure.Repositories.Addresses;
 
 namespace GymManagement.Infrastructure.Repositories
 {
@@ -18,7 +22,20 @@ namespace GymManagement.Infrastructure.Repositories
             return services.AddDbSettingsConfiguration()
                 .RegisterDbContext()
                 .RegisterAuthRepository()
-                .RegisterUserRepositories();
+                .RegisterUserRepositories()
+                .RegisterClubRepositories()
+                .RegisterAddressRepositories();
+        }
+
+        private static IServiceCollection RegisterAddressRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<IAddressCommandRepository, AddressCommandRepository>();
+        }
+
+        private static IServiceCollection RegisterClubRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<IClubQueryRepository, ClubQueryRepository>()
+                .AddScoped<IClubCommandRepository, ClubCommandRepository>();
         }
 
         private static IServiceCollection RegisterAuthRepository(this IServiceCollection services)

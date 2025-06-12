@@ -13,5 +13,14 @@
         UserCreationFailed = 101,
         UserEmailAlreadyUsed = 102,
         UserPhoneNumberAlreadyUsed = 103,
+
+        // Club
+        ClubNotFound = 200,
+        ClubCreationFailed = 201,
+        ClubManagerNotFound = 202,
+
+        // Address
+        AddressNotFound = 300,
+        AddressCreationFailed = 301,
     }
 }
