@@ -47,5 +47,18 @@ namespace GymManagement.Application.Services.Users
 
             return ModelActionResult<UserDto>.Ok(newUser.ToDto());
         }
+
+        public async Task<ModelActionResult<UserDetailsDto>> UpdateUserAsync (UserUpdateDto userUpdateDto)
+        {
+            var userResult = await _userRepository.GetUserByIdAsync(userUpdateDto.Id);
+
+            if (!userResult.Success)
+                return ModelActionResult<UserDetailsDto>.Fail(userResult);
+
+            var user = userResult.Results;
+
+            var userCreateResult = User.Build(
+                )
+        }
     }
 }

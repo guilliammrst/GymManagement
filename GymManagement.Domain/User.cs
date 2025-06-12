@@ -20,14 +20,36 @@ namespace GymManagement.Domain
             Gender = gender;
         }
 
-        public string Name { get; }
-        public string Surname { get; }
-        public DateTime Birthdate { get; }
-        public string Password { get; }
-        public Role Role { get; }
-        public string Email { get; }
-        public string PhoneNumber { get; }
-        public Gender Gender { get; }
+        private User(int id, DateTime createdAt, DateTime updatedAt, string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number) : base(id, createdAt, updatedAt)
+        {
+            Name = name;
+            Surname = surname;
+            Birthdate = birthdate;
+            Password = password;
+            Role = role;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Gender = gender;
+            Country = country;
+            City = city;
+            Street = street;
+            PostalCode = postalCode;
+            Number = number;
+        }
+
+        public string Name { get; private set; }
+        public string Surname { get; private set; }
+        public DateTime Birthdate { get; private set; }
+        public string Password { get; private set; }
+        public Role Role { get; private set; }
+        public string Email { get; private set; }
+        public string PhoneNumber { get; private set; }
+        public Gender Gender { get; private set; }
+        public Country Country { get; private set; }
+        public string City { get; private set; }
+        public string Street { get; private set; }
+        public string PostalCode { get; private set; }
+        public string Number { get; private set; }
 
         public static ModelActionResult<User> Create(string? name, string? surname, DateTime? birthdate, string? password, Role? role, string? email, string? phoneNumber, Gender? gender)
         {
@@ -73,6 +95,65 @@ namespace GymManagement.Domain
             var hashedPassword = password.Hash();
 
             return ModelActionResult<User>.Ok(new User(name, surname, (DateTime)birthdate, hashedPassword, (Role)role, email, phoneNumber, (Gender)gender));
+        }
+
+        public static ModelActionResult<User> Build(int id, DateTime createdAt, DateTime updatedAt, string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number)
+        {
+            return ModelActionResult<User>.Ok(new User(id, createdAt, updatedAt, name, surname, birthdate, password, role, email, phoneNumber, gender, country, city, street, postalCode, number));
+        }
+
+        public ModelActionResult Update(string? name, string? surname, DateTime? birthdate, string? password, Role? role, string? email, string? phoneNumber, Gender? gender, Country? country, string? city, string? street, string? postalCode, string? number)
+        {
+
+            if (!string.IsNullOrWhiteSpace(name))
+                Name = name;
+
+            if (!string.IsNullOrWhiteSpace(surname))
+                Surname = surname;
+
+            if (birthdate != null)
+                Birthdate = (DateTime)birthdate;
+
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                if (!password.IsValidPassword())
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, $"User update failed: field Password wrong format. Expected: at least 8 characters, at least 1 uppercase letter, at least 1 lowercase letter, at least 1 number, at least 1 special character in : '{PasswordExt.SPECIAL_CHARS}'.");
+                
+                var hashedPassword = password.Hash();
+                Password = hashedPassword;
+            }        
+
+            if (role != null)
+            {
+                if (!Enum.IsDefined((Role)role))
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Role does not contain a valid value (expected: 0 - None, 1 - Member, 2 - Coach, 3 - Staff, 4 - Manager).");
+                Role = (Role)role;
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                if (!UserRegexs.ValidEmail().IsMatch(email))
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Email wrong format (expected: xx@xx.xx).");
+                Email = email;
+            }      
+
+            if (!string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                if (!UserRegexs.ValidPhoneNumber().IsMatch(phoneNumber))
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field PhoneNumber wrong format (expected: 0123456789).");
+                PhoneNumber = phoneNumber;
+            }
+
+            if (gender != null)
+            {
+                if (!Enum.IsDefined((Gender)gender))
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Gender does not contain a valid value (expected: 0 - None, 1 - Male, 2 - Female, 3 - Other).");
+                Gender = (Gender)gender;
+
+            }
+
+            return ModelActionResult.Ok;
         }
     }
 }
