@@ -1,0 +1,49 @@
+﻿using GymManagement.Shared.Core.BaseObjects;
+using GymManagement.Shared.Core.Enums;
+using GymManagement.Shared.Core.Results;
+
+namespace GymManagement.Domain
+{
+    public class MembershipPlan : BaseObject
+    {
+        private MembershipPlan(string description, MembershipPlanType membershipPlanType, decimal basePrice, decimal yearlyDiscount, decimal registrationFees) : base (0, DateTime.UtcNow) 
+        {
+            Description = description;
+            MembershipPlanType = membershipPlanType;
+            BasePrice = basePrice;
+            YearlyDiscount = yearlyDiscount;
+            RegistrationFees = registrationFees;
+            IsValid = true;
+        }
+
+        public string Description { get; }
+        public MembershipPlanType MembershipPlanType { get; }
+        public decimal BasePrice { get; }
+        public decimal YearlyDiscount { get; }
+        public decimal RegistrationFees { get; }
+        public bool IsValid { get; }
+
+        public static ModelActionResult<MembershipPlan> Create(string? description, MembershipPlanType? membershipPlanType, decimal? basePrice, decimal? yearlyDiscount, decimal? registrationFees)
+        {
+            if (string.IsNullOrWhiteSpace(description))
+                return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field Description is required.");
+
+            if (membershipPlanType is null)
+                return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field MembershipPlanType is required.");
+
+            if (!Enum.IsDefined((MembershipPlanType)membershipPlanType))
+                return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field MembershipPlanType does not contain a valid value.");
+
+            if (basePrice is null || basePrice <= 0)
+                return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field BasePrice is required and must be greater than 0.");
+
+            if (yearlyDiscount is null || yearlyDiscount < 0)
+                return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field YearlyDiscount is required and must be greater than or equal to 0.");
+
+            if (registrationFees is null || registrationFees < 0)
+                return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field RegistrationFees is required and must be greater than or equal to 0.");
+
+            return ModelActionResult<MembershipPlan>.Ok(new MembershipPlan(description, membershipPlanType.Value, basePrice.Value, yearlyDiscount.Value, registrationFees.Value));
+        }
+    }
+}

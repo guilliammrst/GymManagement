@@ -6,6 +6,8 @@ using GymManagement.Application.Interfaces.Services.Users;
 using GymManagement.Application.Services.Users;
 using GymManagement.Application.Services.Clubs;
 using GymManagement.Application.Interfaces.Services.Clubs;
+using GymManagement.Application.Interfaces.Services.MembershipPlans;
+using GymManagement.Application.Services.MembershipPlans;
 
 namespace GymManagement.Application.Services
 {
@@ -15,7 +17,14 @@ namespace GymManagement.Application.Services
         {
             return services.RegisterAuthService(configuration)
                 .RegisterUserServices()
-                .RegisterClubServices();
+                .RegisterClubServices()
+                .RegisterMembershipPlanServices();
+        }
+
+        private static IServiceCollection RegisterMembershipPlanServices(this IServiceCollection services)
+        {
+            return services.AddTransient<IMembershipPlanCommandService, MembershipPlanCommandService>()
+                .AddTransient<IMembershipPlanQueryService, MembershipPlanQueryService>();
         }
 
         private static IServiceCollection RegisterClubServices(this IServiceCollection services)

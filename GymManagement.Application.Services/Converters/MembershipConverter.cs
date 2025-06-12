@@ -1,6 +1,4 @@
-﻿using GymManagement.Application.Interfaces.Repositories.Attendances;
-using GymManagement.Application.Interfaces.Repositories.Memberships;
-using GymManagement.Application.Interfaces.Services.Attendances;
+﻿using GymManagement.Application.Interfaces.Repositories.Memberships;
 using GymManagement.Application.Interfaces.Services.Memberships;
 
 namespace GymManagement.Application.Services.Converters

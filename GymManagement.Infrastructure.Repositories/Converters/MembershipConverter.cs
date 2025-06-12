@@ -1,5 +1,4 @@
 ﻿using GymManagement.Application.Interfaces.Repositories.Memberships;
-using GymManagement.Application.Interfaces.Repositories.Users;
 using GymManagement.Infrastructure.Persistence.Models;
 
 namespace GymManagement.Infrastructure.Repositories.Converters
@@ -25,7 +24,5 @@ namespace GymManagement.Infrastructure.Repositories.Converters
         {
             return membership.Select(ToDao).ToList();
         }
-
-
     }
 }

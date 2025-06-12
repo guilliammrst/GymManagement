@@ -11,6 +11,8 @@ using GymManagement.Application.Interfaces.Repositories.Clubs;
 using GymManagement.Infrastructure.Repositories.Clubs;
 using GymManagement.Application.Interfaces.Repositories.Addresses;
 using GymManagement.Infrastructure.Repositories.Addresses;
+using GymManagement.Application.Interfaces.Repositories.MembershipPlans;
+using GymManagement.Infrastructure.Repositories.MembershipPlans;
 
 namespace GymManagement.Infrastructure.Repositories
 {
@@ -24,7 +26,14 @@ namespace GymManagement.Infrastructure.Repositories
                 .RegisterAuthRepository()
                 .RegisterUserRepositories()
                 .RegisterClubRepositories()
-                .RegisterAddressRepositories();
+                .RegisterAddressRepositories()
+                .RegisterMembershipPlanRepositories();
+        }
+
+        private static IServiceCollection RegisterMembershipPlanRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<IMembershipPlanQueryRepository, MembershipPlanQueryRepository>()
+                .AddScoped<IMembershipPlanCommandRepository, MembershipPlanCommandRepository>();
         }
 
         private static IServiceCollection RegisterAddressRepositories(this IServiceCollection services)

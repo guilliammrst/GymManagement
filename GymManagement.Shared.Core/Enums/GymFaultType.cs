@@ -22,5 +22,10 @@
         // Address
         AddressNotFound = 300,
         AddressCreationFailed = 301,
+
+        // Membership plan
+        MembershipPlanNotFound = 400,
+        MembershipPlanCreationFailed = 401,
+
     }
 }
