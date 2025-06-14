@@ -6,7 +6,7 @@
 
         public DateTime CreatedAt { get; }
 
-        public DateTime? UpdatedAt { get; }
+        public DateTime? UpdatedAt { get; protected set; }
 
         protected BaseObject(int id, DateTime createdAt, DateTime? updatedAt = null)
         {

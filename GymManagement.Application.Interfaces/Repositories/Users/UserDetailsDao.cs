@@ -6,9 +6,7 @@ namespace GymManagement.Application.Interfaces.Repositories.Users
 {
     public class UserDetailsDao : UserDao
     {
-        public AddressDao Address { get; set; }
         public List <MembershipDao> Memberships { get; set; }
-
-        public List<AttendanceDao> Attendances{ get; set; }
+        public List<AttendanceDao> Attendances { get; set; }
     }
 }

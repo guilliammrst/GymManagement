@@ -6,6 +6,27 @@ namespace GymManagement.Application.Services.Converters
 {
     public static class UserConverter
     {
+        public static UserUpdateDao ToUpdateDao(this User user)
+        {
+            return new UserUpdateDao
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Surname = user.Surname,
+                Birthdate = user.Birthdate,
+                Password = user.Password,
+                Role = user.Role,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Gender = user.Gender,
+                Country = user.Country,
+                City = user.City,
+                PostalCode = user.PostalCode,
+                Street = user.Street,
+                Number = user.Number
+            };
+        }
+
         public static UserCreateDao ToCreateDao(this User user)
         {
             return new UserCreateDao
@@ -17,7 +38,12 @@ namespace GymManagement.Application.Services.Converters
                 Role = user.Role,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender
+                Gender = user.Gender,
+                Country = user.Country,
+                City = user.City,
+                PostalCode = user.PostalCode,
+                Street = user.Street,
+                Number = user.Number
             };
         }
 
@@ -35,7 +61,8 @@ namespace GymManagement.Application.Services.Converters
                 Role = user.Role,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender
+                Gender = user.Gender,
+                Address = user.Address.ToDto()
             };
         }
 

@@ -13,6 +13,9 @@
         UserCreationFailed = 101,
         UserEmailAlreadyUsed = 102,
         UserPhoneNumberAlreadyUsed = 103,
+        UserUpdateFailed = 104,
+        UserAlreadyHaveAnActiveMembership = 105,
+        UserSubscriptionFailed = 106,
 
         // Club
         ClubNotFound = 200,
@@ -27,5 +30,11 @@
         MembershipPlanNotFound = 400,
         MembershipPlanCreationFailed = 401,
 
+        // Membership
+        MembershipNotFound = 500,
+        MembershipAlreadyPaid = 501,
+        MembershipExpired = 502,
+        MembershipPaymentDetailNotFound = 503,
+        MembershipPaymentFailed = 504,
     }
 }

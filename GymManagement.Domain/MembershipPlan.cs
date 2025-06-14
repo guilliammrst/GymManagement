@@ -16,6 +16,16 @@ namespace GymManagement.Domain
             IsValid = true;
         }
 
+        private MembershipPlan(int id, DateTime createdAt, DateTime? updatedAt, bool isValid, string description, MembershipPlanType membershipPlanType, decimal basePrice, decimal yearlyDiscount, decimal registrationFees) : base(id, createdAt, updatedAt)
+        {
+            Description = description;
+            MembershipPlanType = membershipPlanType;
+            BasePrice = basePrice;
+            YearlyDiscount = yearlyDiscount;
+            RegistrationFees = registrationFees;
+            IsValid = isValid;
+        }
+
         public string Description { get; }
         public MembershipPlanType MembershipPlanType { get; }
         public decimal BasePrice { get; }
@@ -44,6 +54,11 @@ namespace GymManagement.Domain
                 return ModelActionResult<MembershipPlan>.Fail(GymFaultType.BadParameter, "Membership plan creation failed: field RegistrationFees is required and must be greater than or equal to 0.");
 
             return ModelActionResult<MembershipPlan>.Ok(new MembershipPlan(description, membershipPlanType.Value, basePrice.Value, yearlyDiscount.Value, registrationFees.Value));
+        }
+
+        public static ModelActionResult<MembershipPlan> Build(int id, DateTime createdAt, DateTime? updatedAt, bool isValid, string description, MembershipPlanType membershipPlanType, decimal basePrice, decimal yearlyDiscount, decimal registrationFees)
+        {
+            return ModelActionResult<MembershipPlan>.Ok(new MembershipPlan(id, createdAt, updatedAt, isValid, description, membershipPlanType, basePrice, yearlyDiscount, registrationFees));
         }
     }
 }

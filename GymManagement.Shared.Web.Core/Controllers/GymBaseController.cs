@@ -30,12 +30,20 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.UserEmailAlreadyUsed:
                 case GymFaultType.UserPhoneNumberAlreadyUsed:
                 case GymFaultType.GetEmailFromTokenFailed:
+                case GymFaultType.UserUpdateFailed:
+                case GymFaultType.UserAlreadyHaveAnActiveMembership:
+                case GymFaultType.UserSubscriptionFailed:
+                case GymFaultType.MembershipAlreadyPaid:
+                case GymFaultType.MembershipExpired:
+                case GymFaultType.MembershipPaymentFailed:
                     return BadRequest(error);
                 case GymFaultType.UserNotFound:
                 case GymFaultType.ClubNotFound:
                 case GymFaultType.ClubManagerNotFound:
                 case GymFaultType.AddressNotFound:
                 case GymFaultType.MembershipPlanNotFound:
+                case GymFaultType.MembershipNotFound:
+                case GymFaultType.MembershipPaymentDetailNotFound:
                     return NotFound(error);
                 case GymFaultType.DatabaseUnavailable:
                     return StatusCode(503, error);

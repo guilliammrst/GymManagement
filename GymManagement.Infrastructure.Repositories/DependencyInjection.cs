@@ -13,6 +13,8 @@ using GymManagement.Application.Interfaces.Repositories.Addresses;
 using GymManagement.Infrastructure.Repositories.Addresses;
 using GymManagement.Application.Interfaces.Repositories.MembershipPlans;
 using GymManagement.Infrastructure.Repositories.MembershipPlans;
+using GymManagement.Infrastructure.Repositories.Memberships;
+using GymManagement.Application.Interfaces.Repositories.Memberships;
 
 namespace GymManagement.Infrastructure.Repositories
 {
@@ -27,7 +29,13 @@ namespace GymManagement.Infrastructure.Repositories
                 .RegisterUserRepositories()
                 .RegisterClubRepositories()
                 .RegisterAddressRepositories()
-                .RegisterMembershipPlanRepositories();
+                .RegisterMembershipPlanRepositories()
+                .RegisterMembershipRepositories();
+        }
+        
+        private static IServiceCollection RegisterMembershipRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<IMembershipQueryRepository, MembershipQueryRepository>();
         }
 
         private static IServiceCollection RegisterMembershipPlanRepositories(this IServiceCollection services)
@@ -54,8 +62,9 @@ namespace GymManagement.Infrastructure.Repositories
 
         private static IServiceCollection RegisterUserRepositories(this IServiceCollection services)
         {
-            return services.AddScoped<IUserRepository, UserRepository>()
-                .Decorate<IUserRepository, CacheUserRepository>();
+            return services.AddScoped<IUserQueryRepository, UserQueryRepository>()
+                .AddScoped<IUserCommandRepository, UserCommandRepository>()
+                .AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
         }
 
         private static IServiceCollection RegisterDbContext(this IServiceCollection services)

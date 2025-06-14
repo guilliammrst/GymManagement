@@ -40,7 +40,9 @@ namespace GymManagement.Application.Services
 
         private static IServiceCollection RegisterUserServices(this IServiceCollection services)
         {
-            return services.AddTransient<IUserService, UserService>();
+            return services.AddTransient<IUserQueryService, UserQueryService>()
+                .AddTransient<IUserCommandService, UserCommandService>()
+                .AddTransient<IUserSubscriptionService, UserSubscriptionService>();
         }
     }
 }

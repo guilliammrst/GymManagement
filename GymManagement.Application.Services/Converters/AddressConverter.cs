@@ -7,6 +7,7 @@ namespace GymManagement.Application.Services.Converters
     {
         public static AddressDto ToDto(this AddressDao address)
         {
+            if (address == null) return new AddressDto();
             return new AddressDto
             {
                 Id = address.Id,
