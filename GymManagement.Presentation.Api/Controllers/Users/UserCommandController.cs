@@ -1,47 +1,21 @@
-﻿using GymManagement.Shared.Core.Constants;
-using GymManagement.Application.Interfaces.Services.Users;
+﻿using GymManagement.Application.Interfaces.Services.Users;
+using GymManagement.Presentation.Api.DTOs;
+using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GymManagement.Presentation.Api.DTOs;
 
 namespace GymManagement.Presentation.Api.Controllers.Users
 {
     [ApiController]
     [Route("api/users")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
-    public class UserController(IUserService _userService) : GymBaseController
+    public class UserCommandController(IUserCommandService _userCommandService) : GymBaseController
     {
-        [HttpGet("{userId}")]
-        public async Task<ActionResult> GetUserById(int userId)
-        {
-            var userResult = await _userService.GetUserByIdAsync(userId);
-
-            if (!userResult.Success)
-                return ConvertActionResult(userResult);
-
-            var user = userResult.Results;
-
-            return Ok(user);
-        }
-
-        [HttpGet]
-        public async Task<ActionResult> GetAccounts()
-        {
-            var usersResult = await _userService.GetUsersAsync();
-
-            if (!usersResult.Success)
-                return ConvertActionResult(usersResult);
-
-            var users = usersResult.Results;
-
-            return Ok(users);
-        }
-
         [HttpPost]
         public async Task<ActionResult> CreateUser([FromBody] CreateUserDto userDto)
         {
-            var userResult = await _userService.CreateUserAsync(new UserCreateDto
+            var userResult = await _userCommandService.CreateUserAsync(new UserCreateDto
             {
                 Name = userDto.Name,
                 Surname = userDto.Surname,
@@ -68,7 +42,7 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         public async Task<ActionResult> UpdateUser([FromRoute] int userId, [FromBody] UpdateUserDto userDto)
         {
 
-            var userResult = await _userService.UpdateUserAsync(new UserUpdateDto
+            var userResult = await _userCommandService.UpdateUserAsync(new UserUpdateDto
             {
                 Id = userId,
                 Name = userDto.Name,

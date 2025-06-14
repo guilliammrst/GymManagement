@@ -17,6 +17,17 @@ namespace GymManagement.Domain
             ManagerId = managerId;
         }
 
+        private Club(int id, DateTime createdAt, DateTime? updatedAt, string name, Country country, string city, string street, string postalCode, string number, int? managerId) : base(id, createdAt, updatedAt)
+        {
+            Name = name;
+            Country = country;
+            City = city;
+            Street = street;
+            PostalCode = postalCode;
+            Number = number;
+            ManagerId = managerId;
+        }
+
         public string Name { get; }
         public Country Country { get; }
         public string City { get; }
@@ -30,10 +41,10 @@ namespace GymManagement.Domain
             if (string.IsNullOrWhiteSpace(name))
                 return ModelActionResult<Club>.Fail(GymFaultType.BadParameter, "Club creation failed: field Name is required.");
 
-            if (country is null)
+            if (!country.HasValue)
                 return ModelActionResult<Club>.Fail(GymFaultType.BadParameter, "Club creation failed: field Country is required.");
 
-            if (!Enum.IsDefined((Country)country))
+            if (!Enum.IsDefined(country.Value))
                 return ModelActionResult<Club>.Fail(GymFaultType.BadParameter, "Club creation failed: field Country does not contain a valid value.");
 
             if (string.IsNullOrWhiteSpace(city))
@@ -52,6 +63,11 @@ namespace GymManagement.Domain
                 return ModelActionResult<Club>.Fail(GymFaultType.BadParameter, "Club creation failed: field ManagerId must be a positive integer or null.");
 
             return ModelActionResult<Club>.Ok(new Club(name, country.Value, city, street, postalCode, number, managerId));
+        }
+
+        public static ModelActionResult<Club> Build (int id, DateTime createdAt, DateTime? updatedAt, string name, Country country, string city, string street, string postalCode, string number, int? managerId = null)
+        {
+            return ModelActionResult<Club>.Ok(new Club(id, createdAt, updatedAt, name, country, city, street, postalCode, number, managerId));
         }
     }
 }

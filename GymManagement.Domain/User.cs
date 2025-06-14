@@ -8,19 +8,7 @@ namespace GymManagement.Domain
 {
     public class User : BaseObject
     {
-        private User (string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender) : base(0, DateTime.UtcNow)
-        {
-            Name = name;
-            Surname = surname;
-            Birthdate = birthdate;
-            Password = password;
-            Role = role;
-            Email = email;
-            PhoneNumber = phoneNumber;
-            Gender = gender;
-        }
-
-        private User(int id, DateTime createdAt, DateTime updatedAt, string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number) : base(id, createdAt, updatedAt)
+        private User (string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number) : base(0, DateTime.UtcNow)
         {
             Name = name;
             Surname = surname;
@@ -35,6 +23,25 @@ namespace GymManagement.Domain
             Street = street;
             PostalCode = postalCode;
             Number = number;
+            Memberships = [];
+        }
+
+        private User(int id, DateTime createdAt, DateTime? updatedAt, string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number, List<Membership>? memberships) : base(id, createdAt, updatedAt)
+        {
+            Name = name;
+            Surname = surname;
+            Birthdate = birthdate;
+            Password = password;
+            Role = role;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Gender = gender;
+            Country = country;
+            City = city;
+            Street = street;
+            PostalCode = postalCode;
+            Number = number;
+            Memberships = memberships ?? [];
         }
 
         public string Name { get; private set; }
@@ -50,8 +57,9 @@ namespace GymManagement.Domain
         public string Street { get; private set; }
         public string PostalCode { get; private set; }
         public string Number { get; private set; }
+        public List<Membership> Memberships { get; private set; }
 
-        public static ModelActionResult<User> Create(string? name, string? surname, DateTime? birthdate, string? password, Role? role, string? email, string? phoneNumber, Gender? gender)
+        public static ModelActionResult<User> Create(string? name, string? surname, DateTime? birthdate, string? password, Role? role, string? email, string? phoneNumber, Gender? gender, Country? country, string? city, string? street, string? postalCode, string? number)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Name is required.");
@@ -59,8 +67,11 @@ namespace GymManagement.Domain
             if (string.IsNullOrWhiteSpace(surname))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Surname is required.");
 
-            if (birthdate == null)
+            if (!birthdate.HasValue)
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Birthdate is required.");
+
+            if (birthdate > DateTime.UtcNow)
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Birthdate is in future.");
 
             if (string.IsNullOrWhiteSpace(password))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Password is required.");
@@ -68,10 +79,10 @@ namespace GymManagement.Domain
             if (!password.IsValidPassword())
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, $"User creation failed: field Password wrong format. Expected: at least 8 characters, at least 1 uppercase letter, at least 1 lowercase letter, at least 1 number, at least 1 special character in : '{PasswordExt.SPECIAL_CHARS}'.");
 
-            if (role == null)
+            if (!role.HasValue)
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Role is required.");
 
-            if (!Enum.IsDefined((Role)role))
+            if (!Enum.IsDefined(role.Value))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Role does not contain a valid value (expected: 0 - None, 1 - Member, 2 - Coach, 3 - Staff, 4 - Manager).");
 
             if (string.IsNullOrWhiteSpace(email))
@@ -86,20 +97,38 @@ namespace GymManagement.Domain
             if (!UserRegexs.ValidPhoneNumber().IsMatch(phoneNumber))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field PhoneNumber wrong format (expected: 0123456789).");
 
-            if (gender == null)
+            if (!gender.HasValue)
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Gender is required.");
 
-            if (!Enum.IsDefined((Gender)gender))
+            if (!Enum.IsDefined(gender.Value))
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Gender does not contain a valid value (expected: 0 - None, 1 - Male, 2 - Female, 3 - Other).");
+
+            if (!country.HasValue)
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Country is required.");
+
+            if (!Enum.IsDefined(country.Value))
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Country does not contain a valid value.");
+
+            if (string.IsNullOrWhiteSpace(city))
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field City is required.");
+
+            if (string.IsNullOrWhiteSpace(street))
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Street is required.");
+
+            if (string.IsNullOrWhiteSpace(postalCode))
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field PostalCode is required.");
+
+            if (string.IsNullOrWhiteSpace(number))
+                return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Number is required.");
 
             var hashedPassword = password.Hash();
 
-            return ModelActionResult<User>.Ok(new User(name, surname, (DateTime)birthdate, hashedPassword, (Role)role, email, phoneNumber, (Gender)gender));
+            return ModelActionResult<User>.Ok(new User(name, surname, birthdate.Value, hashedPassword, role.Value, email, phoneNumber, gender.Value, country.Value, city, street, postalCode, number));
         }
 
-        public static ModelActionResult<User> Build(int id, DateTime createdAt, DateTime updatedAt, string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number)
+        public static ModelActionResult<User> Build(int id, DateTime createdAt, DateTime? updatedAt, string name, string surname, DateTime birthdate, string password, Role role, string email, string phoneNumber, Gender gender, Country country, string city, string street, string postalCode, string number, List<Membership>? memberships = null)
         {
-            return ModelActionResult<User>.Ok(new User(id, createdAt, updatedAt, name, surname, birthdate, password, role, email, phoneNumber, gender, country, city, street, postalCode, number));
+            return ModelActionResult<User>.Ok(new User(id, createdAt, updatedAt, name, surname, birthdate, password, role, email, phoneNumber, gender, country, city, street, postalCode, number, memberships));
         }
 
         public ModelActionResult Update(string? name, string? surname, DateTime? birthdate, string? password, Role? role, string? email, string? phoneNumber, Gender? gender, Country? country, string? city, string? street, string? postalCode, string? number)
@@ -111,8 +140,13 @@ namespace GymManagement.Domain
             if (!string.IsNullOrWhiteSpace(surname))
                 Surname = surname;
 
-            if (birthdate != null)
-                Birthdate = (DateTime)birthdate;
+            if (birthdate.HasValue)
+            {
+                if (birthdate > DateTime.UtcNow)
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Birthdate is in future.");
+
+                Birthdate = birthdate.Value;
+            }
 
             if (!string.IsNullOrWhiteSpace(password))
             {
@@ -123,18 +157,19 @@ namespace GymManagement.Domain
                 Password = hashedPassword;
             }        
 
-            if (role != null)
+            if (role.HasValue)
             {
-                if (!Enum.IsDefined((Role)role))
+                if (!Enum.IsDefined(role.Value))
                     return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Role does not contain a valid value (expected: 0 - None, 1 - Member, 2 - Coach, 3 - Staff, 4 - Manager).");
-                Role = (Role)role;
+                
+                Role = role.Value;
             }
-
 
             if (!string.IsNullOrWhiteSpace(email))
             {
                 if (!UserRegexs.ValidEmail().IsMatch(email))
                     return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Email wrong format (expected: xx@xx.xx).");
+                
                 Email = email;
             }      
 
@@ -142,17 +177,50 @@ namespace GymManagement.Domain
             {
                 if (!UserRegexs.ValidPhoneNumber().IsMatch(phoneNumber))
                     return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field PhoneNumber wrong format (expected: 0123456789).");
+                
                 PhoneNumber = phoneNumber;
             }
 
-            if (gender != null)
+            if (gender.HasValue)
             {
-                if (!Enum.IsDefined((Gender)gender))
+                if (!Enum.IsDefined(gender.Value))
                     return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Gender does not contain a valid value (expected: 0 - None, 1 - Male, 2 - Female, 3 - Other).");
-                Gender = (Gender)gender;
-
+                
+                Gender = gender.Value;
             }
 
+            if (country.HasValue)
+            {
+                if (!Enum.IsDefined(country.Value))
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Country does not contain a valid value.");
+
+                Country = country.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(city))
+                City = city;
+
+            if (!string.IsNullOrWhiteSpace(street))
+                Street = street;
+
+            if (!string.IsNullOrWhiteSpace(postalCode))
+                PostalCode = postalCode;
+
+            if (!string.IsNullOrWhiteSpace(number))
+                Number = number;
+
+            return ModelActionResult.Ok;
+        }
+
+        public ModelActionResult AddNewMembership(Membership membership)
+        {
+            if (Memberships.Any(m => m.RenewWhenExpiry))
+                return ModelActionResult.Fail(GymFaultType.UserAlreadyHaveAnActiveMembership, "User add new membership: user already has an active membership with renew when expiry option enabled, user have to disable RenewWhenExpiry before start new membership.");
+
+            if (Memberships.Any(m => !m.IsExpired && m.EndDate > membership.StartDate && m.IsActive))
+                return ModelActionResult.Fail(GymFaultType.UserAlreadyHaveAnActiveMembership, "User add new membership: user will already have an active membership on the chosen start date.");
+            
+            Memberships.Add(membership);
             return ModelActionResult.Ok;
         }
     }

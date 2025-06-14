@@ -39,7 +39,12 @@ namespace GymManagement.Presentation.AuthApi.Controllers
                 Surname = bodyRegisterDto.Surname,
                 Birthdate = bodyRegisterDto.Birthdate,
                 Gender = bodyRegisterDto.Gender,
-                PhoneNumber = bodyRegisterDto.PhoneNumber
+                PhoneNumber = bodyRegisterDto.PhoneNumber,
+                Country = bodyRegisterDto.Country,
+                City = bodyRegisterDto.City,
+                Street = bodyRegisterDto.Street,
+                PostalCode = bodyRegisterDto.PostalCode,
+                Number = bodyRegisterDto.Number
             });
             if (!registerResult.Success)
                 return ConvertActionResult(registerResult);

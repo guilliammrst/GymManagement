@@ -1,5 +1,4 @@
-﻿using GymManagement.Application.Interfaces.Services.Addresses;
-using GymManagement.Shared.Core.Enums;
+﻿using GymManagement.Shared.Core.Enums;
 
 namespace GymManagement.Application.Interfaces.Services.Users
 {

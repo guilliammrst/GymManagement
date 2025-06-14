@@ -17,7 +17,15 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 Role = user.Role,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender
+                Gender = user.Gender,
+                Address = new AddressModel
+                {
+                    Country = user.Country,
+                    City = user.City,
+                    PostalCode = user.PostalCode,
+                    Street = user.Street,
+                    Number = user.Number
+                }
             };
         }
 
@@ -35,9 +43,11 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 Role = user.Role,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender
+                Gender = user.Gender,
+                Address = user.Address == null ? new AddressDao() : user.Address.ToDao()
             };
         }
+
         public static UserDetailsDao ToDetailsDao(this UserModel user)
         {
             return new UserDetailsDao
@@ -53,7 +63,7 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Gender = user.Gender,
-                Address = user.Address==null?new AddressDao():user.Address.ToDao(),
+                Address = user.Address == null ? new AddressDao() : user.Address.ToDao(),
                 Memberships = user.Memberships.ToDao(),
                 Attendances = user.Attendances.ToDao()
             };
@@ -78,7 +88,8 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 Role = user.Role,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender
+                Gender = user.Gender,
+                Address = user.Address ?? new AddressDao()
             };
         }
     }
