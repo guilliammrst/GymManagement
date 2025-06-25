@@ -1,5 +1,5 @@
-﻿using GymManagement.Application.Interfaces.Services.Users;
-using GymManagement.Presentation.Api.DTOs;
+﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
+using GymManagement.Application.Interfaces.Services.Users;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +24,12 @@ namespace GymManagement.Presentation.Api.Controllers.Users
                 Role = userDto.Role,
                 Email = userDto.Email,
                 PhoneNumber = userDto.PhoneNumber,
-                Gender = userDto.Gender
+                Gender = userDto.Gender,
+                Country = userDto.Country,
+                City = userDto.City,
+                Street = userDto.Street,
+                PostalCode = userDto.PostalCode,
+                Number = userDto.Number
             });
 
             if (!userResult.Success)

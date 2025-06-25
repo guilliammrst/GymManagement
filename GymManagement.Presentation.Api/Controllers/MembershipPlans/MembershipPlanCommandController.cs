@@ -1,5 +1,5 @@
-﻿using GymManagement.Application.Interfaces.Services.MembershipPlans;
-using GymManagement.Presentation.Api.DTOs;
+﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
+using GymManagement.Application.Interfaces.Services.MembershipPlans;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;

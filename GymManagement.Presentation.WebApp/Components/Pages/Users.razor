@@ -1,4 +1,5 @@
 ﻿@page "/users"
+@rendermode InteractiveServer
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
@@ -6,9 +7,25 @@
 
 <h1>Users</h1>
 
+<div class="mt-2">
+	<label>Email :</label>
+	<input @bind="emailSearch" class="form-control" placeholder="Entrez un email" style="width: 300px; display: inline-block;" />
+	<label>Page :</label>
+	<input type="number" @bind="pageNumber" min="1" class="form-control" style="width: 100px; display: inline-block;" />
+	<label class="ms-2">Taille :</label>
+	<input type="number" @bind="pageSize" min="1" class="form-control" style="width: 100px; display: inline-block;" />
+</div>
+
+<RadzenButton Text="Rechercher" Icon="search" Style="margin: 10px 0;" Click="OnSearch" />
+<RadzenButton Text="Créer un utilisateur" Click="OpenCreateUserDialog" Style="margin-bottom: 20px;" />
+
 @if (users == null)
 {
-    <p><em>Loading...</em></p>
+	<p><em>Loading...</em></p>
+}
+else if (users.Count == 0)
+{
+	<p>Aucun utilisateur trouvé.</p>
 }
 else
 {
@@ -17,27 +34,72 @@ else
 			<tr>
 				<th>Id</th>
 				<th>Name</th>
+				<th>Surname</th>
 				<th>Email</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach (var user in users)
 			{
+				var href = $"user/{user.Id}";
 				<tr>
 					<td>@user.Id</td>
 					<td>@user.Name</td>
+					<td>@user.Surname</td>
 					<td>@user.Email</td>
+					<td>
+						<NavLink class="btn btn-primary nav-link" href="@href">
+							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
+						</NavLink>
+					</td>
 				</tr>
-			}
+				}
 		</tbody>
-	</table>
+	</table>	
 }
 
 @code {
 	private List<UserDto>? users;
+	private string emailSearch = string.Empty;
+	private int pageNumber = 1;
+	private int pageSize = 20;
 
-    protected override async Task OnInitializedAsync()
-    {
-        users = await _gymApiClient.GetUsers();
-    }
+
+	protected override async Task OnInitializedAsync()
+	{
+		users = await _gymApiClient.GetUsersAsync(new UserFilter
+			{
+				Email = emailSearch,
+				PageNumber = pageNumber,
+				PageSize = pageSize
+			});
+	}
+
+
+	private async Task OnSearch()
+	{
+		users = await _gymApiClient.GetUsersAsync(new UserFilter
+			{
+				Email = emailSearch,
+				PageNumber = pageNumber,
+				PageSize = pageSize
+			});
+	}
+
+	private async Task OpenCreateUserDialog()
+	{
+		var result = await _dialogService.OpenAsync<CreateUserPopup>("Créer un utilisateur",
+			options: new DialogOptions
+			{
+				Width = "600px",
+				Height = "500px",
+				Style = "top: 20vh; left: 12vw;"
+			});
+
+		if (result is true)
+		{
+			await OnSearch();
+		}
+	}
 }

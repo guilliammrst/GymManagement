@@ -1,0 +1,47 @@
+﻿@page "/club/{ClubId:int}"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Club</PageTitle>
+
+<NavLink class="btn btn-primary nav-link" href="clubs" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+    <span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+</NavLink>
+
+<h3>Club Details</h3>
+
+@if (club == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div>
+		<ClubComponent Club="club"></ClubComponent>
+		<MembershipComponent Memberships="club.Memberships"></MembershipComponent>
+		<AttendanceComponent Attendances="club.Attendances"></AttendanceComponent>
+
+		<ul>
+			<li><strong>Manager</strong></li>
+			<UserComponent User="club.Manager"></UserComponent>
+		</ul>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public int ClubId { get; set; }
+
+	private ClubDetailsDto? club;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadClub();
+	}
+
+	private async Task LoadClub()
+	{
+		club = await _gymApiClient.GetClubByIdAsync(ClubId);
+	}
+}

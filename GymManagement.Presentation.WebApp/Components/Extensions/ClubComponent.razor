@@ -1,0 +1,21 @@
+﻿<ul>
+    @if (Club == null)
+    {
+        <ul>
+            <li>No club.</li>
+        </ul>
+    }
+    else
+    {
+        <li><strong>ID:</strong> @Club.Id</li>
+        <li><strong>Created At:</strong> @Club.CreatedAt.ToString("g")</li>
+        <li><strong>Updated At:</strong> @Club.UpdatedAt?.ToString("g")</li>
+        <li><strong>Name:</strong> @Club.Name</li>
+        <AddressComponent Address="Club.Address"></AddressComponent>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public ClubDto? Club { get; set; }
+}

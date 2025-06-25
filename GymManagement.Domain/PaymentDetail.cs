@@ -56,7 +56,7 @@ namespace GymManagement.Domain
         public ModelActionResult Pay(PaymentMethod? paymentMethod)
         {
             if (PaymentStatus == PaymentStatus.Paid)
-                return ModelActionResult.Fail(GymFaultType.MembershipAlreadyPaid, "Payment detail cannot be paid because it is not in pending status.");
+                return ModelActionResult.Fail(GymFaultType.MembershipAlreadyPaid, "Payment detail payment failed: membership already paid.");
 
             if (!paymentMethod.HasValue)
                 return ModelActionResult.Fail(GymFaultType.BadParameter, "Payment detail payment failed: field PaymentMethod is required.");

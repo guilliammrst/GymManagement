@@ -1,0 +1,73 @@
+﻿<EditForm Model="@club" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Nom :</label>
+        <InputText class="form-control" @bind-Value="club.Name" />
+    </div>
+
+    <div class="mb-2">
+        <label>Pays :</label>
+        <InputSelect class="form-control" @bind-Value="club.Country">
+            <option value="">Sélectionner un pays</option>
+            @foreach (var c in Enum.GetValues<Country>())
+            {
+                <option value="@c">@c.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Ville :</label>
+        <InputText class="form-control" @bind-Value="club.City" />
+    </div>
+
+    <div class="mb-2">
+        <label>Rue :</label>
+        <InputText class="form-control" @bind-Value="club.Street" />
+    </div>
+
+    <div class="mb-2">
+        <label>Code postal :</label>
+        <InputText class="form-control" @bind-Value="club.PostalCode" />
+    </div>
+
+    <div class="mb-2">
+        <label>Numéro :</label>
+        <InputText class="form-control" @bind-Value="club.Number" />
+    </div>
+
+    <div class="mb-2">
+        <label>Manager Id :</label>
+        <InputNumber class="form-control" @bind-Value="club.ManagerId" />
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p class="text-danger">@errorMessage</p>
+    }
+
+    <RadzenButton Text="Valider" Type="Submit" Style="margin-right: 10px;" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    private CreateClubDto club = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await _gymApiClient.CreateClubAsync(club);
+
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

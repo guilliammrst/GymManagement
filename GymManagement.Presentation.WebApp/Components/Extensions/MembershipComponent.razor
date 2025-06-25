@@ -1,0 +1,63 @@
+﻿<ul>
+	<li><strong>Memberships</strong></li>
+	@if (Memberships == null || !Memberships.Any())
+	{
+		<ul>
+			<li>No memberships.</li>
+		</ul>
+	}
+	else
+	{
+		@foreach (var membership in Memberships)
+		{
+			<ul>
+				<li><strong>ID:</strong> @membership.Id</li>
+				<li><strong>Created At:</strong> @membership.CreatedAt.ToString("g")</li>
+				<li><strong>Updated At:</strong> @membership.UpdatedAt?.ToString("g")</li>
+				<li><strong>Start date:</strong> @membership.StartDate</li>
+				<li><strong>End date:</strong> @membership.EndDate</li>
+				<li><strong>Is active:</strong> @membership.IsActive</li>
+				<li><strong>Renew when expiry:</strong> @membership.RenewWhenExpiry</li>
+				<li><strong>Is expired:</strong> @membership.IsExpired</li>
+				@if (UserId.HasValue)
+				{
+					<RadzenButton Text="Pay membership" Click="() => OpenPaymentDialog(membership.Id)" Style="margin-bottom: 20px;" />
+				}
+				<p></p>
+			</ul>
+		}
+	}
+</ul>
+
+@code {
+	[Parameter]
+	public List<MembershipDto>? Memberships { get; set; }
+
+	[Parameter]
+	public int? UserId { get; set; }
+
+	[Parameter]
+	public EventCallback OnPaymentRequested { get; set; }
+
+	private async Task OpenPaymentDialog(int membershipId)
+	{
+		if (!UserId.HasValue)
+			return;
+
+		var result = await _dialogService.OpenAsync<PaymentPopup>("Payer l'abonnement", new Dictionary<string, object>()
+			{
+				["UserId"] = UserId,
+				["MembershipId"] = membershipId
+
+			},
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await OnPaymentRequested.InvokeAsync();
+	}
+}

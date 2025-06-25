@@ -1,0 +1,25 @@
+﻿<ul>
+    @if (MembershipPlan == null)
+    {
+        <ul>
+            <li>No membership plan.</li>
+        </ul>
+    }
+    else
+    {
+        <li><strong>ID:</strong> @MembershipPlan.Id</li>
+        <li><strong>Created At:</strong> @MembershipPlan.CreatedAt.ToString("g")</li>
+        <li><strong>Updated At:</strong> @MembershipPlan.UpdatedAt?.ToString("g")</li>
+        <li><strong>Description:</strong> @MembershipPlan.Description</li>
+        <li><strong>Base price:</strong> @MembershipPlan.BasePrice.ToString("C")</li>
+        <li><strong>Is valid:</strong> @MembershipPlan.IsValid</li>
+        <li><strong>Membership plan type:</strong> @MembershipPlan.MembershipPlanType.ToString()</li>
+        <li><strong>Yearly discount:</strong> @MembershipPlan.YearlyDiscount</li>
+        <li><strong>Registration fees:</strong> @MembershipPlan.RegistrationFees</li>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public MembershipPlanDto? MembershipPlan { get; set; }
+}

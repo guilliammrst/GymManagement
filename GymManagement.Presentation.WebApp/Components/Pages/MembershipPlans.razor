@@ -1,0 +1,78 @@
+﻿@page "/membership-plans"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Memberships plans</PageTitle>
+
+<h3>Memberships plans</h3>
+
+<RadzenButton Text="Créer un plan d'abonnement" Click="OpenCreateMembershipPlanDialog" Style="margin-bottom: 20px;" />
+
+@if (membershipPlans == null)
+{
+	<p><em>Loading...</em></p>
+}
+else if (membershipPlans.Count == 0)
+{
+	<p>Aucun plan d'abonnement trouvé.</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Description</th>
+				<th>MembershipPlanType</th>
+				<th>IsValid</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var membershipPlan in membershipPlans)
+			{
+				var href = $"membership-plan/{membershipPlan.Id}";
+				<tr>
+					<td>@membershipPlan.Id</td>
+					<td>@membershipPlan.Description</td>
+					<td>@membershipPlan.MembershipPlanType.ToString()</td>
+					<td>@membershipPlan.IsValid</td>
+					<td>
+						<NavLink class="btn btn-primary nav-link" href="@href">
+							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
+						</NavLink>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<MembershipPlanDto>? membershipPlans;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadMembershipPlans();
+	}
+
+	private async Task LoadMembershipPlans()
+	{
+		membershipPlans = await _gymApiClient.GetMembershipPlansAsync();
+	}
+
+	private async Task OpenCreateMembershipPlanDialog()
+	{
+		var result = await _dialogService.OpenAsync<CreateMembershipPlanPopup>("Créer un plan d'abonnement",
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await LoadMembershipPlans();
+	}
+}

@@ -45,6 +45,8 @@ namespace GymManagement.Domain
             if (!startDate.HasValue)
                 return ModelActionResult<Membership>.Fail(GymFaultType.BadParameter, "Membership creation failed: field StartDate is required.");
 
+            startDate = startDate.Value.ToUniversalTime();
+
             if (startDate.Value < DateTime.UtcNow)
                 return ModelActionResult<Membership>.Fail(GymFaultType.BadParameter, "Membership creation failed: field StartDate cannot be in the past.");
 

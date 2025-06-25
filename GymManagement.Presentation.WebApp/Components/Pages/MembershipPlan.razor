@@ -1,0 +1,41 @@
+﻿@page "/membership-plan/{MembershipPlanId:int}"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Membership plan</PageTitle>
+
+<NavLink class="btn btn-primary nav-link" href="membership-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+	<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+</NavLink>
+
+<h3>Membership plan Details</h3>
+
+@if (membershipPlan == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div>
+		<MembershipPlanComponent MembershipPlan="membershipPlan"></MembershipPlanComponent>
+		<MembershipComponent Memberships="membershipPlan.Memberships"></MembershipComponent>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public int MembershipPlanId { get; set; }
+
+	private MembershipPlanDetailsDto? membershipPlan;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadMembershipPlan();
+	}
+
+	private async Task LoadMembershipPlan()
+	{
+		membershipPlan = await _gymApiClient.GetMembershipPlanByIdAsync(MembershipPlanId);
+	}
+}

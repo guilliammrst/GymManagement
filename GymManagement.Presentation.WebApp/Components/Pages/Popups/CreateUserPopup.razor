@@ -1,0 +1,113 @@
+﻿<EditForm Model="@user" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Nom :</label>
+        <InputText class="form-control" @bind-Value="user.Name" />
+    </div>
+
+    <div class="mb-2">
+        <label>Prénom :</label>
+        <InputText class="form-control" @bind-Value="user.Surname" />
+    </div>
+
+    <div class="mb-2">
+        <label>Email :</label>
+        <InputText class="form-control" @bind-Value="user.Email" />
+    </div>
+
+    <div class="mb-2">
+        <label>Téléphone :</label>
+        <InputText class="form-control" @bind-Value="user.PhoneNumber" />
+    </div>
+
+    <div class="mb-2">
+        <label>Date de naissance :</label>
+        <InputDate class="form-control" @bind-Value="user.Birthdate" />
+    </div>
+
+    <div class="mb-2">
+        <label>Mot de passe :</label>
+        <InputText type="password" class="form-control" @bind-Value="user.Password" />
+    </div>
+
+    <div class="mb-2">
+        <label>Rôle :</label>
+        <InputSelect class="form-control" @bind-Value="user.Role">
+            <option value="">Sélectionner un rôle</option>
+            @foreach (var role in Enum.GetValues<Role>())
+            {
+                <option value="@role">@role.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Genre :</label>
+        <InputSelect class="form-control" @bind-Value="user.Gender">
+            <option value="">Sélectionner un genre</option>
+            @foreach (var gender in Enum.GetValues<Gender>())
+            {
+                <option value="@gender">@gender.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Pays :</label>
+        <InputSelect class="form-control" @bind-Value="user.Country">
+            <option value="">Sélectionner un pays</option>
+            @foreach (var country in Enum.GetValues<Country>())
+            {
+                <option value="@country">@country.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Ville :</label>
+        <InputText class="form-control" @bind-Value="user.City" />
+    </div>
+
+    <div class="mb-2">
+        <label>Rue :</label>
+        <InputText class="form-control" @bind-Value="user.Street" />
+    </div>
+
+    <div class="mb-2">
+        <label>Code postal :</label>
+        <InputText class="form-control" @bind-Value="user.PostalCode" />
+    </div>
+
+    <div class="mb-2">
+        <label>Numéro :</label>
+        <InputText class="form-control" @bind-Value="user.Number" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color: red">@errorMessage</p>
+    }
+
+    <RadzenButton Text="Créer" Type="Submit" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    private CreateUserDto user = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await _gymApiClient.CreateUserAsync(user);
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}
