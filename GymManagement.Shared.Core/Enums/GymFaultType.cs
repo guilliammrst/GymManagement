@@ -18,6 +18,7 @@
         UserAlreadyHaveAnActiveMembership = 105,
         UserSubscriptionFailed = 106,
         UserNotAuthenticated = 107,
+        UserDeletionFailed = 108,
 
         // Club
         ClubNotFound = 200,

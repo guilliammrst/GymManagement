@@ -58,5 +58,14 @@ namespace GymManagement.Application.Services.Users
 
             return ModelActionResult<UserDto>.Ok(updatedUser.ToDto());
         }
+
+        public async Task<ModelActionResult> DeleteUserAsync(int userId)
+        {
+            var deleteUserResult = await _userCommandRepository.DeleteUserAsync(userId);
+            if (!deleteUserResult.Success)
+                return ModelActionResult.Fail(deleteUserResult);
+
+            return ModelActionResult.Ok;
+        }
     }
 }

@@ -72,5 +72,15 @@ namespace GymManagement.Presentation.Api.Controllers.Users
 
             return Ok(user);
         }
+
+        [HttpDelete("{userId}")]
+        public async Task<ActionResult> DeleteUser([FromRoute] int userId)
+        {
+            var userResult = await _userCommandService.DeleteUserAsync(userId);
+            if (!userResult.Success)
+                return ConvertActionResult(userResult);
+
+            return NoContent();
+        }
     }
 }

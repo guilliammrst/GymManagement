@@ -111,5 +111,31 @@ namespace GymManagement.Infrastructure.Repositories.Users
                 return ModelActionResult<UserDao>.Fail(GymFaultType.UserUpdateFailed, ex.Message);
             }
         }
+
+        public async Task<ModelActionResult> DeleteUserAsync(int userId)
+        {
+            try
+            {
+                var userModel = await _context.Users.FindAsync(userId);
+                if (userModel == null)
+                    return ModelActionResult.Fail(GymFaultType.UserNotFound, "User deletion failed: user not found.");
+
+                _context.Users.Remove(userModel);
+
+                var result = await _context.SaveChangesAsync();
+                if (result == 0)
+                    return ModelActionResult.Fail(GymFaultType.UserDeletionFailed, "User deletion failed: no rows affected.");
+
+                return ModelActionResult.Ok;
+            }
+            catch (DbUpdateException ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.DatabaseUnavailable, ex.InnerException != null ? ex.InnerException.Message : ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.UserDeletionFailed, ex.Message);
+            }
+        }
     }
 }
