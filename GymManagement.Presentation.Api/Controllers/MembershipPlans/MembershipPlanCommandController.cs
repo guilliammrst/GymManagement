@@ -33,5 +33,24 @@ namespace GymManagement.Presentation.Api.Controllers.MembershipPlans
                 StatusCode = StatusCodes.Status201Created
             };
         }
+
+        [HttpPatch("{membershipPlanId}")]
+        public async Task<ActionResult> UpdateMembershipPlan([FromRoute] int membershipPlanId, [FromBody] UpdateMembershipPlanDto membershipPlanDto)
+        {
+            var membershipPlanResult = await _membershipPlanCommandService.UpdateMembershipPlanAsync(new MembershipPlanUpdateDto
+            {
+                Id = membershipPlanId,
+                Description = membershipPlanDto.Description,
+                BasePrice = membershipPlanDto.BasePrice,
+                MembershipPlanType = membershipPlanDto.MembershipPlanType,
+                YearlyDiscount = membershipPlanDto.YearlyDiscount,
+                RegistrationFees = membershipPlanDto.RegistrationFees,
+                IsValid = membershipPlanDto.IsValid
+            });
+            if (!membershipPlanResult.Success)
+                return ConvertActionResult(membershipPlanResult);
+
+            return NoContent();
+        }
     }
 }

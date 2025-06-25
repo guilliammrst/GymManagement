@@ -33,6 +33,7 @@
         // Membership plan
         MembershipPlanNotFound = 400,
         MembershipPlanCreationFailed = 401,
+        MembershipPlanUpdateFailed = 402,
 
         // Membership
         MembershipNotFound = 500,

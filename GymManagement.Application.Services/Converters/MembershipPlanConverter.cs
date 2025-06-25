@@ -6,6 +6,20 @@ namespace GymManagement.Application.Services.Converters
 {
     public static class MembershipPlanConverter
     {
+        public static MembershipPlanUpdateDao ToUpdateDao(this MembershipPlan membershipPlan)
+        {
+            return new MembershipPlanUpdateDao
+            {
+                Id = membershipPlan.Id,
+                Description = membershipPlan.Description,
+                MembershipPlanType = membershipPlan.MembershipPlanType,
+                RegistrationFees = membershipPlan.RegistrationFees,
+                YearlyDiscount = membershipPlan.YearlyDiscount,
+                BasePrice = membershipPlan.BasePrice,
+                IsValid = membershipPlan.IsValid
+            };
+        }
+
         public static MembershipPlanCreateDao ToCreateDao(this MembershipPlan membershipPlan)
         {
             return new MembershipPlanCreateDao

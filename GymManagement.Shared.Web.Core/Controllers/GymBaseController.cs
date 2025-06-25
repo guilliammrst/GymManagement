@@ -38,6 +38,7 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.MembershipPaymentFailed:
                 case GymFaultType.UserDeletionFailed:
                 case GymFaultType.ClubUpdateFailed:
+                case GymFaultType.MembershipPlanUpdateFailed:
                     return BadRequest(error);
                 case GymFaultType.UserNotFound:
                 case GymFaultType.ClubNotFound:
