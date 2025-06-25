@@ -1,0 +1,36 @@
+﻿@page "/user/{userId:int}"
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>User</PageTitle>
+
+<NavLink class="btn btn-primary nav-link" href="users" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+    <span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+</NavLink>
+
+<h3>User Details</h3>
+
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <UserComponent User="user"></UserComponent>
+        <MembershipComponent Memberships="user.Memberships"></MembershipComponent>
+        <AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int userId { get; set; }
+
+    private UserDetailsDto? user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await _gymApiClient.GetUserByIdAsync(userId);
+    }
+}

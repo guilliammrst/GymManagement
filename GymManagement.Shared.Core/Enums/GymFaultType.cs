@@ -7,6 +7,7 @@
         DatabaseUnavailable = 2,
         InvalidEmailOrPassword = 3,
         GetEmailFromTokenFailed = 4,
+        ApiCallFailed = 5,
         
         // User
         UserNotFound = 100,
@@ -16,6 +17,7 @@
         UserUpdateFailed = 104,
         UserAlreadyHaveAnActiveMembership = 105,
         UserSubscriptionFailed = 106,
+        UserNotAuthenticated = 107,
 
         // Club
         ClubNotFound = 200,

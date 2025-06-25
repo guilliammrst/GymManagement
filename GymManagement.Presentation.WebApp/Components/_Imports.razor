@@ -12,6 +12,7 @@
 @using GymManagement.Presentation.WebApp.ApiClients.Gym
 @using GymManagement.Presentation.WebApp.Components.Layout
 @using GymManagement.Presentation.WebApp.Components.Log
+@using GymManagement.Presentation.WebApp.Components.Pages.Popups
 @inject NavigationManager _navigationManager
 @inject GymApiClient _gymApiClient
 @inject AuthApiClient _authApiClient
@@ -23,3 +24,11 @@
 @inject IAuthManager _authManager
 @using Radzen
 @using Radzen.Blazor
+@using GymManagement.Application.Interfaces.Services.Users
+@using GymManagement.Application.Interfaces.Services.Addresses
+@using GymManagement.Application.Interfaces.Services.Memberships
+@using GymManagement.Application.Interfaces.Services.Attendances
+@using GymManagement.Application.Interfaces.Controllers.DTOs
+@using GymManagement.Shared.Core.Enums
+@using GymManagement.Presentation.WebApp.Components.Extensions
+@inject DialogService _dialogService

@@ -1,0 +1,20 @@
+﻿@if (Address == null)
+{
+    <p>No address.</p>
+}
+else
+{
+    <li><strong>Address</strong></li>
+    <ul>
+        <li><strong>Country:</strong> @Address.Country</li>
+        <li><strong>City:</strong> @Address.City</li>
+        <li><strong>Street:</strong> @Address.Street</li>
+        <li><strong>Postal Code:</strong> @Address.PostalCode</li>
+        <li><strong>Number:</strong> @Address.Number</li>
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public AddressDto? Address { get; set; }
+}

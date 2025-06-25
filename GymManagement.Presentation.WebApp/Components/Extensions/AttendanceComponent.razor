@@ -1,0 +1,21 @@
+﻿@if (Attendances == null)
+{
+    <p>No attendances.</p>
+}
+else
+{
+    <ul>
+        <li><strong>Attendances</strong></li>
+        @foreach (var attendance in Attendances)
+        {
+            <ul>
+                <li><strong>Check in time:</strong> @attendance.CheckInTime</li>
+            </ul>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public List<AttendanceDto>? Attendances { get; set; }
+}

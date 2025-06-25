@@ -3,6 +3,7 @@ using GymManagement.Presentation.WebApp.ApiClients.Auth;
 using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
 using GymManagement.Shared.Core.Constants;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddOutputCache();
+
+builder.Services.AddScoped<DialogService>();
 
 builder.Services.AddHttpClient<GymApiClient>(client =>
 {

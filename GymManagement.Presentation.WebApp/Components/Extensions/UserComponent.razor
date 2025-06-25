@@ -1,0 +1,25 @@
+﻿@if (User == null)
+{
+    <p>No user.</p>
+}
+else
+{
+    <ul>
+        <li><strong>ID:</strong> @User.Id</li>
+        <li><strong>Created At:</strong> @User.CreatedAt.ToString("g")</li>
+        <li><strong>Updated At:</strong> @User.UpdatedAt?.ToString("g")</li>
+        <li><strong>Surname:</strong> @User.Surname</li>
+        <li><strong>Name:</strong> @User.Name</li>
+        <li><strong>Birthdate:</strong> @User.Birthdate</li>
+        <li><strong>Email:</strong> @User.Email</li>
+        <li><strong>Phone:</strong> @User.PhoneNumber</li>
+        <li><strong>Role:</strong> @User.Role</li>
+        <li><strong>Gender:</strong> @User.Gender</li>
+		<AddressComponent Address="User.Address"></AddressComponent>
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public UserDto? User { get; set; }
+}

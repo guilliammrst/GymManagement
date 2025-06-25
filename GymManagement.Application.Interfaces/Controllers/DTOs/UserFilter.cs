@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.DTOs
+namespace GymManagement.Application.Interfaces.Controllers.DTOs
 {
     public class UserFilter
     {

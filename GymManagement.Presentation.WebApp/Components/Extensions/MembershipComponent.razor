@@ -1,0 +1,25 @@
+﻿@if (Memberships == null)
+{
+    <p>No memberships.</p>
+}
+else
+{
+    <ul>
+        <li><strong>Memberships</strong></li>
+        @foreach (var membership in Memberships)
+	    {
+            <ul>
+                <li><strong>Start date:</strong> @membership.StartDate</li>
+                <li><strong>End date:</strong> @membership.EndDate</li>
+                <li><strong>Is active:</strong> @membership.IsActive</li>
+                <li><strong>Renew when expiry:</strong> @membership.RenewWhenExpiry</li>
+                <li><strong>Is expired:</strong> @membership.IsExpired</li>
+            </ul>
+	    }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public List<MembershipDto>? Memberships { get; set; }
+}

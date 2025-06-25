@@ -70,7 +70,9 @@ namespace GymManagement.Domain
             if (!birthdate.HasValue)
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Birthdate is required.");
 
-            if (birthdate > DateTime.UtcNow)
+            birthdate = birthdate.Value.ToUniversalTime();
+
+            if (birthdate.Value > DateTime.UtcNow)
                 return ModelActionResult<User>.Fail(GymFaultType.BadParameter, "User creation failed: field Birthdate is in future.");
 
             if (string.IsNullOrWhiteSpace(password))
@@ -142,6 +144,8 @@ namespace GymManagement.Domain
 
             if (birthdate.HasValue)
             {
+                birthdate = birthdate.Value.ToUniversalTime();
+
                 if (birthdate > DateTime.UtcNow)
                     return ModelActionResult.Fail(GymFaultType.BadParameter, "User update failed: field Birthdate is in future.");
 
