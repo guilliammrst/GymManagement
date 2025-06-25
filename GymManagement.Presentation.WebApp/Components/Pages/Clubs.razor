@@ -1,0 +1,74 @@
+﻿@page "/clubs"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Clubs</PageTitle>
+
+<h3>Clubs</h3>
+
+<RadzenButton Text="Créer un club" Click="OpenCreateClubDialog" Style="margin-bottom: 20px;" />
+
+@if (clubs == null)
+{
+	<p><em>Loading...</em></p>
+}
+else if (clubs.Count == 0)
+{
+	<p>Aucun club trouvé.</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Name</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var club in clubs)
+			{
+				var href = $"club/{club.Id}";
+				<tr>
+					<td>@club.Id</td>
+					<td>@club.Name</td>
+					<td>
+						<NavLink class="btn btn-primary nav-link" href="@href">
+							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
+						</NavLink>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<ClubDto>? clubs;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadClubs();
+	}
+
+	private async Task LoadClubs()
+	{
+		clubs = await _gymApiClient.GetClubsAsync();
+	}
+
+	private async Task OpenCreateClubDialog()
+	{
+		var result = await _dialogService.OpenAsync<CreateClubPopup>("Créer un club",
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await LoadClubs();
+	}
+}

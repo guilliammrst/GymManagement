@@ -84,23 +84,48 @@
         <label>Numéro :</label>
         <InputText class="form-control" @bind-Value="user.Number" />
     </div>
-
+    
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <p style="color: red">@errorMessage</p>
     }
 
-    <RadzenButton Text="Créer" Type="Submit" />
+    <RadzenButton Text="Enregistrer" Type="Submit" Style="margin-right: 10px" />
     <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
 </EditForm>
 
 @code {
-    private CreateUserDto user = new();
+    [Parameter]
+    public UserDto User { get; set; }
+
+    private UpdateUserDto user = new();
     private string errorMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (User != null)
+        {
+            user.Name = User.Name;
+            user.Surname = User.Surname;
+            user.Email = User.Email;
+            user.PhoneNumber = User.PhoneNumber;
+            user.Birthdate = User.Birthdate;
+            user.Role = User.Role;
+            user.Gender = User.Gender;
+            if (User.Address != null)
+			{
+                user.Country = User.Address.Country;
+                user.City = User.Address.City;
+                user.Street = User.Address.Street;
+                user.Number = User.Address.Number;
+                user.PostalCode = User.Address.PostalCode;
+			}
+        }
+    }
 
     private async Task HandleValidSubmit()
     {
-        var result = await _gymApiClient.CreateUserAsync(user);
+        var result = await _gymApiClient.UpdateUserAsync(User.Id, user);
         if (!result.Success)
         {
             errorMessage = result.ErrorMessage;

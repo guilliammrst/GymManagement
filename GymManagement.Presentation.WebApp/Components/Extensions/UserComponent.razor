@@ -1,6 +1,8 @@
-﻿@if (User == null)
+﻿@if (User == null || User.Id == 0)
 {
-    <p>No user.</p>
+    <ul>
+        <li>No user.</li>
+    </ul>
 }
 else
 {

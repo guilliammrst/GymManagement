@@ -1,0 +1,67 @@
+﻿<EditForm Model="@subscription" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Home Club Id :</label>
+        <InputNumber class="form-control" @bind-Value="subscription.HomeClubId" />
+    </div>
+
+    <div class="mb-2">
+        <label>Membership Plan Id :</label>
+        <InputNumber class="form-control" @bind-Value="subscription.MembershipPlanId" />
+    </div>
+
+    <div class="mb-2">
+        <label>Start Date :</label>
+        <InputDate class="form-control" @bind-Value="subscription.StartDate" />
+    </div>
+
+    <div class="mb-2">
+        <label>Membership Period :</label>
+        <InputSelect class="form-control" @bind-Value="subscription.MembershipPeriod">
+            <option value="">Sélectionner une période</option>
+            @foreach (var period in Enum.GetValues<MembershipPeriod>())
+            {
+                <option value="@period">@period.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2 form-check">
+        <InputCheckbox class="form-check-input" @bind-Value="RenewWhenExpiry" />
+        <label class="form-check-label">Renouveler à l'expiration</label>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color: red">@errorMessage</p>
+    }
+
+    <RadzenButton Text="Enregistrer" Type="Submit" Style="margin-right:10px" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    [Parameter]
+    public int UserId { get; set; }
+
+    private SubscribeUserDto subscription = new();
+    private string errorMessage = string.Empty;
+	private bool RenewWhenExpiry { get; set; } = true;
+
+    private async Task HandleValidSubmit()
+    {
+		subscription.RenewWhenExpiry = RenewWhenExpiry;
+
+        var result = await _gymApiClient.SubscribeUserAsync(UserId, subscription);
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

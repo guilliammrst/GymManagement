@@ -1,18 +1,18 @@
-﻿@if (Address == null)
-{
-    <p>No address.</p>
-}
-else
-{
-    <li><strong>Address</strong></li>
-    <ul>
+﻿<li><strong>Address</strong></li>
+<ul>
+    @if (Address == null)
+    {
+        <li>No address.</li>
+    }
+    else
+    {
         <li><strong>Country:</strong> @Address.Country</li>
         <li><strong>City:</strong> @Address.City</li>
         <li><strong>Street:</strong> @Address.Street</li>
         <li><strong>Postal Code:</strong> @Address.PostalCode</li>
         <li><strong>Number:</strong> @Address.Number</li>
-    </ul>
-}
+    }
+</ul>
 
 @code {
     [Parameter]

@@ -135,7 +135,6 @@ namespace GymManagement.Domain
 
         public ModelActionResult Update(string? name, string? surname, DateTime? birthdate, string? password, Role? role, string? email, string? phoneNumber, Gender? gender, Country? country, string? city, string? street, string? postalCode, string? number)
         {
-
             if (!string.IsNullOrWhiteSpace(name))
                 Name = name;
 

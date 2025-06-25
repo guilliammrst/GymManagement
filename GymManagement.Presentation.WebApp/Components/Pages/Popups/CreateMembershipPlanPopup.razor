@@ -1,0 +1,67 @@
+﻿<EditForm Model="@plan" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Description :</label>
+        <InputText class="form-control" @bind-Value="plan.Description" />
+    </div>
+
+    <div class="mb-2">
+        <label>Type :</label>
+        <InputSelect class="form-control" @bind-Value="plan.MembershipPlanType">
+            <option value="">Sélectionner un type</option>
+            @foreach (var type in Enum.GetValues<MembershipPlanType>())
+            {
+                <option value="@type">@type.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Prix de base (€) :</label>
+        <InputNumber class="form-control" @bind-Value="plan.BasePrice" Step="0.01" />
+    </div>
+
+    <div class="mb-2">
+        <label>Réduction annuelle :</label>
+        <div class="input-group">
+            <InputNumber class="form-control" @bind-Value="plan.YearlyDiscount" Step="0.01" />
+            <span class="input-group-text">%</span>
+        </div>
+    </div>
+
+    <div class="mb-2">
+        <label>Frais d’inscription (€) :</label>
+        <InputNumber class="form-control" @bind-Value="plan.RegistrationFees" Step="0.01" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p class="text-danger">@errorMessage</p>
+    }
+
+    <RadzenButton Text="Valider" Type="Submit" Style="margin-right: 10px;" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+
+@code {
+    private CreateMembershipPlanDto plan = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await _gymApiClient.CreateMembershipPlanAsync(plan);
+
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

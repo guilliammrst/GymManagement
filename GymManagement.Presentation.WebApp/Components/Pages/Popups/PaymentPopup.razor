@@ -1,0 +1,47 @@
+﻿<EditForm Model="@payment" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Méthode de paiement :</label>
+        <InputSelect class="form-control" @bind-Value="payment.PaymentMethod">
+            <option value="">Sélectionner une méthode</option>
+            @foreach (var method in Enum.GetValues<PaymentMethod>())
+            {
+                <option value="@method">@method.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p style="color: red">@errorMessage</p>
+    }
+
+    <RadzenButton Text="Valider" Type="Submit" Style="margin-right:10px" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    [Parameter]
+    public int UserId { get; set; }
+
+    [Parameter]
+    public int MembershipId { get; set; }
+
+    private PaymentDto payment = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await _gymApiClient.PayMembershipAsync(UserId, MembershipId, payment);
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

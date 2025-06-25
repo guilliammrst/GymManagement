@@ -1,4 +1,5 @@
 ﻿@page "/user/{userId:int}"
+@rendermode InteractiveServer
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
@@ -12,25 +13,72 @@
 
 @if (user == null)
 {
-    <p>Loading...</p>
+	<p>Loading...</p>
 }
 else
 {
-    <div>
-        <UserComponent User="user"></UserComponent>
-        <MembershipComponent Memberships="user.Memberships"></MembershipComponent>
-        <AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
-    </div>
+	<div>
+		<UserComponent User="user"></UserComponent>
+		<MembershipComponent Memberships="user.Memberships" UserId="user.Id" OnPaymentRequested="LoadUser"></MembershipComponent>
+		<AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
+		<RadzenButton Text="Update" Click="OpenUpdateUserDialog" Style="margin-bottom: 20px;" />
+		<RadzenButton Text="Subscribe" Click="OpenSubscribeUserDialog" Style="margin-bottom: 20px;" />
+	</div>
 }
 
 @code {
-    [Parameter]
-    public int userId { get; set; }
+	[Parameter]
+	public int userId { get; set; }
 
-    private UserDetailsDto? user;
+	private UserDetailsDto? user;
 
-    protected override async Task OnInitializedAsync()
-    {
-        user = await _gymApiClient.GetUserByIdAsync(userId);
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadUser();
+	}
+
+	private async Task LoadUser()
+	{
+		user = await _gymApiClient.GetUserByIdAsync(userId);
+	}
+
+	private async Task OpenUpdateUserDialog()
+	{
+		if (user == null)
+			return;
+
+		var result = await _dialogService.OpenAsync<UpdateUserPopup>("Modifier l'utilisateur", new Dictionary<string, object>()
+			{
+				["User"] = user
+			},
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await LoadUser();
+	}
+
+	private async Task OpenSubscribeUserDialog()
+	{
+		if (user == null)
+			return;
+
+		var result = await _dialogService.OpenAsync<SubscribeUserPopup>("Abonner l'utilisateur", new Dictionary<string, object>()
+			{
+				["UserId"] = userId
+			},
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await LoadUser();
+	}
 }
