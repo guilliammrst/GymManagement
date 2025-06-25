@@ -74,6 +74,23 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             }
         }
 
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            if (!_authenticatedUser.IsAuthenticated)
+                return false;
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+                var response = await _httpClient.DeleteAsync("api/users/" + userId);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<ModelActionResult> SubscribeUserAsync(int userId, SubscribeUserDto userSubscribeDto)
         {
             if (!_authenticatedUser.IsAuthenticated)
