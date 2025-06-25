@@ -24,6 +24,7 @@
         ClubNotFound = 200,
         ClubCreationFailed = 201,
         ClubManagerNotFound = 202,
+        ClubUpdateFailed = 203,
 
         // Address
         AddressNotFound = 300,
