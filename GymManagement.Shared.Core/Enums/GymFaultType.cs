@@ -8,6 +8,8 @@
         InvalidEmailOrPassword = 3,
         GetEmailFromTokenFailed = 4,
         ApiCallFailed = 5,
+        RefreshTokenFailed = 6,
+        GetTokenFailed = 7,
         
         // User
         UserNotFound = 100,

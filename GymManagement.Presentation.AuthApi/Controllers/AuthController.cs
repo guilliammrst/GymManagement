@@ -28,6 +28,25 @@ namespace GymManagement.Presentation.AuthApi.Controllers
             return Ok(token);
         }
 
+        [HttpGet("refresh-token")]
+        [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
+        public async Task<ActionResult> RefreshToken()
+        {
+            var emailResult = User.GetEmail();
+            if (!emailResult.Success)
+                return ConvertActionResult(emailResult);
+
+            var email = emailResult.Results;
+
+            var loginResult = await _authService.RefreshToken(email);
+            if (!loginResult.Success)
+                return ConvertActionResult(loginResult);
+
+            var token = loginResult.Results;
+
+            return Ok(token);
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] BodyRegisterDto bodyRegisterDto)
         {

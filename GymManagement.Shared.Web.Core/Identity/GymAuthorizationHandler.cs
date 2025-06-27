@@ -14,6 +14,7 @@ namespace GymManagement.Shared.Web.Core.Identity
     public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IOptions<IssuerOptions> options) : IAuthorizationHandler
     {
         private readonly IssuerOptions _issuerOptions = options.Value;
+        private const string REFRESH_TOKEN_PATH = "/api/refresh-token";
 
         private static void ValidateRequirements(AuthorizationHandlerContext context, ClaimsPrincipal principal)
         {
@@ -47,13 +48,19 @@ namespace GymManagement.Shared.Web.Core.Identity
                 context.Fail();
                 return Task.CompletedTask;
             }
+            var validateLifetime = true;
+            if (context.Resource is HttpContext httpContext)
+            {
+                if (httpContext.Request.Path.Value == REFRESH_TOKEN_PATH)
+                    validateLifetime = false;
+            }
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_issuerOptions.SecretKey));
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = true,
+                ValidateLifetime = validateLifetime,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _issuerOptions.Issuer,
                 ValidAudience = _issuerOptions.Audience,

@@ -1,0 +1,85 @@
+﻿<EditForm Model="@membershipPlan" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Description :</label>
+        <InputText class="form-control" @bind-Value="membershipPlan.Description" />
+    </div>
+
+    <div class="mb-2">
+        <label>Type de plan :</label>
+        <InputSelect class="form-control" @bind-Value="membershipPlan.MembershipPlanType">
+            <option value="">Sélectionner un type</option>
+            @foreach (var type in Enum.GetValues<MembershipPlanType>())
+            {
+                <option value="@type">@type.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Prix de base :</label>
+        <InputNumber class="form-control" @bind-Value="membershipPlan.BasePrice" />
+    </div>
+
+    <div class="mb-2">
+        <label>Réduction annuelle (%) :</label>
+        <InputNumber class="form-control" @bind-Value="membershipPlan.YearlyDiscount" />
+    </div>
+
+    <div class="mb-2">
+        <label>Frais d'inscription :</label>
+        <InputNumber class="form-control" @bind-Value="membershipPlan.RegistrationFees" />
+    </div>
+
+    <div class="mb-2 form-check">
+        <InputCheckbox class="form-check-input" @bind-Value="IsValid" />
+        <label class="form-check-label">Valide</label>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <RadzenButton Text="Mettre à jour" Type="Submit" Style="margin-right: 10px;" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    [Parameter]
+    public MembershipPlanDto MembershipPlan { get; set; }
+
+    private bool IsValid { get; set; }
+    private UpdateMembershipPlanDto membershipPlan = new();
+    private string errorMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (MembershipPlan != null)
+        {
+            IsValid = MembershipPlan.IsValid;
+            membershipPlan.MembershipPlanType = MembershipPlan.MembershipPlanType;
+            membershipPlan.BasePrice = MembershipPlan.BasePrice;
+            membershipPlan.YearlyDiscount = MembershipPlan.YearlyDiscount;
+            membershipPlan.RegistrationFees = MembershipPlan.RegistrationFees;
+            membershipPlan.Description = MembershipPlan.Description;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        membershipPlan.IsValid = IsValid;
+
+        var result = await _gymApiClient.UpdateMembershipPlanAsync(MembershipPlan.Id, membershipPlan);
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

@@ -1,4 +1,5 @@
 using GymManagement.Presentation.WebApp;
+using GymManagement.Presentation.WebApp.ApiClients;
 using GymManagement.Presentation.WebApp.ApiClients.Auth;
 using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
@@ -33,6 +34,7 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
 });
 
 builder.Services.AddScoped<IAuthManager, AuthManager>();
+builder.Services.AddScoped<IApiClientHelper, ApiClientHelper>();
 builder.Services.AddSingleton<AuthenticatedUser>();
 
 var app = builder.Build();

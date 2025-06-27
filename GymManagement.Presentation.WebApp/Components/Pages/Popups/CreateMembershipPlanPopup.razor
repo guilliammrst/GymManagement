@@ -38,7 +38,7 @@
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
-        <p class="text-danger">@errorMessage</p>
+        <div class="alert alert-danger">@errorMessage</div>
     }
 
     <RadzenButton Text="Valider" Type="Submit" Style="margin-right: 10px;" />
