@@ -1,0 +1,92 @@
+﻿<EditForm Model="@club" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Nom :</label>
+        <InputText class="form-control" @bind-Value="club.Name" />
+    </div>
+
+    <div class="mb-2">
+        <label>Pays :</label>
+        <InputSelect class="form-control" @bind-Value="club.Country">
+            <option value="">Sélectionner un pays</option>
+            @foreach (var c in Enum.GetValues<Country>())
+            {
+                <option value="@c">@c</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-2">
+        <label>Ville :</label>
+        <InputText class="form-control" @bind-Value="club.City" />
+    </div>
+
+    <div class="mb-2">
+        <label>Rue :</label>
+        <InputText class="form-control" @bind-Value="club.Street" />
+    </div>
+
+    <div class="mb-2">
+        <label>Code postal :</label>
+        <InputText class="form-control" @bind-Value="club.PostalCode" />
+    </div>
+
+    <div class="mb-2">
+        <label>Numéro :</label>
+        <InputText class="form-control" @bind-Value="club.Number" />
+    </div>
+
+    <div class="mb-2">
+        <label>ID du Manager :</label>
+        <InputNumber class="form-control" @bind-Value="club.ManagerId" />
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <RadzenButton Text="Mettre à jour" Type="Submit" Style="margin-right:10px" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    [Parameter]
+    public ClubDetailsDto Club { get; set; }
+
+    private UpdateClubDto club = new();
+    private string errorMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (Club != null)
+        {
+            club.Name = Club.Name;
+            if (Club.Manager != null && Club.Manager.Id != 0)
+                club.ManagerId = Club.Manager.Id;
+            if (Club.Address != null)
+            {
+                club.Country = Club.Address.Country;
+                club.City = Club.Address.City;
+                club.Street = Club.Address.Street;
+                club.Number = Club.Address.Number;
+                club.PostalCode = Club.Address.PostalCode;
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var result = await _gymApiClient.UpdateClubAsync(Club.Id, club);
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

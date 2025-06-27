@@ -174,6 +174,25 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             }
         }
 
+        public async Task<ModelActionResult> UpdateClubAsync(int clubId, UpdateClubDto clubUpdateDto)
+        {
+            if (!_authenticatedUser.IsAuthenticated)
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+                var response = await _httpClient.PatchAsJsonAsync("api/clubs/" + clubId, clubUpdateDto);
+
+                return await ApiClientHelper.GenerateActionResult(response);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
         public async Task<MembershipPlanDetailsDto?> GetMembershipPlanByIdAsync(int id)
         {
             if (!_authenticatedUser.IsAuthenticated)
