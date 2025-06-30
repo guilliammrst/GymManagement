@@ -26,6 +26,8 @@ else
 			<li><strong>Manager</strong></li>
 			<UserComponent User="club.Manager"></UserComponent>
 		</ul>
+
+		<RadzenButton Text="Update" Click="OpenUpdateClubDialog" Style="margin-bottom: 20px;" />
 	</div>
 }
 
@@ -43,5 +45,25 @@ else
 	private async Task LoadClub()
 	{
 		club = await _gymApiClient.GetClubByIdAsync(ClubId);
+	}
+
+	private async Task OpenUpdateClubDialog()
+	{
+		if (club == null)
+			return;
+
+		var result = await _dialogService.OpenAsync<UpdateClubPopup>("Modifier le club", new Dictionary<string, object>()
+			{
+				["Club"] = club
+			},
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await LoadClub();
 	}
 }

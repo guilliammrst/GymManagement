@@ -4,25 +4,13 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.MembershipPlans
+namespace GymManagement.Presentation.Api.Controllers.App.MembershipPlans
 {
     [ApiController]
     [Route("api/membership-plans")]
-    [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
+    [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class MembershipPlanQueryController(IMembershipPlanQueryService _membershipPlanQueryService) : GymBaseController
     {
-        [HttpGet("{membershipPlanId}")]
-        public async Task<ActionResult> GetMembershipPlanById(int membershipPlanId)
-        {
-            var membershipPlanResult = await _membershipPlanQueryService.GetMembershipPlanByIdAsync(membershipPlanId);
-            if (!membershipPlanResult.Success)
-                return ConvertActionResult(membershipPlanResult);
-
-            var membershipPlan = membershipPlanResult.Results;
-
-            return Ok(membershipPlan);
-        }
-
         [HttpGet]
         public async Task<ActionResult> GetMembershipPlans()
         {

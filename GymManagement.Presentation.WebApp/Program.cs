@@ -1,4 +1,5 @@
 using GymManagement.Presentation.WebApp;
+using GymManagement.Presentation.WebApp.ApiClients;
 using GymManagement.Presentation.WebApp.ApiClients.Auth;
 using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
@@ -18,7 +19,7 @@ builder.Services.AddOutputCache();
 
 builder.Services.AddScoped<DialogService>();
 
-builder.Services.AddHttpClient<GymApiClient>(client =>
+builder.Services.AddHttpClient<GymAdminApiClient>(client =>
 {
     // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
     // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
@@ -33,6 +34,7 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
 });
 
 builder.Services.AddScoped<IAuthManager, AuthManager>();
+builder.Services.AddScoped<IApiClientHelper, ApiClientHelper>();
 builder.Services.AddSingleton<AuthenticatedUser>();
 
 var app = builder.Build();

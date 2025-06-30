@@ -5,7 +5,7 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.Users
+namespace GymManagement.Presentation.Api.Controllers.Admin.Users
 {
     [ApiController]
     [Route("api/users")]
@@ -71,6 +71,16 @@ namespace GymManagement.Presentation.Api.Controllers.Users
             var user = userResult.Results;
 
             return Ok(user);
+        }
+
+        [HttpDelete("{userId}")]
+        public async Task<ActionResult> DeleteUser([FromRoute] int userId)
+        {
+            var userResult = await _userCommandService.DeleteUserAsync(userId);
+            if (!userResult.Success)
+                return ConvertActionResult(userResult);
+
+            return NoContent();
         }
     }
 }

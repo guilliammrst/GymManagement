@@ -15,7 +15,7 @@
 
     @if (!string.IsNullOrWhiteSpace(errorMessage))
     {
-        <p style="color: red">@errorMessage</p>
+        <div class="alert alert-danger">@errorMessage</div>
     }
 
     <RadzenButton Text="Valider" Type="Submit" Style="margin-right:10px" />

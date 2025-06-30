@@ -1,4 +1,4 @@
-﻿namespace GymManagement.Presentation.AuthApi.DTOs
+﻿namespace GymManagement.Application.Interfaces.Controllers.DTOs
 {
     public class BodyLoginDto
     {

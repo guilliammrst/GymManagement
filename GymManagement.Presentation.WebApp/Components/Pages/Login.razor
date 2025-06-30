@@ -29,9 +29,10 @@
 
     private async Task HandleLogin()
     {
-        var token = await _authApiClient.Login(_loginDto);
-        if (token != null)
+        var tokenResult = await _authApiClient.Login(_loginDto);
+        if (tokenResult.Success)
         {
+            var token = tokenResult.Results;
             if (_authManager.Login(token))
 			{
 				_authManager.RedirectToHome();

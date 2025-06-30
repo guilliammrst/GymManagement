@@ -5,10 +5,10 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.MembershipPlans
+namespace GymManagement.Presentation.Api.Controllers.Admin.MembershipPlans
 {
     [ApiController]
-    [Route("api/membership-plans")]
+    [Route("api/admin/membership-plans")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class MembershipPlanCommandController(IMembershipPlanCommandService _membershipPlanCommandService) : GymBaseController
     {
@@ -32,6 +32,25 @@ namespace GymManagement.Presentation.Api.Controllers.MembershipPlans
             {
                 StatusCode = StatusCodes.Status201Created
             };
+        }
+
+        [HttpPatch("{membershipPlanId}")]
+        public async Task<ActionResult> UpdateMembershipPlan([FromRoute] int membershipPlanId, [FromBody] UpdateMembershipPlanDto membershipPlanDto)
+        {
+            var membershipPlanResult = await _membershipPlanCommandService.UpdateMembershipPlanAsync(new MembershipPlanUpdateDto
+            {
+                Id = membershipPlanId,
+                Description = membershipPlanDto.Description,
+                BasePrice = membershipPlanDto.BasePrice,
+                MembershipPlanType = membershipPlanDto.MembershipPlanType,
+                YearlyDiscount = membershipPlanDto.YearlyDiscount,
+                RegistrationFees = membershipPlanDto.RegistrationFees,
+                IsValid = membershipPlanDto.IsValid
+            });
+            if (!membershipPlanResult.Success)
+                return ConvertActionResult(membershipPlanResult);
+
+            return NoContent();
         }
     }
 }

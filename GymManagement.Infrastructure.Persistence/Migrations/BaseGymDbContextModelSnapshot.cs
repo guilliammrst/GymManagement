@@ -414,7 +414,7 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                     b.HasOne("GymManagement.Infrastructure.Persistence.Models.UserModel", "Member")
                         .WithMany("Memberships")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("GymManagement.Infrastructure.Persistence.Models.MembershipPlanModel", "MembershipPlan")

@@ -6,5 +6,6 @@ namespace GymManagement.Application.Interfaces.Services.Users
     {
         Task<ModelActionResult<UserDto>> CreateUserAsync(UserCreateDto userCreateDto);
         Task<ModelActionResult<UserDto>> UpdateUserAsync(UserUpdateDto userUpdateDto);
+        Task<ModelActionResult> DeleteUserAsync(int userId);
     }
 }

@@ -20,6 +20,7 @@ else
 	<div>
 		<MembershipPlanComponent MembershipPlan="membershipPlan"></MembershipPlanComponent>
 		<MembershipComponent Memberships="membershipPlan.Memberships"></MembershipComponent>
+		<RadzenButton Text="Update" Click="OpenUpdateMembershipPlanDialog" Style="margin-bottom: 20px;" />
 	</div>
 }
 
@@ -37,5 +38,25 @@ else
 	private async Task LoadMembershipPlan()
 	{
 		membershipPlan = await _gymApiClient.GetMembershipPlanByIdAsync(MembershipPlanId);
+	}
+
+	private async Task OpenUpdateMembershipPlanDialog()
+	{
+		if (membershipPlan == null)
+			return;
+
+		var result = await _dialogService.OpenAsync<UpdateMembershipPlanPopup>("Modifier le plan d'abonnement", new Dictionary<string, object>()
+			{
+				["MembershipPlan"] = membershipPlan
+			},
+			options: new DialogOptions
+				{
+					Width = "600px",
+					Height = "500px",
+					Style = "top: 20vh; left: 12vw;"
+				});
+
+		if (result is true)
+			await LoadMembershipPlan();
 	}
 }

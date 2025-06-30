@@ -1,5 +1,5 @@
-﻿using GymManagement.Application.Interfaces.Services.Auth;
-using GymManagement.Presentation.AuthApi.DTOs;
+﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
+using GymManagement.Application.Interfaces.Services.Auth;
 using GymManagement.Shared.Core.ClaimsHelper;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
@@ -20,6 +20,25 @@ namespace GymManagement.Presentation.AuthApi.Controllers
                 Email = bodyLoginDto.Email,
                 Password = bodyLoginDto.Password
             });
+            if (!loginResult.Success)
+                return ConvertActionResult(loginResult);
+
+            var token = loginResult.Results;
+
+            return Ok(token);
+        }
+
+        [HttpGet("refresh-token")]
+        [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
+        public async Task<ActionResult> RefreshToken()
+        {
+            var emailResult = User.GetEmail();
+            if (!emailResult.Success)
+                return ConvertActionResult(emailResult);
+
+            var email = emailResult.Results;
+
+            var loginResult = await _authService.RefreshToken(email);
             if (!loginResult.Success)
                 return ConvertActionResult(loginResult);
 

@@ -5,16 +5,21 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.Users
+namespace GymManagement.Presentation.Api.Controllers.App.Users
 {
     [ApiController]
     [Route("api/users")]
-    [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
-    public class UserSubscribtionController(IUserSubscriptionService _userSubscriptionService) : GymBaseController
+    [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
+    public class UserSubscribtionController(IUserVerificationService _userVerificationService, 
+        IUserSubscriptionService _userSubscriptionService) : GymBaseController
     {
         [HttpPost("{userId}/subscribe")]
         public async Task<ActionResult> SubscribeUser(int userId, [FromBody] SubscribeUserDto subscribeUserDto)
         {
+            var verificationResult = await _userVerificationService.VerifyAuthenticatedUser(userId, User);
+            if (!verificationResult.Success)
+                return ConvertActionResult(verificationResult);
+
             var subscriptionResult = await _userSubscriptionService.AddUserSubscriptionAsync(new UserSubscribeDto
             {
                 UserId = userId,
@@ -26,7 +31,7 @@ namespace GymManagement.Presentation.Api.Controllers.Users
             });
             if (!subscriptionResult.Success)
                 return ConvertActionResult(subscriptionResult);
-            
+
             var subscription = subscriptionResult.Results;
 
             return Ok(subscription);
@@ -35,6 +40,10 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         [HttpPost("{userId}/memberships/{membershipId}")]
         public async Task<ActionResult> PaySubscription(int userId, int membershipId, [FromBody] PaymentDto paymentDto)
         {
+            var verificationResult = await _userVerificationService.VerifyAuthenticatedUser(userId, User);
+            if (!verificationResult.Success)
+                return ConvertActionResult(verificationResult);
+
             var paymentResult = await _userSubscriptionService.PayUserSubscriptionAsync(new UserPaymentDto
             {
                 UserId = userId,

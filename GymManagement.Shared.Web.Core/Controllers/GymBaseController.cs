@@ -36,7 +36,14 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.MembershipAlreadyPaid:
                 case GymFaultType.MembershipExpired:
                 case GymFaultType.MembershipPaymentFailed:
+                case GymFaultType.UserDeletionFailed:
+                case GymFaultType.ClubUpdateFailed:
+                case GymFaultType.MembershipPlanUpdateFailed:
+                case GymFaultType.UserHasNoActiveMembership:
+                case GymFaultType.UserHasNoMembership:
+                case GymFaultType.QrCodeExpired:
                     return BadRequest(error);
+
                 case GymFaultType.UserNotFound:
                 case GymFaultType.ClubNotFound:
                 case GymFaultType.ClubManagerNotFound:
@@ -44,9 +51,18 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.MembershipPlanNotFound:
                 case GymFaultType.MembershipNotFound:
                 case GymFaultType.MembershipPaymentDetailNotFound:
+                case GymFaultType.GetTokenFailed:
                     return NotFound(error);
+
                 case GymFaultType.DatabaseUnavailable:
                     return StatusCode(503, error);
+
+                case GymFaultType.UserNotAuthorized:
+                    return StatusCode(403, error);
+
+                case GymFaultType.TokenValidationFailed:
+                    return StatusCode(401, error);
+
                 default:
                     return StatusCode(500, error);
             }

@@ -1,19 +1,17 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
 using GymManagement.Shared.Core.Configurations;
-using GymManagement.Shared.Core.Constants;
+using GymManagement.Shared.Core.JwtValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace GymManagement.Shared.Web.Core.Identity
 {
-    public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IOptions<IssuerOptions> options) : IAuthorizationHandler
+    public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IJwtValidationService _jwtValidationService, IOptions<IssuerOptions> options) : IAuthorizationHandler
     {
         private readonly IssuerOptions _issuerOptions = options.Value;
+        private const string REFRESH_TOKEN_PATH = "/api/refresh-token";
 
         private static void ValidateRequirements(AuthorizationHandlerContext context, ClaimsPrincipal principal)
         {
@@ -34,9 +32,7 @@ namespace GymManagement.Shared.Web.Core.Identity
             }
 
             if (validateRequirements.Count == 0)
-            {
                 context.Fail();
-            }
         }
 
         public Task HandleAsync(AuthorizationHandlerContext context)
@@ -47,29 +43,26 @@ namespace GymManagement.Shared.Web.Core.Identity
                 context.Fail();
                 return Task.CompletedTask;
             }
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_issuerOptions.SecretKey));
-            var validationParameters = new TokenValidationParameters
+
+            var validateLifetime = true;
+            if (context.Resource is HttpContext httpContext)
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = _issuerOptions.Issuer,
-                ValidAudience = _issuerOptions.Audience,
-                IssuerSigningKey = key,
-                RoleClaimType = ClaimsTypes.Role
-            };
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-                _httpContextAccessor.HttpContext.User = principal;
-                ValidateRequirements(context, principal);
+                if (httpContext.Request.Path.Value == REFRESH_TOKEN_PATH)
+                    validateLifetime = false;
             }
-            catch
+
+            var result = _jwtValidationService.ValidateToken(token, validateLifetime);
+            if (!result.Success)
             {
                 context.Fail();
+                return Task.CompletedTask;
             }
+
+            var claimsPrincipal = result.Results;
+            
+            _httpContextAccessor.HttpContext.User = claimsPrincipal;
+            ValidateRequirements(context, claimsPrincipal);
+            
             return Task.CompletedTask;
         }
 
@@ -77,14 +70,12 @@ namespace GymManagement.Shared.Web.Core.Identity
         {
             var authorizationHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
             if (string.IsNullOrEmpty(authorizationHeader))
-            {
                 return null;
-            }
+
             var header = authorizationHeader.ToString();
             if (header.StartsWith("Bearer "))
-            {
                 return header.Substring(7);
-            }
+
             return null;
         }
     }

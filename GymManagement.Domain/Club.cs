@@ -28,13 +28,13 @@ namespace GymManagement.Domain
             ManagerId = managerId;
         }
 
-        public string Name { get; }
-        public Country Country { get; }
-        public string City { get; }
-        public string Street { get; }
-        public string PostalCode { get; }
-        public string Number { get; }
-        public int? ManagerId { get; }
+        public string Name { get; private set; }
+        public Country Country { get; private set; }
+        public string City { get; private set; }
+        public string Street { get; private set; }
+        public string PostalCode { get; private set; }
+        public string Number { get; private set; }
+        public int? ManagerId { get; private set; }
 
         public static ModelActionResult<Club> Create(string? name, Country? country, string? city, string? street, string? postalCode, string? number, int? managerId)
         {
@@ -65,9 +65,45 @@ namespace GymManagement.Domain
             return ModelActionResult<Club>.Ok(new Club(name, country.Value, city, street, postalCode, number, managerId));
         }
 
-        public static ModelActionResult<Club> Build (int id, DateTime createdAt, DateTime? updatedAt, string name, Country country, string city, string street, string postalCode, string number, int? managerId = null)
+        public static ModelActionResult<Club> Build(int id, DateTime createdAt, DateTime? updatedAt, string name, Country country, string city, string street, string postalCode, string number, int? managerId = null)
         {
             return ModelActionResult<Club>.Ok(new Club(id, createdAt, updatedAt, name, country, city, street, postalCode, number, managerId));
+        }
+
+        public ModelActionResult Update(string? name, Country? country, string? city, string? street, string? postalCode, string? number, int? managerId)
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+                Name = name;
+
+            if (country.HasValue)
+            {
+                if (!Enum.IsDefined(country.Value))
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "Club update failed: field Country does not contain a valid value.");
+
+                Country = country.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(city))
+                City = city;
+
+            if (!string.IsNullOrWhiteSpace(street))
+                Street = street;
+
+            if (!string.IsNullOrWhiteSpace(postalCode))
+                PostalCode = postalCode;
+
+            if (!string.IsNullOrWhiteSpace(number))
+                Number = number;
+
+            if (managerId.HasValue)
+            {
+                if (managerId <= 0)
+                    return ModelActionResult.Fail(GymFaultType.BadParameter, "Club update failed: field ManagerId must be a positive integer or null.");
+
+                ManagerId = managerId;
+            }
+
+            return ModelActionResult.Ok;
         }
     }
 }

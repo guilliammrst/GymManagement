@@ -3,10 +3,12 @@ using GymManagement.Shared.Core.Enums;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using System.Text.Json;
+using GymManagement.Shared.Core.Results;
+using GymManagement.Presentation.WebApp.ApiClients.Auth;
 
 namespace GymManagement.Presentation.WebApp
 {
-    public class AuthManager (NavigationManager _navigationManager, AuthenticatedUser _authenticatedUser) : IAuthManager
+    public class AuthManager (NavigationManager _navigationManager, AuthenticatedUser _authenticatedUser, AuthApiClient _authApiClient) : IAuthManager
     {
         public void RedirectToLogin(bool forceLoad = false)
         {
@@ -28,7 +30,28 @@ namespace GymManagement.Presentation.WebApp
             _authenticatedUser.Token = token;
             _authenticatedUser.Email = claims.Where(c => c.Type == ClaimsTypes.Email).FirstOrDefault()?.Value!;
             _authenticatedUser.Role = Enum.Parse<Role>(role.Value);
+
+            var expClaim = claims.FirstOrDefault(c => c.Type == "exp");
+            if (expClaim != null && long.TryParse(expClaim.Value, out long expSeconds))
+            {
+                _authenticatedUser.TokenExpiration = DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
+            }
+
             return true;
+        }
+
+        public async Task<ModelActionResult> RefreshToken()
+        {
+            var refreshTokenResult = await _authApiClient.RefreshToken();
+            if (!refreshTokenResult.Success)
+                return ModelActionResult.Fail(refreshTokenResult);
+
+            var token = refreshTokenResult.Results;
+
+            if (!Login(token))
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+
+            return ModelActionResult.Ok;
         }
 
         public void Logout()

@@ -1,5 +1,4 @@
 using GymManagement.Application.Interfaces.Controllers.DTOs;
-using GymManagement.Application.Interfaces.Repositories.Clubs;
 using GymManagement.Application.Interfaces.Services.Clubs;
 using GymManagement.Application.Interfaces.Services.MembershipPlans;
 using GymManagement.Application.Interfaces.Services.Users;
@@ -8,16 +7,17 @@ using GymManagement.Shared.Core.Results;
 
 namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 {
-    public class GymApiClient(HttpClient _httpClient, AuthenticatedUser _authenticatedUser)
+    public class GymAdminApiClient(HttpClient _httpClient, AuthenticatedUser _authenticatedUser, IApiClientHelper _apiClientHelper)
     {
         public async Task<UserDetailsDto?> GetUserByIdAsync(int id)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return null;
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/users/" + id);
+            var response = await _httpClient.GetAsync("api/admin/users/" + id);
             response.EnsureSuccessStatusCode();
             var user = await response.Content.ReadFromJsonAsync<UserDetailsDto>();
             return user;
@@ -25,12 +25,13 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<List<UserDto>> GetUsersAsync(UserFilter userFilter)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return [];
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync($"api/users?page-size={userFilter.PageSize}&page-number={userFilter.PageNumber}&email={userFilter.Email}");
+            var response = await _httpClient.GetAsync($"api/admin/users?page-size={userFilter.PageSize}&page-number={userFilter.PageNumber}&email={userFilter.Email}");
             response.EnsureSuccessStatusCode();
             var users = await response.Content.ReadFromJsonAsync<List<UserDto>>();
             return users ?? [];
@@ -38,16 +39,17 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<ModelActionResult> CreateUserAsync(CreateUserDto userCreateDto)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/users", userCreateDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/users", userCreateDto);
 
-                return await ApiClientHelper.GenerateActionResult(response);
+                return await _apiClientHelper.GenerateActionResult(response);
             }
             catch (Exception ex)
             {
@@ -57,16 +59,17 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<ModelActionResult> UpdateUserAsync(int userId, UpdateUserDto userUpdateDto)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PatchAsJsonAsync("api/users/" + userId, userUpdateDto);
+                var response = await _httpClient.PatchAsJsonAsync("api/admin/users/" + userId, userUpdateDto);
 
-                return await ApiClientHelper.GenerateActionResult(response);
+                return await _apiClientHelper.GenerateActionResult(response);
             }
             catch (Exception ex)
             {
@@ -74,18 +77,37 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             }
         }
 
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return false;
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+                var response = await _httpClient.DeleteAsync("api/admin/users/" + userId);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<ModelActionResult> SubscribeUserAsync(int userId, SubscribeUserDto userSubscribeDto)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/users/" + userId + "/subscribe", userSubscribeDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/users/" + userId + "/subscribe", userSubscribeDto);
 
-                return await ApiClientHelper.GenerateActionResult(response);
+                return await _apiClientHelper.GenerateActionResult(response);
             }
             catch (Exception ex)
             {
@@ -95,16 +117,17 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<ModelActionResult> PayMembershipAsync(int userId, int membershipId, PaymentDto paymentDto)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/users/" + userId + "/memberships/" + membershipId, paymentDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/users/" + userId + "/memberships/" + membershipId, paymentDto);
 
-                return await ApiClientHelper.GenerateActionResult(response);
+                return await _apiClientHelper.GenerateActionResult(response);
             }
             catch (Exception ex)
             {
@@ -114,12 +137,13 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<ClubDetailsDto?> GetClubByIdAsync(int id)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return null;
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/clubs/" + id);
+            var response = await _httpClient.GetAsync("api/admin/clubs/" + id);
             response.EnsureSuccessStatusCode();
             var club = await response.Content.ReadFromJsonAsync<ClubDetailsDto>();
             return club;
@@ -127,12 +151,13 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<List<ClubDto>> GetClubsAsync()
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return [];
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/clubs");
+            var response = await _httpClient.GetAsync("api/admin/clubs");
             response.EnsureSuccessStatusCode();
             var clubs = await response.Content.ReadFromJsonAsync<List<ClubDto>>();
             return clubs ?? [];
@@ -140,16 +165,37 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<ModelActionResult> CreateClubAsync(CreateClubDto clubCreateDto)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/clubs", clubCreateDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/clubs", clubCreateDto);
 
-                return await ApiClientHelper.GenerateActionResult(response);
+                return await _apiClientHelper.GenerateActionResult(response);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult> UpdateClubAsync(int clubId, UpdateClubDto clubUpdateDto)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+                var response = await _httpClient.PatchAsJsonAsync("api/admin/clubs/" + clubId, clubUpdateDto);
+
+                return await _apiClientHelper.GenerateActionResult(response);
             }
             catch (Exception ex)
             {
@@ -159,12 +205,13 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<MembershipPlanDetailsDto?> GetMembershipPlanByIdAsync(int id)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return null;
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/membership-plans/" + id);
+            var response = await _httpClient.GetAsync("api/admin/membership-plans/" + id);
             response.EnsureSuccessStatusCode();
             var membershipPlan = await response.Content.ReadFromJsonAsync<MembershipPlanDetailsDto>();
             return membershipPlan;
@@ -172,12 +219,13 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<List<MembershipPlanDto>> GetMembershipPlansAsync()
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return [];
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/membership-plans");
+            var response = await _httpClient.GetAsync("api/admin/membership-plans");
             response.EnsureSuccessStatusCode();
             var membershipPlans = await response.Content.ReadFromJsonAsync<List<MembershipPlanDto>>();
             return membershipPlans ?? [];
@@ -185,16 +233,37 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
         public async Task<ModelActionResult> CreateMembershipPlanAsync(CreateMembershipPlanDto createMembershipPlanDto)
         {
-            if (!_authenticatedUser.IsAuthenticated)
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
 
             try
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/membership-plans", createMembershipPlanDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/membership-plans", createMembershipPlanDto);
 
-                return await ApiClientHelper.GenerateActionResult(response);
+                return await _apiClientHelper.GenerateActionResult(response);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult> UpdateMembershipPlanAsync(int membershipPlanId, UpdateMembershipPlanDto membershipPlanUpdateDto)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+                var response = await _httpClient.PatchAsJsonAsync("api/admin/membership-plans/" + membershipPlanId, membershipPlanUpdateDto);
+
+                return await _apiClientHelper.GenerateActionResult(response);
             }
             catch (Exception ex)
             {

@@ -51,5 +51,60 @@ namespace GymManagement.Infrastructure.Repositories.Clubs
                 return ModelActionResult<ClubDetailsDao>.Fail(GymFaultType.ClubCreationFailed, ex.Message);
             }
         }
+
+        public async Task<ModelActionResult> UpdateClubAsync(ClubUpdateDao clubUpdateDao)
+        {
+            try
+            {
+                var clubModel = await _context.Clubs
+                    .Include(c => c.Address)
+                    .FirstOrDefaultAsync(c => c.Id == clubUpdateDao.Id);
+
+                if (clubModel == null)
+                    return ModelActionResult.Fail(GymFaultType.ClubNotFound, "Club update failed: club not found.");
+
+                if (!string.IsNullOrWhiteSpace(clubUpdateDao.Name))
+                    clubModel.Name = clubUpdateDao.Name;
+
+                if (clubUpdateDao.Country.HasValue && clubModel.Address != null)
+                    clubModel.Address.Country = clubUpdateDao.Country.Value;
+
+                if (!string.IsNullOrWhiteSpace(clubUpdateDao.City) && clubModel.Address != null)
+                    clubModel.Address.City = clubUpdateDao.City;
+
+                if (!string.IsNullOrWhiteSpace(clubUpdateDao.Street) && clubModel.Address != null)
+                    clubModel.Address.Street = clubUpdateDao.Street;
+
+                if (!string.IsNullOrWhiteSpace(clubUpdateDao.PostalCode) && clubModel.Address != null)
+                    clubModel.Address.PostalCode = clubUpdateDao.PostalCode;
+
+                if (!string.IsNullOrWhiteSpace(clubUpdateDao.Number) && clubModel.Address != null)
+                    clubModel.Address.Number = clubUpdateDao.Number;
+
+                if (clubUpdateDao.ManagerId.HasValue && clubUpdateDao.ManagerId >= 0)
+                {
+                    var clubManager = await _context.Users.FindAsync(clubUpdateDao.ManagerId.Value);
+                    if (clubManager == null || clubManager.Role != Role.Manager)
+                        return ModelActionResult.Fail(GymFaultType.ClubManagerNotFound, "Club update failed: Manager not found.");
+                    clubModel.Manager = clubManager;
+                }
+
+                _context.Clubs.Update(clubModel);
+
+                var result = await _context.SaveChangesAsync();
+                if (result == 0)
+                    return ModelActionResult.Fail(GymFaultType.ClubUpdateFailed, "Club update failed: no rows affected.");
+
+                return ModelActionResult.Ok;
+            }
+            catch (DbUpdateException ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.DatabaseUnavailable, ex.InnerException != null ? ex.InnerException.Message : ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.ClubUpdateFailed, ex.Message);
+            }
+        }
     }
 }

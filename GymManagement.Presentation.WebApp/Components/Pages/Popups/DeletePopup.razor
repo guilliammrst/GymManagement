@@ -1,0 +1,44 @@
+﻿    <div class="p-4">
+        <h4>Confirmer la suppression</h4>
+        <p>Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.</p>
+
+        <div class="d-flex justify-content-end mt-4">
+            <RadzenButton Text="Annuler"
+            ButtonStyle="ButtonStyle.Secondary"
+            Style="margin-right: 10px;"
+            Click="@OnCancel" />
+            <RadzenButton Text="Supprimer"
+            ButtonStyle="ButtonStyle.Danger"
+            Click="@OnConfirm" />
+        </div>
+    </div>
+
+@code {
+    [Parameter]
+	public int ItemId { get; set; }
+
+    [Parameter]
+    public Func<int, Task<bool>>? DeleteAction { get; set; }
+
+    [Parameter]
+    public string RedirectUrl { get; set; } = "/";
+
+    private async Task OnConfirm()
+    {
+        if (DeleteAction is not null)
+        {
+            bool result = await DeleteAction.Invoke(ItemId);
+
+            if (result)
+            {
+                _dialogService.Close(true);
+                if (!string.IsNullOrWhiteSpace(RedirectUrl))
+                    _navigationManager.NavigateTo(RedirectUrl);
+            }
+            else 
+                _dialogService.Close(false);
+        }
+    }
+
+    private void OnCancel() => _dialogService.Close(false);
+}

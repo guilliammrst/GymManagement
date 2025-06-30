@@ -41,6 +41,21 @@ namespace GymManagement.Application.Services.Auth
             return ModelActionResult<string>.Ok(token);
         }
 
+        public async Task<ModelActionResult<string>> RefreshToken(string email)
+        {
+            var userResult = await _userQueryRepository.GetUserByEmailAsync(email);
+            if (!userResult.Success)
+                return ModelActionResult<string>.Fail(userResult);
+
+            var tokenResult = await GenerateTokenAsync(email);
+            if (!tokenResult.Success)
+                return ModelActionResult<string>.Fail(tokenResult);
+
+            var token = tokenResult.Results;
+
+            return ModelActionResult<string>.Ok(token);
+        }
+
         public async Task<ModelActionResult<string>> RegisterAsync(RegisterDto registerDto)
         {
             var userResult = User.Create(registerDto.Name, registerDto.Surname, registerDto.Birthdate, 

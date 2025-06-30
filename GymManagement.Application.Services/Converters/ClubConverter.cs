@@ -6,6 +6,21 @@ namespace GymManagement.Application.Services.Converters
 {
     public static class ClubConverter
     {
+        public static ClubUpdateDao ToUpdateDao(this Club club)
+        {
+            return new ClubUpdateDao
+            {
+                Id = club.Id,
+                Name = club.Name,
+                Country = club.Country,
+                City = club.City,
+                Street = club.Street,
+                PostalCode = club.PostalCode,
+                Number = club.Number,
+                ManagerId = club.ManagerId
+            };
+        }
+
         public static ClubDto ToDto(this ClubDao club)
         {
             return new ClubDto

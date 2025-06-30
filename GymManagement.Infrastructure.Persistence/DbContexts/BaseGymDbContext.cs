@@ -53,7 +53,7 @@ namespace GymManagement.Infrastructure.Persistence.DbContexts
                 .HasOne(m => m.Member)
                 .WithMany(u => u.Memberships)
                 .HasForeignKey(m => m.MemberId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<MembershipModel>()
                 .HasOne(m => m.HomeClub)

@@ -5,10 +5,10 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.Clubs
+namespace GymManagement.Presentation.Api.Controllers.Admin.Clubs
 {
     [ApiController]
-    [Route("api/clubs")]
+    [Route("api/admin/clubs")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class ClubCommandController(IClubCommandService _clubCommandService) : GymBaseController
     {
@@ -27,13 +27,33 @@ namespace GymManagement.Presentation.Api.Controllers.Clubs
             });
             if (!clubResult.Success)
                 return ConvertActionResult(clubResult);
-            
+
             var club = clubResult.Results;
 
             return new ObjectResult(club)
             {
                 StatusCode = StatusCodes.Status201Created
             };
+        }
+
+        [HttpPatch("{clubId}")]
+        public async Task<ActionResult> UpdateClub([FromRoute] int clubId, [FromBody] UpdateClubDto clubDto)
+        {
+            var clubResult = await _clubCommandService.UpdateClubAsync(new ClubUpdateDto
+            {
+                Id = clubId,
+                Name = clubDto.Name,
+                Country = clubDto.Country,
+                City = clubDto.City,
+                Street = clubDto.Street,
+                PostalCode = clubDto.PostalCode,
+                Number = clubDto.Number,
+                ManagerId = clubDto.ManagerId
+            });
+            if (!clubResult.Success)
+                return ConvertActionResult(clubResult);
+
+            return NoContent();
         }
     }
 }

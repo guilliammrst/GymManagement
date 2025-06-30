@@ -4,10 +4,10 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.Clubs
+namespace GymManagement.Presentation.Api.Controllers.Admin.Clubs
 {
     [ApiController]
-    [Route("api/clubs")]
+    [Route("api/admin/clubs")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class ClubQueryController(IClubQueryService _clubQueryService) : GymBaseController
     {
