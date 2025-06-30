@@ -1,5 +1,5 @@
-﻿using GymManagement.Application.Interfaces.Services.Auth;
-using GymManagement.Presentation.AuthApi.DTOs;
+﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
+using GymManagement.Application.Interfaces.Services.Auth;
 using GymManagement.Shared.Core.ClaimsHelper;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;

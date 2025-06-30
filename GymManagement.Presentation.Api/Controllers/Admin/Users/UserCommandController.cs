@@ -5,7 +5,7 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.Users
+namespace GymManagement.Presentation.Api.Controllers.Admin.Users
 {
     [ApiController]
     [Route("api/users")]

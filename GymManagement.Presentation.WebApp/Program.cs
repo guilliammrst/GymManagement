@@ -19,7 +19,7 @@ builder.Services.AddOutputCache();
 
 builder.Services.AddScoped<DialogService>();
 
-builder.Services.AddHttpClient<GymApiClient>(client =>
+builder.Services.AddHttpClient<GymAdminApiClient>(client =>
 {
     // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
     // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.

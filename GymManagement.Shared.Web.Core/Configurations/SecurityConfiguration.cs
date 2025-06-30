@@ -1,6 +1,7 @@
 ﻿using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Core.Environments;
+using GymManagement.Shared.Core.JwtValidation;
 using GymManagement.Shared.Web.Core.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,7 @@ namespace GymManagement.Shared.Web.Core.Configurations
             });
 
             return services.AddScoped<IAuthorizationHandler, GymAuthorizationHandler>()
+                .AddScoped<IJwtValidationService, JwtValidationService>()
                 .AddHttpContextAccessor();
         }
     }

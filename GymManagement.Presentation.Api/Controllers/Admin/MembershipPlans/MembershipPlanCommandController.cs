@@ -5,10 +5,10 @@ using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymManagement.Presentation.Api.Controllers.MembershipPlans
+namespace GymManagement.Presentation.Api.Controllers.Admin.MembershipPlans
 {
     [ApiController]
-    [Route("api/membership-plans")]
+    [Route("api/admin/membership-plans")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class MembershipPlanCommandController(IMembershipPlanCommandService _membershipPlanCommandService) : GymBaseController
     {

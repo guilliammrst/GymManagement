@@ -7,7 +7,7 @@ using GymManagement.Shared.Core.Results;
 
 namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 {
-    public class GymApiClient(HttpClient _httpClient, AuthenticatedUser _authenticatedUser, IApiClientHelper _apiClientHelper)
+    public class GymAdminApiClient(HttpClient _httpClient, AuthenticatedUser _authenticatedUser, IApiClientHelper _apiClientHelper)
     {
         public async Task<UserDetailsDto?> GetUserByIdAsync(int id)
         {
@@ -17,7 +17,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/users/" + id);
+            var response = await _httpClient.GetAsync("api/admin/users/" + id);
             response.EnsureSuccessStatusCode();
             var user = await response.Content.ReadFromJsonAsync<UserDetailsDto>();
             return user;
@@ -31,7 +31,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync($"api/users?page-size={userFilter.PageSize}&page-number={userFilter.PageNumber}&email={userFilter.Email}");
+            var response = await _httpClient.GetAsync($"api/admin/users?page-size={userFilter.PageSize}&page-number={userFilter.PageNumber}&email={userFilter.Email}");
             response.EnsureSuccessStatusCode();
             var users = await response.Content.ReadFromJsonAsync<List<UserDto>>();
             return users ?? [];
@@ -47,7 +47,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/users", userCreateDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/users", userCreateDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -67,7 +67,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PatchAsJsonAsync("api/users/" + userId, userUpdateDto);
+                var response = await _httpClient.PatchAsJsonAsync("api/admin/users/" + userId, userUpdateDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -86,7 +86,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.DeleteAsync("api/users/" + userId);
+                var response = await _httpClient.DeleteAsync("api/admin/users/" + userId);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception)
@@ -105,7 +105,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/users/" + userId + "/subscribe", userSubscribeDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/users/" + userId + "/subscribe", userSubscribeDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -125,7 +125,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/users/" + userId + "/memberships/" + membershipId, paymentDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/users/" + userId + "/memberships/" + membershipId, paymentDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -143,7 +143,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/clubs/" + id);
+            var response = await _httpClient.GetAsync("api/admin/clubs/" + id);
             response.EnsureSuccessStatusCode();
             var club = await response.Content.ReadFromJsonAsync<ClubDetailsDto>();
             return club;
@@ -157,7 +157,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/clubs");
+            var response = await _httpClient.GetAsync("api/admin/clubs");
             response.EnsureSuccessStatusCode();
             var clubs = await response.Content.ReadFromJsonAsync<List<ClubDto>>();
             return clubs ?? [];
@@ -173,7 +173,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/clubs", clubCreateDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/clubs", clubCreateDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -193,7 +193,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PatchAsJsonAsync("api/clubs/" + clubId, clubUpdateDto);
+                var response = await _httpClient.PatchAsJsonAsync("api/admin/clubs/" + clubId, clubUpdateDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -211,7 +211,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/membership-plans/" + id);
+            var response = await _httpClient.GetAsync("api/admin/membership-plans/" + id);
             response.EnsureSuccessStatusCode();
             var membershipPlan = await response.Content.ReadFromJsonAsync<MembershipPlanDetailsDto>();
             return membershipPlan;
@@ -225,7 +225,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-            var response = await _httpClient.GetAsync("api/membership-plans");
+            var response = await _httpClient.GetAsync("api/admin/membership-plans");
             response.EnsureSuccessStatusCode();
             var membershipPlans = await response.Content.ReadFromJsonAsync<List<MembershipPlanDto>>();
             return membershipPlans ?? [];
@@ -241,7 +241,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PostAsJsonAsync("api/membership-plans", createMembershipPlanDto);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/membership-plans", createMembershipPlanDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }
@@ -261,7 +261,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients.Gym
             {
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
-                var response = await _httpClient.PatchAsJsonAsync("api/membership-plans/" + membershipPlanId, membershipPlanUpdateDto);
+                var response = await _httpClient.PatchAsJsonAsync("api/admin/membership-plans/" + membershipPlanId, membershipPlanUpdateDto);
 
                 return await _apiClientHelper.GenerateActionResult(response);
             }

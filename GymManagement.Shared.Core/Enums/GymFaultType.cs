@@ -10,6 +10,8 @@
         ApiCallFailed = 5,
         RefreshTokenFailed = 6,
         GetTokenFailed = 7,
+        TokenValidationFailed = 8,
+        QrCodeExpired = 9,
         
         // User
         UserNotFound = 100,
@@ -21,6 +23,9 @@
         UserSubscriptionFailed = 106,
         UserNotAuthenticated = 107,
         UserDeletionFailed = 108,
+        UserNotAuthorized = 109,
+        UserHasNoMembership = 110,
+        UserHasNoActiveMembership = 111,
 
         // Club
         ClubNotFound = 200,

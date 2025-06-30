@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GymManagement.Application.Interfaces.Controllers.DTOs;
 
-namespace GymManagement.Presentation.Api.Controllers.Users
+namespace GymManagement.Presentation.Api.Controllers.Admin.Users
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/admin/users")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class UserQueryController(IUserQueryService _userQueryService) : GymBaseController
     {
@@ -26,7 +26,7 @@ namespace GymManagement.Presentation.Api.Controllers.Users
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAccounts([FromQuery] UserFilter filter)
+        public async Task<ActionResult> GetUsers([FromQuery] UserFilter filter)
         {
             var usersResult = await _userQueryService.GetUsersAsync(new UserServiceFilter
             {
