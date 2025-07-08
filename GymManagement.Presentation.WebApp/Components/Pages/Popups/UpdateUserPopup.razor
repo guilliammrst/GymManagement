@@ -90,8 +90,12 @@
         <div class="alert alert-danger">@errorMessage</div>
     }
 
-    <RadzenButton Text="Enregistrer" Type="Submit" Style="margin-right: 10px" />
-    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2">
+        Enregistrer
+    </MudButton>
+    <MudButton OnClick="Close" Variant="Variant.Filled" Color="Color.Secondary">
+        Annuler
+    </MudButton>
 </EditForm>
 
 @code {

@@ -4,7 +4,7 @@ using GymManagement.Presentation.WebApp.ApiClients.Auth;
 using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
 using GymManagement.Shared.Core.Constants;
-using Radzen;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +17,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddOutputCache();
 
-builder.Services.AddScoped<DialogService>();
+builder.Services.AddMudServices();
 
 builder.Services.AddHttpClient<GymAdminApiClient>(client =>
 {

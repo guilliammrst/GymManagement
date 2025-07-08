@@ -2,5 +2,7 @@
 
 @if (_authenticatedUser.IsAuthenticated)
 {
-    <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="_authManager.Logout">Log out</RadzenButton>
+    <MudButton OnClick="_authManager.Logout" Variant="Variant.Filled" Color="Color.Error">
+        Log out
+    </MudButton>
 }

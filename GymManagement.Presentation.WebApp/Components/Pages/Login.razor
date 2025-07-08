@@ -1,50 +1,434 @@
 ﻿@page "/login"
+@layout EmptyLayout
+@rendermode InteractiveServer
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Login - Gym Management</PageTitle>
 
-<h3>Connexion</h3>
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p style="color: red">@errorMessage</p>
-}
-
-<EditForm Model="_loginDto" OnValidSubmit="HandleLogin" FormName="Login">
-    <DataAnnotationsValidator />
-    <div>
-        <label>Email</label>
-        <InputText @bind-Value="_loginDto!.Email" />
+<div class="login-container">
+    <div class="login-background">
+        <div class="background-overlay"></div>
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
     </div>
-    <div>
-        <label>Mot de passe</label>
-        <InputText @bind-Value="_loginDto!.Password" type="password" />
+    
+    <div class="login-content">
+        <div class="login-card animate-fade-in">
+            <!-- Logo and Header -->
+            <div class="login-header">
+                <div class="logo-container">
+                    <MudIcon Icon="@Icons.Material.Filled.FitnessCenter" Class="logo-icon" />
+                    <MudText Typo="Typo.h4" Class="logo-text">GymManager</MudText>
+                </div>
+                <MudText Typo="Typo.h5" Class="welcome-text">Welcome back!</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary" Class="subtitle">
+                    Please sign in to your account
+                </MudText>
+            </div>
+
+            <!-- Error Message -->
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="login-error">
+                    @errorMessage
+                </MudAlert>
+            }
+
+            <!-- Login Form -->
+            <MudForm @ref="loginForm" @bind-IsValid="@isFormValid" Class="login-form">
+                <div class="form-fields">
+                    <MudTextField @bind-Value="_loginDto.Email"
+                                  Label="Email Address"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Email"
+                                  Required="true"
+                                  RequiredError="Email is required"
+                                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address" })"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Email"
+                                  AdornmentColor="Color.Primary"
+                                  Class="form-field" />
+
+                    <MudTextField @bind-Value="_loginDto.Password"
+                                  Label="Password"
+                                  Variant="Variant.Outlined"
+                                  InputType="@passwordInputType"
+                                  Required="true"
+                                  RequiredError="Password is required"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@passwordIcon"
+                                  AdornmentColor="Color.Primary"
+                                  OnAdornmentClick="@TogglePasswordVisibility"
+                                  AdornmentAriaLabel="Show/Hide Password"
+                                  Class="form-field" />
+                </div>
+
+                <div class="form-options">
+                    <MudCheckBox @bind-Value="rememberMe" 
+                                 Label="Remember me"
+                                 Color="Color.Primary" />
+                    <MudLink Href="#" Color="Color.Primary" Class="forgot-password">
+                        Forgot password?
+                    </MudLink>
+                </div>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           Class="login-button"
+                           Disabled="@(!isFormValid || isLoading)"
+                           OnClick="@HandleLogin">
+                    @if (isLoading)
+                    {
+                        <MudProgressCircular Color="Color.Secondary" Size="Size.Small" Indeterminate="true" />
+                        <span class="loading-text">Signing in...</span>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Login" />
+                        <span>Sign In</span>
+                    }
+                </MudButton>
+            </MudForm>
+
+            <!-- Divider -->
+            <div class="divider">
+                <MudDivider />
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="divider-text">
+                    or
+                </MudText>
+                <MudDivider />
+            </div>
+
+            <!-- Social Login Options -->
+            <div class="social-login">
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Custom.Brands.Google"
+                           FullWidth="true"
+                           Class="social-button"
+                           Disabled="true">
+                    Continue with Google
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Custom.Brands.Microsoft"
+                           FullWidth="true"
+                           Class="social-button"
+                           Disabled="true">
+                    Continue with Microsoft
+                </MudButton>
+            </div>
+
+            <!-- Register Link -->
+            <div class="register-link">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Don't have an account?
+                    <MudLink Href="/register" Color="Color.Primary" Class="register-link-text">
+                        Sign up here
+                    </MudLink>
+                </MudText>
+            </div>
+        </div>
     </div>
-    <RadzenButton ButtonStyle="ButtonStyle.Primary" type="submit">Log in</RadzenButton>
-</EditForm>
+</div>
+
+<style>
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 1;
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 2;
+    }
+
+    .background-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-1 {
+        width: 200px;
+        height: 200px;
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .shape-2 {
+        width: 150px;
+        height: 150px;
+        top: 60%;
+        right: 15%;
+        animation-delay: 2s;
+    }
+
+    .shape-3 {
+        width: 100px;
+        height: 100px;
+        bottom: 20%;
+        left: 60%;
+        animation-delay: 4s;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .login-content {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 400px;
+        padding: var(--spacing-lg);
+    }
+
+    .login-card {
+        background: var(--background-card);
+        border-radius: var(--radius-2xl);
+        padding: var(--spacing-2xl);
+        box-shadow: var(--shadow-xl);
+        border: 1px solid var(--border-color);
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .logo-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+    }
+
+    .logo-text {
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .welcome-text {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .subtitle {
+        margin-bottom: 0;
+    }
+
+    .login-error {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .login-form {
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .form-field {
+        width: 100%;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .forgot-password {
+        font-size: var(--font-size-sm);
+        text-decoration: none;
+    }
+
+    .login-button {
+        height: 48px;
+        font-weight: 600;
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-xl);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+    }
+
+    .loading-text {
+        margin-left: var(--spacing-sm);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .divider-text {
+        white-space: nowrap;
+        padding: 0 var(--spacing-sm);
+    }
+
+    .social-login {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .social-button {
+        height: 44px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: var(--spacing-lg);
+    }
+
+    .register-link-text {
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+        .login-content {
+            padding: var(--spacing-md);
+        }
+
+        .login-card {
+            padding: var(--spacing-xl);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .form-options {
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            align-items: flex-start;
+        }
+
+        .forgot-password {
+            align-self: flex-end;
+        }
+    }
+</style>
 
 @code {
-    [SupplyParameterFromForm(FormName = "Login")]
-    private LoginDto _loginDto { get; set; } = new();
-
+    private LoginDto _loginDto = new();
     private string errorMessage = "";
+    private bool isLoading = false;
+    private bool isFormValid = false;
+    private bool rememberMe = false;
+    private bool showPassword = false;
+    private MudForm loginForm;
+
+    private InputType passwordInputType => showPassword ? InputType.Text : InputType.Password;
+    private string passwordIcon => showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility;
+
+    protected override void OnInitialized()
+    {
+        _loginDto = new LoginDto();
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
 
     private async Task HandleLogin()
     {
-        var tokenResult = await _authApiClient.Login(_loginDto);
-        if (tokenResult.Success)
+        if (!isFormValid)
+            return;
+
+        try
         {
-            var token = tokenResult.Results;
-            if (_authManager.Login(token))
-			{
-				_authManager.RedirectToHome();
-			}
-			else
-			{
-				errorMessage = "Vous n'avez pas les permissions.";
-			}
+            isLoading = true;
+            errorMessage = "";
+            StateHasChanged();
+
+            var tokenResult = await _authApiClient.Login(_loginDto);
+            if (tokenResult.Success)
+            {
+                var token = tokenResult.Results;
+                if (_authManager.Login(token))
+                {
+                    _authManager.RedirectToHome();
+                }
+                else
+                {
+                    errorMessage = "You don't have the required permissions to access this system.";
+                }
+            }
+            else
+            {
+                errorMessage = "Invalid email or password. Please try again.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            errorMessage = "Identifiants incorrects.";
+            errorMessage = "An error occurred during login. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
         }
     }
 }

@@ -21,9 +21,15 @@ else
 		<UserComponent User="user"></UserComponent>
 		<MembershipComponent Memberships="user.Memberships" UserId="user.Id" OnPaymentRequested="LoadUser"></MembershipComponent>
 		<AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
-		<RadzenButton Text="Update" Click="OpenUpdateUserDialog" Style="margin-bottom: 20px;" />
-		<RadzenButton Text="Subscribe" Click="OpenSubscribeUserDialog" Style="margin-bottom: 20px;" />
-		<RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete" Click="OpenDeleteUserDialog" Style="margin-bottom: 20px;" />
+		    <MudButton OnClick="OpenUpdateUserDialog" Variant="Variant.Filled" Color="Color.Primary" Class="mb-3 mr-2">
+        Update
+    </MudButton>
+    <MudButton OnClick="OpenSubscribeUserDialog" Variant="Variant.Filled" Color="Color.Secondary" Class="mb-3 mr-2">
+        Subscribe
+    </MudButton>
+    <MudButton OnClick="OpenDeleteUserDialog" Variant="Variant.Filled" Color="Color.Error" Class="mb-3">
+        Delete
+    </MudButton>
 	</div>
 }
 
@@ -48,18 +54,19 @@ else
 		if (user == null)
 			return;
 
-		var result = await _dialogService.OpenAsync<UpdateUserPopup>("Modifier l'utilisateur", new Dictionary<string, object>()
-			{
-				["User"] = user
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+		var parameters = new DialogParameters();
+		parameters.Add("User", user);
+		
+		var options = new DialogOptions 
+		{ 
+			MaxWidth = MaxWidth.Medium,
+			CloseOnEscapeKey = true,
+			CloseButton = true
+		};
+		
+		var result = await _dialogService.ShowAsync<UpdateUserPopup>("Modifier l'utilisateur", parameters, options);
 
-		if (result is true)
+		if (result.Result == DialogResult.Ok())
 			await LoadUser();
 	}
 
@@ -68,18 +75,19 @@ else
 		if (user == null)
 			return;
 
-		var result = await _dialogService.OpenAsync<SubscribeUserPopup>("Abonner l'utilisateur", new Dictionary<string, object>()
-			{
-				["UserId"] = userId
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+		var parameters = new DialogParameters();
+		parameters.Add("UserId", userId);
+		
+		var options = new DialogOptions 
+		{ 
+			MaxWidth = MaxWidth.Medium,
+			CloseOnEscapeKey = true,
+			CloseButton = true
+		};
+		
+		var result = await _dialogService.ShowAsync<SubscribeUserPopup>("Abonner l'utilisateur", parameters, options);
 
-		if (result is true)
+		if (result.Result == DialogResult.Ok())
 			await LoadUser();
 	}
 
@@ -88,20 +96,21 @@ else
 		if (user == null)
 			return;
 
-		var result = await _dialogService.OpenAsync<DeletePopup>("Supprimer l'utilisateur", new Dictionary<string, object>()
-			{
-				["ItemId"] = userId,
-				["DeleteAction"] = new Func<int, Task<bool>>(async id =>
-				{
-					return await _gymApiClient.DeleteUserAsync(id);
-				}),
-				["RedirectUrl"] = "users"
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "250px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+		var parameters = new DialogParameters();
+		parameters.Add("ItemId", userId);
+		parameters.Add("DeleteAction", new Func<int, Task<bool>>(async id =>
+		{
+			return await _gymApiClient.DeleteUserAsync(id);
+		}));
+		parameters.Add("RedirectUrl", "users");
+		
+		var options = new DialogOptions 
+		{ 
+			MaxWidth = MaxWidth.Small,
+			CloseOnEscapeKey = true,
+			CloseButton = true
+		};
+		
+		var result = await _dialogService.ShowAsync<DeletePopup>("Supprimer l'utilisateur", parameters, options);
 	}
 }

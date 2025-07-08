@@ -3,13 +3,17 @@
         <p>Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.</p>
 
         <div class="d-flex justify-content-end mt-4">
-            <RadzenButton Text="Annuler"
-            ButtonStyle="ButtonStyle.Secondary"
-            Style="margin-right: 10px;"
-            Click="@OnCancel" />
-            <RadzenButton Text="Supprimer"
-            ButtonStyle="ButtonStyle.Danger"
-            Click="@OnConfirm" />
+            <MudButton OnClick="@OnCancel" 
+                       Variant="Variant.Filled" 
+                       Color="Color.Secondary" 
+                       Class="mr-2">
+                Annuler
+            </MudButton>
+            <MudButton OnClick="@OnConfirm" 
+                       Variant="Variant.Filled" 
+                       Color="Color.Error">
+                Supprimer
+            </MudButton>
         </div>
     </div>
 

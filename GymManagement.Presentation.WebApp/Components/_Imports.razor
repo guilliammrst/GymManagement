@@ -22,8 +22,8 @@
 @using System.Text.Json;
 @inject AuthenticatedUser _authenticatedUser
 @inject IAuthManager _authManager
-@using Radzen
-@using Radzen.Blazor
+@using MudBlazor
+@using MudBlazor.Services
 @using GymManagement.Application.Interfaces.Services.Users
 @using GymManagement.Application.Interfaces.Services.Addresses
 @using GymManagement.Application.Interfaces.Services.Memberships
@@ -33,4 +33,4 @@
 @using GymManagement.Application.Interfaces.Controllers.DTOs
 @using GymManagement.Shared.Core.Enums
 @using GymManagement.Presentation.WebApp.Components.Extensions
-@inject DialogService _dialogService
+@inject IDialogService _dialogService

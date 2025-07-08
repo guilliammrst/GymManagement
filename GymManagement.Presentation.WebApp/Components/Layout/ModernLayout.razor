@@ -1,0 +1,312 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="customTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="modern-layout">
+    <LoginRedirect />
+    
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <MudDrawer @bind-Open="@sidebarOpen" 
+                   Elevation="2" 
+                   Variant="DrawerVariant.Mini" 
+                   OpenMiniOnHover="true"
+                   ClipMode="DrawerClipMode.Always"
+                   Color="Color.Surface"
+                   Class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <MudIcon Icon="@Icons.Material.Filled.FitnessCenter" Class="logo-icon" />
+                    <MudText Typo="Typo.h6" Class="logo-text">GymManager</MudText>
+                </div>
+            </div>
+            
+            <MudDivider />
+            
+            <MudNavMenu>
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">
+                    Dashboard
+                </MudNavLink>
+                <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People">
+                    Users
+                </MudNavLink>
+                <MudNavLink Href="/clubs" Icon="@Icons.Material.Filled.Business">
+                    Clubs
+                </MudNavLink>
+                <MudNavLink Href="/membership-plans" Icon="@Icons.Material.Filled.CardMembership">
+                    Membership Plans
+                </MudNavLink>
+                <MudNavLink Href="/reports" Icon="@Icons.Material.Filled.Assessment">
+                    Reports
+                </MudNavLink>
+                <MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings">
+                    Settings
+                </MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <MudAppBar Elevation="2" Class="top-header">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                               Color="Color.Inherit" 
+                               Edge="Edge.Start" 
+                               OnClick="@ToggleSidebar" />
+                
+                <MudSpacer />
+                
+                <!-- Search Bar -->
+                <MudTextField @bind-Value="searchQuery" 
+                              Placeholder="Search..." 
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              AdornmentColor="Color.Secondary"
+                              Class="search-bar"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense" />
+                
+                <MudSpacer />
+                
+                <!-- User Profile Menu -->
+                <MudMenu Icon="@Icons.Material.Filled.AccountCircle" 
+                         Color="Color.Inherit" 
+                         Direction="Direction.Bottom" 
+                         OffsetX="true">
+                    <MudMenuItem OnClick="@ViewProfile">
+                        <div class="menu-item-content">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" />
+                            <MudText>Profile</MudText>
+                        </div>
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@ShowSettings">
+                        <div class="menu-item-content">
+                            <MudIcon Icon="@Icons.Material.Filled.Settings" />
+                            <MudText>Settings</MudText>
+                        </div>
+                    </MudMenuItem>
+                    <MudDivider />
+                    <LogoutDisplay />
+                </MudMenu>
+            </MudAppBar>
+            
+            <!-- Page Content -->
+            <div class="page-content">
+                @Body
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-layout {
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    .app-container {
+        display: flex;
+        height: 100%;
+    }
+    
+    .sidebar {
+        width: var(--sidebar-width);
+        background: var(--background-card);
+        border-right: 1px solid var(--border-color);
+    }
+    
+    .sidebar-header {
+        padding: var(--spacing-lg);
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .logo-icon {
+        color: var(--primary-color);
+        font-size: 2rem;
+    }
+    
+    .logo-text {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+    
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .top-header {
+        background: var(--background-card);
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
+        height: var(--header-height);
+    }
+    
+    .search-bar {
+        max-width: 400px;
+        margin: 0 var(--spacing-lg);
+    }
+    
+    .menu-item-content {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .page-content {
+        flex: 1;
+        overflow: auto;
+        padding: var(--content-padding);
+        background: var(--background-secondary);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform var(--transition-normal);
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .search-bar {
+            display: none;
+        }
+    }
+</style>
+
+@code {
+    private bool sidebarOpen = true;
+    private string searchQuery = "";
+    
+    private MudTheme customTheme = new MudTheme()
+    {
+        Palette = new PaletteLight()
+        {
+            Primary = "#2563eb",
+            Secondary = "#64748b",
+            Success = "#059669",
+            Warning = "#d97706",
+            Error = "#dc2626",
+            Info = "#0284c7",
+            Surface = "#ffffff",
+            Background = "#f8fafc",
+            BackgroundGrey = "#f1f5f9",
+            AppbarBackground = "#ffffff",
+            DrawerBackground = "#ffffff",
+            DrawerText = "#1e293b",
+            TextPrimary = "#1e293b",
+            TextSecondary = "#64748b",
+            ActionDefault = "#64748b",
+            ActionDisabled = "#94a3b8",
+            Divider = "#e2e8f0",
+            TableLines = "#e2e8f0",
+            LinesDefault = "#e2e8f0",
+            LinesInputs = "#e2e8f0",
+            TableStriped = "#f8fafc"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#3b82f6",
+            Secondary = "#64748b",
+            Success = "#10b981",
+            Warning = "#f59e0b",
+            Error = "#ef4444",
+            Info = "#06b6d4",
+            Surface = "#1e293b",
+            Background = "#0f172a",
+            BackgroundGrey = "#1e293b",
+            AppbarBackground = "#1e293b",
+            DrawerBackground = "#1e293b",
+            DrawerText = "#f8fafc",
+            TextPrimary = "#f8fafc",
+            TextSecondary = "#cbd5e1",
+            ActionDefault = "#cbd5e1",
+            ActionDisabled = "#64748b",
+            Divider = "#334155",
+            TableLines = "#334155",
+            LinesDefault = "#334155",
+            LinesInputs = "#334155",
+            TableStriped = "#1e293b"
+        },
+        Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1rem",
+                LineHeight = 1.5
+            },
+            H1 = new H1()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1.875rem",
+                FontWeight = 600,
+                LineHeight = 1.2
+            },
+            H2 = new H2()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1.5rem",
+                FontWeight = 600,
+                LineHeight = 1.2
+            },
+            H3 = new H3()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1.25rem",
+                FontWeight = 600,
+                LineHeight = 1.2
+            },
+            H4 = new H4()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1.125rem",
+                FontWeight = 600,
+                LineHeight = 1.2
+            },
+            H5 = new H5()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "1rem",
+                FontWeight = 600,
+                LineHeight = 1.2
+            },
+            H6 = new H6()
+            {
+                FontFamily = new[] { "Inter", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif" },
+                FontSize = "0.875rem",
+                FontWeight = 600,
+                LineHeight = 1.2
+            }
+        }
+    };
+    
+    private void ToggleSidebar()
+    {
+        sidebarOpen = !sidebarOpen;
+    }
+    
+    private void ViewProfile()
+    {
+        _navigationManager.NavigateTo("/profile");
+    }
+    
+    private void ShowSettings()
+    {
+        _navigationManager.NavigateTo("/settings");
+    }
+} 

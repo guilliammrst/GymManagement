@@ -21,7 +21,9 @@
 				<li><strong>Is expired:</strong> @membership.IsExpired</li>
 				@if (UserId.HasValue)
 				{
-					<RadzenButton Text="Pay membership" Click="() => OpenPaymentDialog(membership.Id)" Style="margin-bottom: 20px;" />
+					        <MudButton OnClick="() => OpenPaymentDialog(membership.Id)" Variant="Variant.Filled" Color="Color.Primary" Class="mb-3">
+            Pay membership
+        </MudButton>
 				}
 				<p></p>
 			</ul>
@@ -44,20 +46,20 @@
 		if (!UserId.HasValue)
 			return;
 
-		var result = await _dialogService.OpenAsync<PaymentPopup>("Payer l'abonnement", new Dictionary<string, object>()
-			{
-				["UserId"] = UserId,
-				["MembershipId"] = membershipId
+		var parameters = new DialogParameters();
+		parameters.Add("UserId", UserId);
+		parameters.Add("MembershipId", membershipId);
+		
+		var options = new DialogOptions 
+		{ 
+			MaxWidth = MaxWidth.Medium,
+			CloseOnEscapeKey = true,
+			CloseButton = true
+		};
+		
+		var result = await _dialogService.ShowAsync<PaymentPopup>("Payer l'abonnement", parameters, options);
 
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
-
-		if (result is true)
+		if (result.Result == DialogResult.Ok())
 			await OnPaymentRequested.InvokeAsync();
 	}
 }

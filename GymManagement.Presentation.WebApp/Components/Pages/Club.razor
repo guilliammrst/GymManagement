@@ -27,7 +27,9 @@ else
 			<UserComponent User="club.Manager"></UserComponent>
 		</ul>
 
-		<RadzenButton Text="Update" Click="OpenUpdateClubDialog" Style="margin-bottom: 20px;" />
+		    <MudButton OnClick="OpenUpdateClubDialog" Variant="Variant.Filled" Color="Color.Primary" Class="mb-3">
+        Update
+    </MudButton>
 	</div>
 }
 
@@ -52,18 +54,19 @@ else
 		if (club == null)
 			return;
 
-		var result = await _dialogService.OpenAsync<UpdateClubPopup>("Modifier le club", new Dictionary<string, object>()
-			{
-				["Club"] = club
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+		var parameters = new DialogParameters();
+		parameters.Add("Club", club);
+		
+		var options = new DialogOptions 
+		{ 
+			MaxWidth = MaxWidth.Medium,
+			CloseOnEscapeKey = true,
+			CloseButton = true
+		};
+		
+		var result = await _dialogService.ShowAsync<UpdateClubPopup>("Modifier le club", parameters, options);
 
-		if (result is true)
+		if (result.Result == DialogResult.Ok())
 			await LoadClub();
 	}
 }

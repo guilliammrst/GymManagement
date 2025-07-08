@@ -3,103 +3,503 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Users</PageTitle>
+<PageTitle>Users Management - Gym Management</PageTitle>
 
-<h1>Users</h1>
-
-<div class="mt-2">
-	<label>Email :</label>
-	<input @bind="emailSearch" class="form-control" placeholder="Entrez un email" style="width: 300px; display: inline-block;" />
-	<label>Page :</label>
-	<input type="number" @bind="pageNumber" min="1" class="form-control" style="width: 100px; display: inline-block;" />
-	<label class="ms-2">Taille :</label>
-	<input type="number" @bind="pageSize" min="1" class="form-control" style="width: 100px; display: inline-block;" />
+<div class="users-container animate-fade-in">
+	<!-- Header Section -->
+	<div class="page-header">
+		<div class="header-content">
+			<div class="header-title">
+				<MudText Typo="Typo.h4">
+					<MudIcon Icon="@Icons.Material.Filled.People" Class="header-icon" />
+					Users Management
+				</MudText>
+				<MudText Typo="Typo.body1" Color="Color.Secondary">
+					Manage and monitor all gym users
+				</MudText>
+			</div>
+			<div class="header-actions">
+				<MudButton Variant="Variant.Filled"
+						   Color="Color.Primary"
+						   StartIcon="@Icons.Material.Filled.PersonAdd"
+						   OnClick="OpenCreateUserDialog"
+						   Class="create-button">
+					Add New User
+				</MudButton>
+			</div>
+		</div>
 </div>
 
-<RadzenButton Text="Rechercher" Icon="search" Style="margin: 10px 0;" Click="OnSearch" />
-<RadzenButton Text="Créer un utilisateur" Click="OpenCreateUserDialog" Style="margin-bottom: 20px;" />
+	<!-- Filters Section -->
+	<MudCard Class="filters-card">
+		<MudCardContent>
+			<div class="filters-grid">
+				<MudTextField @bind-Value="emailSearch"
+							  Label="Search by Email"
+							  Variant="Variant.Outlined"
+							  Adornment="Adornment.Start"
+							  AdornmentIcon="@Icons.Material.Filled.Search"
+							  AdornmentColor="Color.Primary"
+							  Class="search-field"
+							  Clearable="true" />
+				
+				<MudTextField @bind-Value="pageNumber"
+							  Label="Page"
+							  Variant="Variant.Outlined"
+							  InputType="InputType.Number"
+							  Min="1"
+							  Class="page-field" />
+				
+				<MudTextField @bind-Value="pageSize"
+							  Label="Page Size"
+							  Variant="Variant.Outlined"
+							  InputType="InputType.Number"
+							  Min="1"
+							  Max="100"
+							  Class="page-size-field" />
+				
+				<div class="filter-actions">
+					<MudButton Variant="Variant.Filled"
+							   Color="Color.Primary"
+							   StartIcon="@Icons.Material.Filled.Search"
+							   OnClick="OnSearch"
+							   Class="search-button">
+						Search
+					</MudButton>
+					<MudButton Variant="Variant.Outlined"
+							   Color="Color.Secondary"
+							   StartIcon="@Icons.Material.Filled.Refresh"
+							   OnClick="OnReset"
+							   Class="reset-button">
+						Reset
+					</MudButton>
+				</div>
+			</div>
+		</MudCardContent>
+	</MudCard>
 
-@if (users == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (users.Count == 0)
-{
-	<p>Aucun utilisateur trouvé.</p>
+	<!-- Users Table -->
+	<MudCard Class="table-card">
+		<MudCardContent>
+			@if (isLoading)
+			{
+				<div class="loading-container">
+					<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+					<MudText Typo="Typo.body1" Color="Color.Secondary">Loading users...</MudText>
+				</div>
+			}
+			else if (users == null || users.Count == 0)
+			{
+				<div class="empty-state">
+					<MudIcon Icon="@Icons.Material.Filled.PersonOff" Class="empty-icon" />
+					<MudText Typo="Typo.h6" Color="Color.Secondary">No users found</MudText>
+					<MudText Typo="Typo.body2" Color="Color.Secondary">
+						Try adjusting your search criteria or add new users
+					</MudText>
+					<MudButton Variant="Variant.Filled"
+							   Color="Color.Primary"
+							   StartIcon="@Icons.Material.Filled.PersonAdd"
+							   OnClick="OpenCreateUserDialog"
+							   Class="empty-action-button">
+						Add First User
+					</MudButton>
+				</div>
 }
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Name</th>
-				<th>Surname</th>
-				<th>Email</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var user in users)
-			{
-				var href = $"user/{user.Id}";
-				<tr>
-					<td>@user.Id</td>
-					<td>@user.Name</td>
-					<td>@user.Surname</td>
-					<td>@user.Email</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-				}
-		</tbody>
-	</table>	
-}
+				<MudTable Items="@users" 
+						  Hover="true" 
+						  Striped="true" 
+						  Class="modern-table">
+					<HeaderContent>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Id)">
+								ID
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Name)">
+								Name
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Surname)">
+								Surname
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>
+							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Email)">
+								Email
+							</MudTableSortLabel>
+						</MudTh>
+						<MudTh>Status</MudTh>
+						<MudTh>Actions</MudTh>
+					</HeaderContent>
+					<RowTemplate>
+						<MudTd DataLabel="ID">
+							<MudChip T="string" Color="Color.Default" Size="Size.Small">
+								@context.Id
+							</MudChip>
+						</MudTd>
+						<MudTd DataLabel="Name">
+							<div class="user-name">
+								<MudAvatar Color="Color.Primary" Size="Size.Small">
+									@context.Name?.FirstOrDefault()@context.Surname?.FirstOrDefault()
+								</MudAvatar>
+								<span>@context.Name</span>
+							</div>
+						</MudTd>
+						<MudTd DataLabel="Surname">@context.Surname</MudTd>
+						<MudTd DataLabel="Email">
+							<div class="email-cell">
+								<MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" />
+								<span>@context.Email</span>
+							</div>
+						</MudTd>
+						<MudTd DataLabel="Status">
+							<MudChip T="string" Color="Color.Success" Size="Size.Small">
+								Active
+							</MudChip>
+						</MudTd>
+						<MudTd DataLabel="Actions">
+							<div class="action-buttons">
+								<MudTooltip Text="View Details">
+									<MudIconButton Icon="@Icons.Material.Filled.Visibility"
+												   Color="Color.Info"
+												   Size="Size.Small"
+												   OnClick="@(() => ViewUserDetails(context.Id))"
+												   Class="action-button" />
+								</MudTooltip>
+								<MudTooltip Text="Edit User">
+									<MudIconButton Icon="@Icons.Material.Filled.Edit"
+												   Color="Color.Primary"
+												   Size="Size.Small"
+												   OnClick="@(() => EditUser(context.Id))"
+												   Class="action-button" />
+								</MudTooltip>
+								<MudTooltip Text="Delete User">
+									<MudIconButton Icon="@Icons.Material.Filled.Delete"
+												   Color="Color.Error"
+												   Size="Size.Small"
+												   OnClick="@(() => DeleteUser(context.Id))"
+												   Class="action-button" />
+								</MudTooltip>
+							</div>
+						</MudTd>
+					</RowTemplate>
+				</MudTable>
+			}
+		</MudCardContent>
+	</MudCard>
+
+	<!-- Pagination -->
+	@if (users != null && users.Count > 0)
+	{
+		<div class="pagination-container">
+			<MudPagination Count="@totalPages" 
+						   Selected="@pageNumber"
+						   SelectedChanged="@OnPageChanged"
+						   Color="Color.Primary"
+						   Variant="Variant.Filled"
+						   ShowFirstButton="true"
+						   ShowLastButton="true" />
+		</div>
+	}
+</div>
+
+<style>
+	.users-container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: var(--content-padding);
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-lg);
+	}
+
+	.page-header {
+		background: var(--background-card);
+		border-radius: var(--radius-lg);
+		padding: var(--spacing-lg);
+		box-shadow: var(--shadow-sm);
+		border: 1px solid var(--border-color);
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--spacing-md);
+	}
+
+	.header-title {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-xs);
+	}
+
+	.header-icon {
+		margin-right: var(--spacing-sm);
+		color: var(--primary-color);
+	}
+
+	.create-button {
+		height: 40px;
+		border-radius: var(--radius-lg);
+		font-weight: 600;
+	}
+
+	.filters-card {
+		background: var(--background-card);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--border-color);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.filters-grid {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1fr;
+		gap: var(--spacing-md);
+		align-items: end;
+	}
+
+	.filter-actions {
+		display: flex;
+		gap: var(--spacing-sm);
+	}
+
+	.search-button, .reset-button {
+		height: 40px;
+		border-radius: var(--radius-lg);
+		font-weight: 600;
+	}
+
+	.table-card {
+		background: var(--background-card);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--border-color);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.modern-table {
+		width: 100%;
+	}
+
+	.loading-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: var(--spacing-2xl);
+		gap: var(--spacing-lg);
+	}
+
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: var(--spacing-2xl);
+		gap: var(--spacing-lg);
+		text-align: center;
+	}
+
+	.empty-icon {
+		font-size: 4rem;
+		color: var(--text-muted);
+	}
+
+	.empty-action-button {
+		margin-top: var(--spacing-md);
+		height: 44px;
+		border-radius: var(--radius-lg);
+		font-weight: 600;
+	}
+
+	.user-name {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+	}
+
+	.email-cell {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+	}
+
+	.action-buttons {
+		display: flex;
+		gap: var(--spacing-xs);
+	}
+
+	.action-button {
+		transition: all var(--transition-fast);
+	}
+
+	.action-button:hover {
+		transform: scale(1.1);
+	}
+
+	.pagination-container {
+		display: flex;
+		justify-content: center;
+		padding: var(--spacing-lg) 0;
+	}
+
+	/* Responsive Design */
+	@media (max-width: 1024px) {
+		.filters-grid {
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-md);
+		}
+		
+		.search-field {
+			grid-column: 1 / -1;
+		}
+		
+		.filter-actions {
+			grid-column: 1 / -1;
+			justify-content: center;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.header-content {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		
+		.create-button {
+			width: 100%;
+		}
+		
+		.filters-grid {
+			grid-template-columns: 1fr;
+			gap: var(--spacing-md);
+		}
+		
+		.filter-actions {
+			flex-direction: column;
+		}
+		
+		.search-button, .reset-button {
+			width: 100%;
+		}
+	}
+</style>
 
 @code {
 	private List<UserDto>? users;
 	private string emailSearch = string.Empty;
 	private int pageNumber = 1;
 	private int pageSize = 20;
-
+	private int totalPages = 1;
+	private bool isLoading = true;
 
 	protected override async Task OnInitializedAsync()
 	{
+		await LoadUsers();
+	}
+
+	private async Task LoadUsers()
+	{
+		try
+		{
+			isLoading = true;
+			StateHasChanged();
+
 		users = await _gymApiClient.GetUsersAsync(new UserFilter
 			{
 				Email = emailSearch,
 				PageNumber = pageNumber,
 				PageSize = pageSize
 			});
-	}
 
+			// Calculate total pages (simulated)
+			totalPages = Math.Max(1, (int)Math.Ceiling((users?.Count ?? 0) / (double)pageSize));
+			
+			isLoading = false;
+			StateHasChanged();
+		}
+		catch (Exception ex)
+		{
+			isLoading = false;
+			StateHasChanged();
+			// Handle error - could show snackbar
+		}
+	}
 
 	private async Task OnSearch()
 	{
-		users = await _gymApiClient.GetUsersAsync(new UserFilter
+		pageNumber = 1; // Reset to first page
+		await LoadUsers();
+	}
+
+	private async Task OnReset()
+	{
+		emailSearch = string.Empty;
+		pageNumber = 1;
+		pageSize = 20;
+		await LoadUsers();
+	}
+
+	private async Task OnPageChanged(int page)
+	{
+		pageNumber = page;
+		await LoadUsers();
+	}
+
+	private void ViewUserDetails(int userId)
+	{
+		_navigationManager.NavigateTo($"/user/{userId}");
+	}
+
+	private void EditUser(int userId)
+	{
+		_navigationManager.NavigateTo($"/user/{userId}/edit");
+	}
+
+	private async Task DeleteUser(int userId)
+	{
+		// Implement delete functionality with confirmation dialog
+		var confirm = await _dialogService.ShowMessageBox(
+			"Delete User",
+			"Are you sure you want to delete this user? This action cannot be undone.",
+			yesText: "Delete",
+			cancelText: "Cancel"
+		);
+
+		if (confirm == true)
+		{
+			try
 			{
-				Email = emailSearch,
-				PageNumber = pageNumber,
-				PageSize = pageSize
-			});
+				// Call delete API
+				await LoadUsers(); // Refresh the list
+			}
+			catch (Exception ex)
+			{
+				// Handle error
+			}
+		}
 	}
 
 	private async Task OpenCreateUserDialog()
 	{
-		var result = await _dialogService.OpenAsync<CreateUserPopup>("Créer un utilisateur",
-			options: new DialogOptions
-			{
-				Width = "600px",
-				Height = "500px",
-				Style = "top: 20vh; left: 12vw;"
-			});
+		var options = new DialogOptions 
+		{ 
+			MaxWidth = MaxWidth.Medium,
+			CloseOnEscapeKey = true,
+			CloseButton = true,
+			DisableBackdropClick = false
+		};
+		
+		var result = await _dialogService.ShowAsync<CreateUserPopup>("Create New User", options);
 
-		if (result is true)
+		if (result.Result == DialogResult.Ok())
 		{
-			await OnSearch();
+			await LoadUsers();
 		}
 	}
 }

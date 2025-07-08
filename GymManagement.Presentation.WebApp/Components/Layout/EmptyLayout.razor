@@ -1,0 +1,61 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="customTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@Body
+
+@code {
+    private MudTheme customTheme = new MudTheme()
+    {
+        Palette = new PaletteLight()
+        {
+            Primary = "#2563eb",
+            Secondary = "#64748b",
+            Success = "#059669",
+            Warning = "#d97706",
+            Error = "#dc2626",
+            Info = "#0284c7",
+            Surface = "#ffffff",
+            Background = "#f8fafc",
+            BackgroundGrey = "#f1f5f9",
+            AppbarBackground = "#ffffff",
+            DrawerBackground = "#ffffff",
+            DrawerText = "#1e293b",
+            TextPrimary = "#1e293b",
+            TextSecondary = "#64748b",
+            ActionDefault = "#64748b",
+            ActionDisabled = "#94a3b8",
+            Divider = "#e2e8f0",
+            TableLines = "#e2e8f0",
+            LinesDefault = "#e2e8f0",
+            LinesInputs = "#e2e8f0",
+            TableStriped = "#f8fafc"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#3b82f6",
+            Secondary = "#64748b",
+            Success = "#10b981",
+            Warning = "#f59e0b",
+            Error = "#ef4444",
+            Info = "#06b6d4",
+            Surface = "#1e293b",
+            Background = "#0f172a",
+            BackgroundGrey = "#1e293b",
+            AppbarBackground = "#1e293b",
+            DrawerBackground = "#1e293b",
+            DrawerText = "#f8fafc",
+            TextPrimary = "#f8fafc",
+            TextSecondary = "#cbd5e1",
+            ActionDefault = "#cbd5e1",
+            ActionDisabled = "#64748b",
+            Divider = "#334155",
+            TableLines = "#334155",
+            LinesDefault = "#334155",
+            LinesInputs = "#334155",
+            TableStriped = "#1e293b"
+        }
+    };
+} 
