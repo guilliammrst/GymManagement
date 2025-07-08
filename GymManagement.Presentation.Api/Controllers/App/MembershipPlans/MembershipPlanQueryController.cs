@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GymManagement.Presentation.Api.Controllers.App.MembershipPlans
 {
     [ApiController]
-    [Route("api/membership-plans")]
+    [Route("api/app/membership-plans")]
     [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class MembershipPlanQueryController(IMembershipPlanQueryService _membershipPlanQueryService) : GymBaseController
     {

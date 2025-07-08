@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GymManagement.Presentation.Api.Controllers.Admin.Users
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/admin/users")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class UserCommandController(IUserCommandService _userCommandService) : GymBaseController
     {
