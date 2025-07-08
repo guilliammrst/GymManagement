@@ -8,10 +8,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagement.Presentation.AuthApi.Controllers
 {
+    /// <summary>
+    /// Controller for user authentication and authorization operations
+    /// </summary>
     [ApiController]
     [Route("api")]
     public class AuthController (IAuthService _authService) : GymBaseController
     {
+        /// <summary>
+        /// Authenticates a user with email and password
+        /// </summary>
+        /// <param name="bodyLoginDto">Login credentials (email and password)</param>
+        /// <returns>JWT token for authenticated access</returns>
+        /// <response code="200">Login successful, returns JWT token</response>
+        /// <response code="400">Invalid login credentials format</response>
+        /// <response code="401">Invalid email or password</response>
+        /// <response code="404">User not found</response>
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] BodyLoginDto bodyLoginDto)
         {
@@ -28,6 +40,13 @@ namespace GymManagement.Presentation.AuthApi.Controllers
             return Ok(token);
         }
 
+        /// <summary>
+        /// Refreshes an existing JWT token for continued access
+        /// </summary>
+        /// <returns>New JWT token</returns>
+        /// <response code="200">Token refreshed successfully</response>
+        /// <response code="401">Invalid or expired token</response>
+        /// <response code="404">User not found</response>
         [HttpGet("refresh-token")]
         [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
         public async Task<ActionResult> RefreshToken()
@@ -47,6 +66,14 @@ namespace GymManagement.Presentation.AuthApi.Controllers
             return Ok(token);
         }
 
+        /// <summary>
+        /// Registers a new user account in the system
+        /// </summary>
+        /// <param name="bodyRegisterDto">User registration data including personal information</param>
+        /// <returns>JWT token for the newly registered user</returns>
+        /// <response code="201">User registered successfully, returns JWT token</response>
+        /// <response code="400">Invalid registration data</response>
+        /// <response code="409">User with this email already exists</response>
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] BodyRegisterDto bodyRegisterDto)
         {
@@ -73,6 +100,13 @@ namespace GymManagement.Presentation.AuthApi.Controllers
             return StatusCode(StatusCodes.Status201Created, token);
         }
 
+        /// <summary>
+        /// Retrieves the authenticated user's profile information
+        /// </summary>
+        /// <returns>Current user's profile data</returns>
+        /// <response code="200">User profile retrieved successfully</response>
+        /// <response code="401">Invalid or expired token</response>
+        /// <response code="404">User not found</response>
         [HttpGet("me")]
         [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
         public async Task<ActionResult> Me()

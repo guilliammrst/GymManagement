@@ -1,25 +1,216 @@
-@GymManagement.Presentation.Api_HostAddress = http://localhost:5217/api
+# Gym Management API - Tests Collection
+# Documentation: https://localhost:7114/swagger
+
+### Variables d'environnement
+@baseUrl = https://localhost:7114
+@authApiUrl = https://localhost:7203
+@authToken = {{auth_token}}
 @userId = 1
+@clubId = 1
+@membershipPlanId = 1
 
-### Get user by id
-GET {{GymManagement.Presentation.Api_HostAddress}}/users/{{userId}}
-Accept: application/json
+### ======================
+### AUTHENTIFICATION
+### ======================
 
-### Get all users
-GET {{GymManagement.Presentation.Api_HostAddress}}/users/
-Accept: application/json
-
-### Create user
-POST {{GymManagement.Presentation.Api_HostAddress}}/users/
+### Obtenir un token d'authentification
+POST {{authApiUrl}}/api/token
 Content-Type: application/json
-Accept: application/json
+
 {
-    "name": "Test",
-    "surname": "TEST",
-    "birthdate": "2006-08-22T00:00:00Z",
-    "password": "test",
+    "email": "admin@gym.com",
+    "password": "password123"
+}
+
+### ======================
+### USERS - ADMIN ROUTES
+### ======================
+
+### Créer un utilisateur (Admin)
+POST {{baseUrl}}/api/admin/users
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "John",
+    "surname": "Doe",
+    "birthdate": "1990-01-01T00:00:00Z",
+    "password": "SecurePass123!",
     "role": 1,
-    "email": "test@gmail.com",
-    "phoneNumber": "0657421798",
-    "gender": 3
+    "email": "john.doe@email.com",
+    "phoneNumber": "0123456789",
+    "gender": 1,
+    "country": 1,
+    "city": "Paris",
+    "street": "123 Main St",
+    "postalCode": "75001",
+    "number": "42"
+}
+
+### Obtenir un utilisateur par ID (Admin)
+GET {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### Obtenir tous les utilisateurs (Admin)
+GET {{baseUrl}}/api/admin/users?page-size=10&page-number=1&email=
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### Modifier un utilisateur (Admin)
+PATCH {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "John Updated",
+    "email": "john.updated@email.com",
+    "role": 2
+}
+
+### Supprimer un utilisateur (Admin)
+DELETE {{baseUrl}}/api/admin/users/{{userId}}
+Authorization: Bearer {{authToken}}
+
+### ======================
+### USERS - APP ROUTES
+### ======================
+
+### Modifier son propre profil (App)
+PATCH {{baseUrl}}/api/app/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "John Self-Updated",
+    "email": "john.self@email.com"
+}
+
+### Obtenir son profil (App)
+GET {{baseUrl}}/api/app/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### ======================
+### CLUBS - ADMIN ROUTES
+### ======================
+
+### Créer un club (Admin)
+POST {{baseUrl}}/api/admin/clubs
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Fitness Plus",
+    "description": "Club de fitness moderne",
+    "country": 1,
+    "city": "Lyon",
+    "street": "456 Gym Ave",
+    "postalCode": "69001",
+    "number": "10"
+}
+
+### Obtenir tous les clubs (Admin)
+GET {{baseUrl}}/api/admin/clubs
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### Obtenir un club par ID (Admin)
+GET {{baseUrl}}/api/admin/clubs/{{clubId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### Modifier un club (Admin)
+PATCH {{baseUrl}}/api/admin/clubs/{{clubId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Fitness Plus Updated",
+    "description": "Club de fitness moderne et équipé"
+}
+
+### ======================
+### MEMBERSHIP PLANS - ADMIN ROUTES
+### ======================
+
+### Créer un plan d'abonnement (Admin)
+POST {{baseUrl}}/api/admin/membership-plans
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "description": "Plan Premium",
+    "basePrice": 49.99,
+    "membershipPlanType": 1,
+    "yearlyDiscount": 10.0,
+    "registrationFees": 20.0
+}
+
+### Obtenir tous les plans d'abonnement (Admin)
+GET {{baseUrl}}/api/admin/membership-plans
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### Obtenir un plan d'abonnement par ID (Admin)
+GET {{baseUrl}}/api/admin/membership-plans/{{membershipPlanId}}
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### Modifier un plan d'abonnement (Admin)
+PATCH {{baseUrl}}/api/admin/membership-plans/{{membershipPlanId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "description": "Plan Premium Updated",
+    "basePrice": 54.99,
+    "yearlyDiscount": 15.0
+}
+
+### ======================
+### SOUSCRIPTIONS - ADMIN ROUTES
+### ======================
+
+### Souscrire un utilisateur à un plan (Admin)
+POST {{baseUrl}}/api/admin/users/{{userId}}/subscribe
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "membershipPlanId": {{membershipPlanId}},
+    "clubId": {{clubId}},
+    "membershipPeriod": 1
+}
+
+### Effectuer un paiement (Admin)
+POST {{baseUrl}}/api/admin/users/{{userId}}/memberships/1
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "amount": 49.99,
+    "paymentMethod": 1
+}
+
+### ======================
+### QR CODES - APP ROUTES
+### ======================
+
+### Générer un QR code (App)
+POST {{baseUrl}}/api/app/users/{{userId}}/qr-code
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "clubId": {{clubId}}
+}
+
+### Valider un QR code (App)
+POST {{baseUrl}}/api/app/users/validate-qr-code
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "qrCodePayload": "generated-qr-code-payload"
 }
