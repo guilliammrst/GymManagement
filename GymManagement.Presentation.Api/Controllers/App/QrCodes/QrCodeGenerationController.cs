@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GymManagement.Presentation.Api.Controllers.App.QrCodes
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/app/users")]
     [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class QrCodeGenerationController(IUserVerificationService _userVerificationService,
         IQrCodeGenerationService _qrCodeGenerationService) : GymBaseController

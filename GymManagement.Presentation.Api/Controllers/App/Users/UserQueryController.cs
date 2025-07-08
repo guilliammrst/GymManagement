@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GymManagement.Presentation.Api.Controllers.App.Users
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("api/app/users")]
     [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class UserQueryController(IUserVerificationService _userVerificationService, 
         IUserQueryService _userQueryService) : GymBaseController
