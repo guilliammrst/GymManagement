@@ -1,116 +1,706 @@
-﻿@page "/user/{userId:int}"
+@page "/users/{UserId:int}"
 @rendermode InteractiveServer
-@attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
+@using GymManagement.Application.Interfaces.Services.Users
+@using GymManagement.Presentation.WebApp.ApiClients.Gym
+@using GymManagement.Presentation.WebApp.Services
+@using GymManagement.Shared.Core.Enums
+@inject GymAdminApiClient GymApiClient
+@inject INotificationService NotificationService
+@inject IModalService ModalService
+@inject NavigationManager Navigation
 
-<PageTitle>User</PageTitle>
+<PageTitle>@(user?.FirstName + " " + user?.LastName) - GymManager</PageTitle>
 
-<NavLink class="btn btn-primary nav-link" href="users" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-    <span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-</NavLink>
+<div class="page-container">
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Chargement des informations utilisateur...</p>
+        </div>
+    }
+    else if (user == null)
+    {
+        <div class="error-container">
+            <div class="error-icon">❌</div>
+            <h2>Utilisateur non trouvé</h2>
+            <p>L'utilisateur demandé n'existe pas ou a été supprimé.</p>
+            <button class="btn btn-primary" @onclick="NavigateToUsers">
+                Retour à la liste
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- En-tête utilisateur -->
+        <div class="user-header">
+            <div class="breadcrumb">
+                <a href="/users" class="breadcrumb-link">Utilisateurs</a>
+                <span class="breadcrumb-separator">›</span>
+                <span class="breadcrumb-current">@user.FirstName @user.LastName</span>
+            </div>
+            
+            <div class="user-header-content">
+                <div class="user-avatar-large">
+                    <span class="avatar-text">@GetInitials(user.FirstName, user.LastName)</span>
+                </div>
+                
+                <div class="user-header-info">
+                    <h1 class="user-name">@user.FirstName @user.LastName</h1>
+                    <p class="user-email">@user.Email</p>
+                    <div class="user-badges">
+                        <span class="badge badge-@user.Role.ToString().ToLower()">
+                            @GetRoleDisplayName(user.Role)
+                        </span>
+                        <span class="badge badge-secondary">
+                            Membre depuis @user.CreatedAt.ToString("MMMM yyyy")
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="user-header-actions">
+                    <button class="btn btn-outline" @onclick="EditUser">
+                        <span class="btn-icon">✏️</span>
+                        Modifier
+                    </button>
+                    <button class="btn btn-primary" @onclick="SubscribeUser">
+                        <span class="btn-icon">💳</span>
+                        Abonner
+                    </button>
+                    <button class="btn btn-danger" @onclick="DeleteUser">
+                        <span class="btn-icon">🗑️</span>
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
 
-<h3>User Details</h3>
+        <!-- Contenu principal -->
+        <div class="user-content">
+            <div class="content-grid">
+                <!-- Informations personnelles -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="card-icon">👤</span>
+                            Informations personnelles
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">Prénom</label>
+                                <span class="info-value">@user.FirstName</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Nom</label>
+                                <span class="info-value">@user.LastName</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Email</label>
+                                <span class="info-value">@user.Email</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Téléphone</label>
+                                <span class="info-value">@(user.PhoneNumber ?? "Non renseigné")</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Genre</label>
+                                <span class="info-value">@GetGenderDisplayName(user.Gender)</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Date de naissance</label>
+                                <span class="info-value">@(user.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Non renseigné")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-@if (user == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<div>
-		<UserComponent User="user"></UserComponent>
-		<MembershipComponent Memberships="user.Memberships" UserId="user.Id" OnPaymentRequested="LoadUser"></MembershipComponent>
-		<AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
-		    <MudButton OnClick="OpenUpdateUserDialog" Variant="Variant.Filled" Color="Color.Primary" Class="mb-3 mr-2">
-        Update
-    </MudButton>
-    <MudButton OnClick="OpenSubscribeUserDialog" Variant="Variant.Filled" Color="Color.Secondary" Class="mb-3 mr-2">
-        Subscribe
-    </MudButton>
-    <MudButton OnClick="OpenDeleteUserDialog" Variant="Variant.Filled" Color="Color.Error" Class="mb-3">
-        Delete
-    </MudButton>
-	</div>
-}
+                <!-- Adresse -->
+                @if (user.Address != null)
+                {
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="card-icon">📍</span>
+                                Adresse
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="address-content">
+                                <p>@user.Address.Street</p>
+                                <p>@user.Address.PostalCode @user.Address.City</p>
+                                <p>@GetCountryDisplayName(user.Address.Country)</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Abonnements -->
+                @if (user.Memberships != null && user.Memberships.Any())
+                {
+                    <div class="info-card memberships-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="card-icon">💳</span>
+                                Abonnements (@user.Memberships.Count)
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="memberships-list">
+                                @foreach (var membership in user.Memberships)
+                                {
+                                    <div class="membership-item">
+                                        <div class="membership-info">
+                                            <h4 class="membership-plan">@membership.MembershipPlan.Name</h4>
+                                            <p class="membership-dates">
+                                                Du @membership.StartDate.ToString("dd/MM/yyyy") 
+                                                au @membership.EndDate.ToString("dd/MM/yyyy")
+                                            </p>
+                                        </div>
+                                        <div class="membership-status">
+                                            @if (membership.EndDate > DateTime.Now)
+                                            {
+                                                <span class="badge badge-success">Actif</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-warning">Expiré</span>
+                                            }
+                                        </div>
+                                        <div class="membership-actions">
+                                            <button class="btn btn-sm btn-outline" 
+                                                    @onclick="() => PayMembership(membership.Id)">
+                                                <span class="btn-icon">💰</span>
+                                                Payer
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Statistiques -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="card-icon">📊</span>
+                            Statistiques
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">@(user.Memberships?.Count ?? 0)</div>
+                                <div class="stat-label">Abonnements</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">@GetActiveMembershipsCount()</div>
+                                <div class="stat-label">Actifs</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">@GetDaysSinceCreation()</div>
+                                <div class="stat-label">Jours d'ancienneté</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .loading-container, .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+        text-align: center;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+    
+    .error-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .error-container h2 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .error-container p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+    
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb-link {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    
+    .breadcrumb-link:hover {
+        text-decoration: underline;
+    }
+    
+    .breadcrumb-separator {
+        color: var(--text-secondary);
+    }
+    
+    .breadcrumb-current {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    
+    .user-header {
+        margin-bottom: 2rem;
+    }
+    
+    .user-header-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 2rem;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+    
+    .user-avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .user-avatar-large .avatar-text {
+        color: white;
+        font-weight: 600;
+        font-size: 2rem;
+    }
+    
+    .user-header-info {
+        flex: 1;
+    }
+    
+    .user-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .user-email {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0 0 1rem 0;
+    }
+    
+    .user-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .badge-staff {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+    }
+    
+    .badge-manager {
+        background: rgba(168, 85, 247, 0.1);
+        color: #a855f7;
+    }
+    
+    .badge-member {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .badge-secondary {
+        background: rgba(107, 114, 128, 0.1);
+        color: #6b7280;
+    }
+    
+    .badge-success {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+    }
+    
+    .badge-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+    
+    .user-header-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .info-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .memberships-card {
+        grid-column: 1 / -1;
+    }
+    
+    .card-header {
+        background: rgba(var(--primary-color-rgb), 0.05);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+    }
+    
+    .card-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .card-icon {
+        font-size: 1.2rem;
+    }
+    
+    .card-content {
+        padding: 1.5rem;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .info-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    
+    .address-content p {
+        margin: 0 0 0.25rem 0;
+        color: var(--text-primary);
+    }
+    
+    .memberships-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .membership-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(var(--primary-color-rgb), 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+    
+    .membership-info {
+        flex: 1;
+    }
+    
+    .membership-plan {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .membership-dates {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 0;
+    }
+    
+    .membership-status {
+        margin-right: 1rem;
+    }
+    
+    .membership-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(var(--primary-color-rgb), 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 1rem;
+        }
+        
+        .user-header-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .user-header-actions {
+            justify-content: center;
+        }
+        
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .membership-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .membership-status {
+            margin-right: 0;
+        }
+    }
+</style>
 
 @code {
-	[Parameter]
-	public int userId { get; set; }
+    [Parameter] public int UserId { get; set; }
+    
+    private UserDetailsDto? user;
+    private bool isLoading = true;
 
-	private UserDetailsDto? user;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUser();
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadUser();
-	}
+    private async Task LoadUser()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            user = await GymApiClient.GetUserByIdAsync(UserId);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors du chargement de l'utilisateur: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 
-	private async Task LoadUser()
-	{
-		user = await _gymApiClient.GetUserByIdAsync(userId);
-	}
+    private async Task EditUser()
+    {
+        if (user != null)
+        {
+            await ModalService.ShowModal("update-user-modal", new { user = user });
+        }
+    }
 
-	private async Task OpenUpdateUserDialog()
-	{
-		if (user == null)
-			return;
+    private async Task SubscribeUser()
+    {
+        if (user != null)
+        {
+            await ModalService.ShowModal("subscribe-user-modal", new { user = user });
+        }
+    }
 
-		var parameters = new DialogParameters();
-		parameters.Add("User", user);
-		
-		var options = new DialogOptions 
-		{ 
-			MaxWidth = MaxWidth.Medium,
-			CloseOnEscapeKey = true,
-			CloseButton = true
-		};
-		
-		var result = await _dialogService.ShowAsync<UpdateUserPopup>("Modifier l'utilisateur", parameters, options);
+    private async Task PayMembership(int membershipId)
+    {
+        if (user != null)
+        {
+            await ModalService.ShowModal("payment-modal", new { userId = user.Id, membershipId = membershipId });
+        }
+    }
 
-		if (result.Result == DialogResult.Ok())
-			await LoadUser();
-	}
+    private async Task DeleteUser()
+    {
+        if (user == null) return;
 
-	private async Task OpenSubscribeUserDialog()
-	{
-		if (user == null)
-			return;
+        var confirmed = await ModalService.ShowConfirmDialog(
+            "Supprimer l'utilisateur",
+            $"Êtes-vous sûr de vouloir supprimer {user.FirstName} {user.LastName} ? Cette action est irréversible.",
+            "Supprimer",
+            "danger"
+        );
 
-		var parameters = new DialogParameters();
-		parameters.Add("UserId", userId);
-		
-		var options = new DialogOptions 
-		{ 
-			MaxWidth = MaxWidth.Medium,
-			CloseOnEscapeKey = true,
-			CloseButton = true
-		};
-		
-		var result = await _dialogService.ShowAsync<SubscribeUserPopup>("Abonner l'utilisateur", parameters, options);
+        if (confirmed)
+        {
+            try
+            {
+                var success = await GymApiClient.DeleteUserAsync(user.Id);
+                if (success)
+                {
+                    await NotificationService.ShowSuccess("Utilisateur supprimé avec succès");
+                    Navigation.NavigateTo("/users");
+                }
+                else
+                {
+                    await NotificationService.ShowError("Erreur lors de la suppression");
+                }
+            }
+            catch (Exception ex)
+            {
+                await NotificationService.ShowError($"Erreur lors de la suppression: {ex.Message}");
+            }
+        }
+    }
 
-		if (result.Result == DialogResult.Ok())
-			await LoadUser();
-	}
+    private string GetInitials(string firstName, string lastName)
+    {
+        var first = !string.IsNullOrEmpty(firstName) ? firstName[0].ToString().ToUpper() : "";
+        var last = !string.IsNullOrEmpty(lastName) ? lastName[0].ToString().ToUpper() : "";
+        return first + last;
+    }
 
-	private async Task OpenDeleteUserDialog()
-	{
-		if (user == null)
-			return;
+    private string GetRoleDisplayName(Role role)
+    {
+        return role switch
+        {
+            Role.Staff => "Personnel",
+            Role.Manager => "Gestionnaire",
+            Role.Member => "Membre",
+            _ => role.ToString()
+        };
+    }
 
-		var parameters = new DialogParameters();
-		parameters.Add("ItemId", userId);
-		parameters.Add("DeleteAction", new Func<int, Task<bool>>(async id =>
-		{
-			return await _gymApiClient.DeleteUserAsync(id);
-		}));
-		parameters.Add("RedirectUrl", "users");
-		
-		var options = new DialogOptions 
-		{ 
-			MaxWidth = MaxWidth.Small,
-			CloseOnEscapeKey = true,
-			CloseButton = true
-		};
-		
-		var result = await _dialogService.ShowAsync<DeletePopup>("Supprimer l'utilisateur", parameters, options);
-	}
-}
+    private string GetGenderDisplayName(Gender gender)
+    {
+        return gender switch
+        {
+            Gender.Male => "Homme",
+            Gender.Female => "Femme",
+            Gender.Other => "Autre",
+            _ => "Non spécifié"
+        };
+    }
+
+    private string GetCountryDisplayName(Country country)
+    {
+        return country switch
+        {
+            Country.France => "France",
+            Country.Belgium => "Belgique",
+            Country.Switzerland => "Suisse",
+            Country.Canada => "Canada",
+            _ => country.ToString()
+        };
+    }
+
+    private int GetActiveMembershipsCount()
+    {
+        return user?.Memberships?.Count(m => m.EndDate > DateTime.Now) ?? 0;
+    }
+
+    private int GetDaysSinceCreation()
+    {
+        return user != null ? (DateTime.Now - user.CreatedAt).Days : 0;
+    }
+    
+    private void NavigateToUsers()
+    {
+        Navigation.NavigateTo("/users");
+    }
+} 

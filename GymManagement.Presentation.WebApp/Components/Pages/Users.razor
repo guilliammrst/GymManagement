@@ -1,505 +1,584 @@
-﻿@page "/users"
+@page "/users"
 @rendermode InteractiveServer
-@attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
+@using GymManagement.Application.Interfaces.Controllers.DTOs
+@using GymManagement.Application.Interfaces.Services.Users
+@using GymManagement.Presentation.WebApp.ApiClients.Gym
+@using GymManagement.Presentation.WebApp.Services
+@using GymManagement.Shared.Core.Enums
+@inject GymAdminApiClient GymApiClient
+@inject INotificationService NotificationService
+@inject IModalService ModalService
+@inject NavigationManager Navigation
 
-<PageTitle>Users Management - Gym Management</PageTitle>
+<PageTitle>Gestion des Utilisateurs - GymManager</PageTitle>
 
-<div class="users-container animate-fade-in">
-	<!-- Header Section -->
-	<div class="page-header">
-		<div class="header-content">
-			<div class="header-title">
-				<MudText Typo="Typo.h4">
-					<MudIcon Icon="@Icons.Material.Filled.People" Class="header-icon" />
-					Users Management
-				</MudText>
-				<MudText Typo="Typo.body1" Color="Color.Secondary">
-					Manage and monitor all gym users
-				</MudText>
-			</div>
-			<div class="header-actions">
-				<MudButton Variant="Variant.Filled"
-						   Color="Color.Primary"
-						   StartIcon="@Icons.Material.Filled.PersonAdd"
-						   OnClick="OpenCreateUserDialog"
-						   Class="create-button">
-					Add New User
-				</MudButton>
-			</div>
-		</div>
-</div>
+<div class="page-container">
+    <div class="page-header">
+        <div class="page-title">
+            <h1>
+                <span class="page-icon">👥</span>
+                Gestion des Utilisateurs
+            </h1>
+            <p>Gérez les membres et le personnel de votre salle de sport</p>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-primary" @onclick="OpenCreateUserModal">
+                <span class="btn-icon">➕</span>
+                Nouvel Utilisateur
+            </button>
+        </div>
+    </div>
 
-	<!-- Filters Section -->
-	<MudCard Class="filters-card">
-		<MudCardContent>
-			<div class="filters-grid">
-				<MudTextField @bind-Value="emailSearch"
-							  Label="Search by Email"
-							  Variant="Variant.Outlined"
-							  Adornment="Adornment.Start"
-							  AdornmentIcon="@Icons.Material.Filled.Search"
-							  AdornmentColor="Color.Primary"
-							  Class="search-field"
-							  Clearable="true" />
-				
-				<MudTextField @bind-Value="pageNumber"
-							  Label="Page"
-							  Variant="Variant.Outlined"
-							  InputType="InputType.Number"
-							  Min="1"
-							  Class="page-field" />
-				
-				<MudTextField @bind-Value="pageSize"
-							  Label="Page Size"
-							  Variant="Variant.Outlined"
-							  InputType="InputType.Number"
-							  Min="1"
-							  Max="100"
-							  Class="page-size-field" />
-				
-				<div class="filter-actions">
-					<MudButton Variant="Variant.Filled"
-							   Color="Color.Primary"
-							   StartIcon="@Icons.Material.Filled.Search"
-							   OnClick="OnSearch"
-							   Class="search-button">
-						Search
-					</MudButton>
-					<MudButton Variant="Variant.Outlined"
-							   Color="Color.Secondary"
-							   StartIcon="@Icons.Material.Filled.Refresh"
-							   OnClick="OnReset"
-							   Class="reset-button">
-						Reset
-					</MudButton>
-				</div>
-			</div>
-		</MudCardContent>
-	</MudCard>
+    <div class="page-content">
+        <!-- Filtres et recherche -->
+        <div class="filters-section">
+            <div class="search-box">
+                <input type="text" 
+                       class="form-input" 
+                       placeholder="Rechercher par email..."
+                       @bind="searchEmail" 
+                       @onkeypress="HandleSearchKeyPress" />
+                <button class="btn btn-outline" @onclick="LoadUsers">
+                    <span class="btn-icon">🔍</span>
+                    Rechercher
+                </button>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn btn-outline" @onclick="ClearFilters">
+                    <span class="btn-icon">🗑️</span>
+                    Effacer
+                </button>
+                <button class="btn btn-outline" @onclick="LoadUsers">
+                    <span class="btn-icon">🔄</span>
+                    Actualiser
+                </button>
+            </div>
+        </div>
 
-	<!-- Users Table -->
-	<MudCard Class="table-card">
-		<MudCardContent>
-			@if (isLoading)
-			{
-				<div class="loading-container">
-					<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
-					<MudText Typo="Typo.body1" Color="Color.Secondary">Loading users...</MudText>
-				</div>
-			}
-			else if (users == null || users.Count == 0)
-			{
-				<div class="empty-state">
-					<MudIcon Icon="@Icons.Material.Filled.PersonOff" Class="empty-icon" />
-					<MudText Typo="Typo.h6" Color="Color.Secondary">No users found</MudText>
-					<MudText Typo="Typo.body2" Color="Color.Secondary">
-						Try adjusting your search criteria or add new users
-					</MudText>
-					<MudButton Variant="Variant.Filled"
-							   Color="Color.Primary"
-							   StartIcon="@Icons.Material.Filled.PersonAdd"
-							   OnClick="OpenCreateUserDialog"
-							   Class="empty-action-button">
-						Add First User
-					</MudButton>
-				</div>
-}
-else
-{
-				<MudTable Items="@users" 
-						  Hover="true" 
-						  Striped="true" 
-						  Class="modern-table">
-					<HeaderContent>
-						<MudTh>
-							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Id)">
-								ID
-							</MudTableSortLabel>
-						</MudTh>
-						<MudTh>
-							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Name)">
-								Name
-							</MudTableSortLabel>
-						</MudTh>
-						<MudTh>
-							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Surname)">
-								Surname
-							</MudTableSortLabel>
-						</MudTh>
-						<MudTh>
-							<MudTableSortLabel SortBy="new Func<UserDto, object>(x => x.Email)">
-								Email
-							</MudTableSortLabel>
-						</MudTh>
-						<MudTh>Status</MudTh>
-						<MudTh>Actions</MudTh>
-					</HeaderContent>
-					<RowTemplate>
-						<MudTd DataLabel="ID">
-							<MudChip T="string" Color="Color.Default" Size="Size.Small">
-								@context.Id
-							</MudChip>
-						</MudTd>
-						<MudTd DataLabel="Name">
-							<div class="user-name">
-								<MudAvatar Color="Color.Primary" Size="Size.Small">
-									@context.Name?.FirstOrDefault()@context.Surname?.FirstOrDefault()
-								</MudAvatar>
-								<span>@context.Name</span>
-							</div>
-						</MudTd>
-						<MudTd DataLabel="Surname">@context.Surname</MudTd>
-						<MudTd DataLabel="Email">
-							<div class="email-cell">
-								<MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" />
-								<span>@context.Email</span>
-							</div>
-						</MudTd>
-						<MudTd DataLabel="Status">
-							<MudChip T="string" Color="Color.Success" Size="Size.Small">
-								Active
-							</MudChip>
-						</MudTd>
-						<MudTd DataLabel="Actions">
-							<div class="action-buttons">
-								<MudTooltip Text="View Details">
-									<MudIconButton Icon="@Icons.Material.Filled.Visibility"
-												   Color="Color.Info"
-												   Size="Size.Small"
-												   OnClick="@(() => ViewUserDetails(context.Id))"
-												   Class="action-button" />
-								</MudTooltip>
-								<MudTooltip Text="Edit User">
-									<MudIconButton Icon="@Icons.Material.Filled.Edit"
-												   Color="Color.Primary"
-												   Size="Size.Small"
-												   OnClick="@(() => EditUser(context.Id))"
-												   Class="action-button" />
-								</MudTooltip>
-								<MudTooltip Text="Delete User">
-									<MudIconButton Icon="@Icons.Material.Filled.Delete"
-												   Color="Color.Error"
-												   Size="Size.Small"
-												   OnClick="@(() => DeleteUser(context.Id))"
-												   Class="action-button" />
-								</MudTooltip>
-							</div>
-						</MudTd>
-					</RowTemplate>
-				</MudTable>
-			}
-		</MudCardContent>
-	</MudCard>
-
-	<!-- Pagination -->
-	@if (users != null && users.Count > 0)
-	{
-		<div class="pagination-container">
-			<MudPagination Count="@totalPages" 
-						   Selected="@pageNumber"
-						   SelectedChanged="@OnPageChanged"
-						   Color="Color.Primary"
-						   Variant="Variant.Filled"
-						   ShowFirstButton="true"
-						   ShowLastButton="true" />
-		</div>
-	}
+        <!-- Liste des utilisateurs -->
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Chargement des utilisateurs...</p>
+            </div>
+        }
+        else if (users.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">👤</div>
+                <h3>Aucun utilisateur trouvé</h3>
+                <p>Commencez par créer votre premier utilisateur</p>
+                <button class="btn btn-primary" @onclick="OpenCreateUserModal">
+                    <span class="btn-icon">➕</span>
+                    Créer un utilisateur
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="users-grid">
+                @foreach (var user in users)
+                {
+                    <div class="user-card">
+                        <div class="user-avatar">
+                            <span class="avatar-text">@GetInitials(user.FirstName, user.LastName)</span>
+                        </div>
+                        
+                        <div class="user-info">
+                            <h3 class="user-name">@user.FirstName @user.LastName</h3>
+                            <p class="user-email">@user.Email</p>
+                            <div class="user-meta">
+                                <span class="user-role role-@user.Role.ToString().ToLower()">
+                                    @GetRoleDisplayName(user.Role)
+                                </span>
+                                <span class="user-date">
+                                    Créé le @user.CreatedAt.ToString("dd/MM/yyyy")
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="user-actions">
+                            <button class="btn btn-sm btn-outline" 
+                                    @onclick="() => ViewUser(user.Id)"
+                                    title="Voir les détails">
+                                <span class="btn-icon">👁️</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline" 
+                                    @onclick="() => EditUser(user.Id)"
+                                    title="Modifier">
+                                <span class="btn-icon">✏️</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline" 
+                                    @onclick="() => SubscribeUser(user.Id)"
+                                    title="Abonner">
+                                <span class="btn-icon">💳</span>
+                            </button>
+                            <button class="btn btn-sm btn-danger" 
+                                    @onclick="() => DeleteUser(user.Id)"
+                                    title="Supprimer">
+                                <span class="btn-icon">🗑️</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Affichage de @((currentPage - 1) * pageSize + 1) à @Math.Min(currentPage * pageSize, users.Count) utilisateurs
+                </div>
+                <div class="pagination-controls">
+                    <button class="btn btn-outline btn-sm" 
+                            @onclick="PreviousPage" 
+                            disabled="@(currentPage <= 1)">
+                        ← Précédent
+                    </button>
+                    <span class="page-indicator">Page @currentPage</span>
+                    <button class="btn btn-outline btn-sm" 
+                            @onclick="NextPage" 
+                            disabled="@(users.Count < pageSize)">
+                        Suivant →
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 <style>
-	.users-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: var(--content-padding);
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-lg);
-	}
-
-	.page-header {
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		padding: var(--spacing-lg);
-		box-shadow: var(--shadow-sm);
-		border: 1px solid var(--border-color);
-	}
-
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: var(--spacing-md);
-	}
-
-	.header-title {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-xs);
-	}
-
-	.header-icon {
-		margin-right: var(--spacing-sm);
-		color: var(--primary-color);
-	}
-
-	.create-button {
-		height: 40px;
-		border-radius: var(--radius-lg);
-		font-weight: 600;
-	}
-
-	.filters-card {
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		border: 1px solid var(--border-color);
-		box-shadow: var(--shadow-sm);
-	}
-
-	.filters-grid {
-		display: grid;
-		grid-template-columns: 2fr 1fr 1fr 1fr;
-		gap: var(--spacing-md);
-		align-items: end;
-	}
-
-	.filter-actions {
-		display: flex;
-		gap: var(--spacing-sm);
-	}
-
-	.search-button, .reset-button {
-		height: 40px;
-		border-radius: var(--radius-lg);
-		font-weight: 600;
-	}
-
-	.table-card {
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		border: 1px solid var(--border-color);
-		box-shadow: var(--shadow-sm);
-	}
-
-	.modern-table {
-		width: 100%;
-	}
-
-	.loading-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: var(--spacing-2xl);
-		gap: var(--spacing-lg);
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: var(--spacing-2xl);
-		gap: var(--spacing-lg);
-		text-align: center;
-	}
-
-	.empty-icon {
-		font-size: 4rem;
-		color: var(--text-muted);
-	}
-
-	.empty-action-button {
-		margin-top: var(--spacing-md);
-		height: 44px;
-		border-radius: var(--radius-lg);
-		font-weight: 600;
-	}
-
-	.user-name {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-	}
-
-	.email-cell {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-xs);
-	}
-
-	.action-buttons {
-		display: flex;
-		gap: var(--spacing-xs);
-	}
-
-	.action-button {
-		transition: all var(--transition-fast);
-	}
-
-	.action-button:hover {
-		transform: scale(1.1);
-	}
-
-	.pagination-container {
-		display: flex;
-		justify-content: center;
-		padding: var(--spacing-lg) 0;
-	}
-
-	/* Responsive Design */
-	@media (max-width: 1024px) {
-		.filters-grid {
-			grid-template-columns: 1fr 1fr;
-			gap: var(--spacing-md);
-		}
-		
-		.search-field {
-			grid-column: 1 / -1;
-		}
-		
-		.filter-actions {
-			grid-column: 1 / -1;
-			justify-content: center;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.header-content {
-			flex-direction: column;
-			align-items: stretch;
-		}
-		
-		.create-button {
-			width: 100%;
-		}
-		
-		.filters-grid {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-md);
-		}
-		
-		.filter-actions {
-			flex-direction: column;
-		}
-		
-		.search-button, .reset-button {
-			width: 100%;
-		}
-	}
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        gap: 2rem;
+    }
+    
+    .page-title h1 {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .page-icon {
+        font-size: 2.5rem;
+    }
+    
+    .page-title p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .filters-section {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .search-box {
+        display: flex;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .search-box .form-input {
+        flex: 1;
+    }
+    
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+        text-align: center;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: var(--text-secondary);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+    
+    .empty-state p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .users-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .user-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .user-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-color);
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    .avatar-text {
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    
+    .user-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .user-email {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin: 0 0 0.75rem 0;
+    }
+    
+    .user-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .user-role {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        width: fit-content;
+    }
+    
+    .role-staff {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+    }
+    
+    .role-manager {
+        background: rgba(168, 85, 247, 0.1);
+        color: #a855f7;
+    }
+    
+    .role-member {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .user-date {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    
+    .user-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        min-width: auto;
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .pagination-info {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .page-indicator {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 1rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .filters-section {
+            flex-direction: column;
+        }
+        
+        .search-box {
+            min-width: auto;
+        }
+        
+        .users-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .pagination-container {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
 </style>
 
 @code {
-	private List<UserDto>? users;
-	private string emailSearch = string.Empty;
-	private int pageNumber = 1;
-	private int pageSize = 20;
-	private int totalPages = 1;
-	private bool isLoading = true;
+    private List<UserDto> users = new();
+    private bool isLoading = true;
+    private string searchEmail = "";
+    private int currentPage = 1;
+    private int pageSize = 10;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadUsers();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
 
-	private async Task LoadUsers()
-	{
-		try
-		{
-			isLoading = true;
-			StateHasChanged();
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            var filter = new UserFilter
+            {
+                Email = searchEmail,
+                PageNumber = currentPage,
+                PageSize = pageSize
+            };
+            
+            users = await GymApiClient.GetUsersAsync(filter);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors du chargement des utilisateurs: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 
-		users = await _gymApiClient.GetUsersAsync(new UserFilter
-			{
-				Email = emailSearch,
-				PageNumber = pageNumber,
-				PageSize = pageSize
-			});
+    private async Task HandleSearchKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            currentPage = 1;
+            await LoadUsers();
+        }
+    }
 
-			// Calculate total pages (simulated)
-			totalPages = Math.Max(1, (int)Math.Ceiling((users?.Count ?? 0) / (double)pageSize));
-			
-			isLoading = false;
-			StateHasChanged();
-		}
-		catch (Exception ex)
-		{
-			isLoading = false;
-			StateHasChanged();
-			// Handle error - could show snackbar
-		}
-	}
+    private async Task ClearFilters()
+    {
+        searchEmail = "";
+        currentPage = 1;
+        await LoadUsers();
+    }
 
-	private async Task OnSearch()
-	{
-		pageNumber = 1; // Reset to first page
-		await LoadUsers();
-	}
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadUsers();
+        }
+    }
 
-	private async Task OnReset()
-	{
-		emailSearch = string.Empty;
-		pageNumber = 1;
-		pageSize = 20;
-		await LoadUsers();
-	}
+    private async Task NextPage()
+    {
+        if (users.Count == pageSize)
+        {
+            currentPage++;
+            await LoadUsers();
+        }
+    }
 
-	private async Task OnPageChanged(int page)
-	{
-		pageNumber = page;
-		await LoadUsers();
-	}
+    private void ViewUser(int userId)
+    {
+        Navigation.NavigateTo($"/users/{userId}");
+    }
 
-	private void ViewUserDetails(int userId)
-	{
-		_navigationManager.NavigateTo($"/user/{userId}");
-	}
+    private async Task EditUser(int userId)
+    {
+        try
+        {
+            var user = await GymApiClient.GetUserByIdAsync(userId);
+            if (user != null)
+            {
+                await ModalService.ShowModal("update-user-modal", new { user = user });
+            }
+            else
+            {
+                await NotificationService.ShowError("Utilisateur non trouvé");
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors de la récupération de l'utilisateur: {ex.Message}");
+        }
+    }
 
-	private void EditUser(int userId)
-	{
-		_navigationManager.NavigateTo($"/user/{userId}/edit");
-	}
+    private async Task SubscribeUser(int userId)
+    {
+        try
+        {
+            var user = await GymApiClient.GetUserByIdAsync(userId);
+            if (user != null)
+            {
+                await ModalService.ShowModal("subscribe-user-modal", new { user = user });
+            }
+            else
+            {
+                await NotificationService.ShowError("Utilisateur non trouvé");
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors de la récupération de l'utilisateur: {ex.Message}");
+        }
+    }
 
-	private async Task DeleteUser(int userId)
-	{
-		// Implement delete functionality with confirmation dialog
-		var confirm = await _dialogService.ShowMessageBox(
-			"Delete User",
-			"Are you sure you want to delete this user? This action cannot be undone.",
-			yesText: "Delete",
-			cancelText: "Cancel"
-		);
+    private async Task DeleteUser(int userId)
+    {
+        var confirmed = await ModalService.ShowConfirmDialog(
+            "Supprimer l'utilisateur",
+            "Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.",
+            "Supprimer",
+            "danger"
+        );
 
-		if (confirm == true)
-		{
-			try
-			{
-				// Call delete API
-				await LoadUsers(); // Refresh the list
-			}
-			catch (Exception ex)
-			{
-				// Handle error
-			}
-		}
-	}
+        if (confirmed)
+        {
+            try
+            {
+                var success = await GymApiClient.DeleteUserAsync(userId);
+                if (success)
+                {
+                    await NotificationService.ShowSuccess("Utilisateur supprimé avec succès");
+                    await LoadUsers();
+                }
+                else
+                {
+                    await NotificationService.ShowError("Erreur lors de la suppression");
+                }
+            }
+            catch (Exception ex)
+            {
+                await NotificationService.ShowError($"Erreur lors de la suppression: {ex.Message}");
+            }
+        }
+    }
 
-	private async Task OpenCreateUserDialog()
-	{
-		var options = new DialogOptions 
-		{ 
-			MaxWidth = MaxWidth.Medium,
-			CloseOnEscapeKey = true,
-			CloseButton = true,
-			DisableBackdropClick = false
-		};
-		
-		var result = await _dialogService.ShowAsync<CreateUserPopup>("Create New User", options);
+    private async Task OpenCreateUserModal()
+    {
+        await ModalService.ShowModal("create-user-modal", new { });
+    }
 
-		if (result.Result == DialogResult.Ok())
-		{
-			await LoadUsers();
-		}
-	}
-}
+    private string GetInitials(string firstName, string lastName)
+    {
+        var first = !string.IsNullOrEmpty(firstName) ? firstName[0].ToString().ToUpper() : "";
+        var last = !string.IsNullOrEmpty(lastName) ? lastName[0].ToString().ToUpper() : "";
+        return first + last;
+    }
+
+    private string GetRoleDisplayName(Role role)
+    {
+        return role switch
+        {
+            Role.Staff => "Personnel",
+            Role.Manager => "Gestionnaire",
+            Role.Member => "Membre",
+            _ => role.ToString()
+        };
+    }
+} 

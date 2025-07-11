@@ -3,8 +3,8 @@ using GymManagement.Presentation.WebApp.ApiClients;
 using GymManagement.Presentation.WebApp.ApiClients.Auth;
 using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
+using GymManagement.Presentation.WebApp.Services;
 using GymManagement.Shared.Core.Constants;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +17,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddOutputCache();
 
-builder.Services.AddMudServices();
+// MudBlazor removed - using pure HTML/CSS/JS
 
 builder.Services.AddHttpClient<GymAdminApiClient>(client =>
 {
@@ -36,6 +36,10 @@ builder.Services.AddHttpClient<AuthApiClient>(client =>
 builder.Services.AddScoped<IAuthManager, AuthManager>();
 builder.Services.AddScoped<IApiClientHelper, ApiClientHelper>();
 builder.Services.AddSingleton<AuthenticatedUser>();
+
+// Custom services pour HTML/CSS pur
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IModalService, ModalService>();
 
 var app = builder.Build();
 

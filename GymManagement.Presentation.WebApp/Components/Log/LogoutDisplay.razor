@@ -1,8 +1,0 @@
-﻿@rendermode InteractiveServer
-
-@if (_authenticatedUser.IsAuthenticated)
-{
-    <MudButton OnClick="_authManager.Logout" Variant="Variant.Filled" Color="Color.Error">
-        Log out
-    </MudButton>
-}

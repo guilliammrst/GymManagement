@@ -1,0 +1,230 @@
+@page "/test-pure-system"
+@layout PureLayout
+@rendermode InteractiveServer
+@using GymManagement.Presentation.WebApp.Services
+@inject GymAdminApiClient _gymApiClient
+@inject INotificationService _notificationService
+@inject IModalService _modalService
+
+<div class="card">
+    <div class="card-header">
+        <h1>Test du Système Pur</h1>
+        <p>Interface complètement HTML/CSS/JS sans dépendances externes</p>
+    </div>
+    
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            
+            <!-- Test des Notifications -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Notifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="flex flex-col gap-2">
+                        <button class="btn btn-success" @onclick="@(() => TestNotification("success"))">
+                            ✅ Succès
+                        </button>
+                        <button class="btn btn-danger" @onclick="@(() => TestNotification("error"))">
+                            ❌ Erreur
+                        </button>
+                        <button class="btn btn-primary" @onclick="@(() => TestNotification("info"))">
+                            ℹ️ Information
+                        </button>
+                        <button class="btn btn-warning" @onclick="@(() => TestNotification("warning"))">
+                            ⚠️ Attention
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test des Dialogues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Dialogues</h3>
+                </div>
+                <div class="card-body">
+                    <div class="flex flex-col gap-2">
+                        <button class="btn btn-primary" @onclick="TestConfirmDialog">
+                            ❓ Confirmation
+                        </button>
+                        <button class="btn btn-secondary" @onclick="TestInfoDialog">
+                            ℹ️ Information
+                        </button>
+                        <button class="btn btn-primary" @onclick="TestInputDialog">
+                            ✏️ Saisie
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test de l'API -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>API</h3>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary w-full" @onclick="TestApiCall">
+                        🔄 Tester l'API
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Résultats -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Résultats des Tests</h3>
+            </div>
+            <div class="card-body">
+                <div style="background-color: var(--background-color); padding: 1rem; border-radius: var(--radius); max-height: 300px; overflow-y: auto;">
+                    @foreach (var result in testResults)
+                    {
+                        <div class="mb-2 p-2 border-left: 4px solid @(result.Success ? "var(--success-color)" : "var(--error-color)"); background: @(result.Success ? "#f0fdf4" : "#fef2f2"); border-radius: var(--radius);">
+                            <strong>[@result.Time.ToString("HH:mm:ss")]</strong> @result.Message
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<TestResult> testResults = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _notificationService.ShowInfo("Système pur chargé avec succès!");
+            testResults.Add(new TestResult("Système initialisé", true));
+            StateHasChanged();
+        }
+    }
+
+    private async Task TestNotification(string type)
+    {
+        var message = $"Test de notification {type}";
+        
+        try
+        {
+            switch (type)
+            {
+                case "success":
+                    await _notificationService.ShowSuccess(message);
+                    break;
+                case "error":
+                    await _notificationService.ShowError(message);
+                    break;
+                case "info":
+                    await _notificationService.ShowInfo(message);
+                    break;
+                case "warning":
+                    await _notificationService.ShowWarning(message);
+                    break;
+            }
+            
+            testResults.Add(new TestResult($"Notification {type}: OK", true));
+        }
+        catch (Exception ex)
+        {
+            testResults.Add(new TestResult($"Notification {type}: ERREUR - {ex.Message}", false));
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task TestConfirmDialog()
+    {
+        try
+        {
+            var result = await _modalService.ShowConfirmDialog(
+                "Confirmation",
+                "Voulez-vous vraiment effectuer cette action ?"
+            );
+            
+            testResults.Add(new TestResult($"Dialogue de confirmation: {(result ? "Confirmé" : "Annulé")}", true));
+        }
+        catch (Exception ex)
+        {
+            testResults.Add(new TestResult($"Dialogue de confirmation: ERREUR - {ex.Message}", false));
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task TestInfoDialog()
+    {
+        try
+        {
+            await _modalService.ShowModal("info-dialog", new { 
+                title = "Information",
+                message = "Ceci est un dialogue d'information du système pur."
+            });
+            
+            testResults.Add(new TestResult("Dialogue d'information: OK", true));
+        }
+        catch (Exception ex)
+        {
+            testResults.Add(new TestResult($"Dialogue d'information: ERREUR - {ex.Message}", false));
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task TestInputDialog()
+    {
+        try
+        {
+            await _modalService.ShowModal("input-dialog", new { 
+                title = "Saisie",
+                message = "Entrez votre nom:",
+                defaultValue = "John Doe"
+            });
+            
+            testResults.Add(new TestResult("Dialogue de saisie: Ouvert", true));
+        }
+        catch (Exception ex)
+        {
+            testResults.Add(new TestResult($"Dialogue de saisie: ERREUR - {ex.Message}", false));
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task TestApiCall()
+    {
+        try
+        {
+            var users = await _gymApiClient.GetUsersAsync(new UserFilter 
+            { 
+                PageNumber = 1, 
+                PageSize = 5 
+            });
+            
+            testResults.Add(new TestResult($"API: OK - {users?.Count ?? 0} utilisateurs récupérés", true));
+            await _notificationService.ShowSuccess($"API testée avec succès! {users?.Count ?? 0} utilisateurs trouvés.");
+        }
+        catch (Exception ex)
+        {
+            testResults.Add(new TestResult($"API: ERREUR - {ex.Message}", false));
+            await _notificationService.ShowError($"Erreur API: {ex.Message}");
+        }
+        
+        StateHasChanged();
+    }
+
+    private class TestResult
+    {
+        public DateTime Time { get; set; } = DateTime.Now;
+        public string Message { get; set; }
+        public bool Success { get; set; }
+
+        public TestResult(string message, bool success)
+        {
+            Message = message;
+            Success = success;
+        }
+    }
+} 

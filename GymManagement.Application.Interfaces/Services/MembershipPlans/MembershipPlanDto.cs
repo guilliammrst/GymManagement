@@ -11,5 +11,11 @@ namespace GymManagement.Application.Interfaces.Services.MembershipPlans
         public MembershipPlanType MembershipPlanType { get; set; }
         public decimal YearlyDiscount { get; set; }
         public decimal RegistrationFees { get; set; }
+        
+        // Convenience properties for Blazor components
+        public string Name => Description;
+        public MembershipPlanType Type => MembershipPlanType;
+        public decimal Price => BasePrice;
+        public MembershipPeriod Period => MembershipPeriod.FourWeeks; // Default period
     }
 }

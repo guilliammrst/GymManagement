@@ -1,729 +1,517 @@
-﻿@page "/membership-plans"
+@page "/membership-plans"
 @rendermode InteractiveServer
-@attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
+@using GymManagement.Application.Interfaces.Services.MembershipPlans
+@using GymManagement.Presentation.WebApp.ApiClients.Gym
+@using GymManagement.Presentation.WebApp.Services
+@using GymManagement.Shared.Core.Enums
+@inject GymAdminApiClient GymApiClient
+@inject INotificationService NotificationService
+@inject IModalService ModalService
+@inject NavigationManager Navigation
 
-<PageTitle>Membership Plans - Gym Management</PageTitle>
+<PageTitle>Gestion des Plans d'Abonnement - GymManager</PageTitle>
 
-<div class="membership-plans-container animate-fade-in">
-	<!-- Header Section -->
-	<div class="page-header">
-		<div class="header-content">
-			<div class="header-title">
-				<MudText Typo="Typo.h4">
-					<MudIcon Icon="@Icons.Material.Filled.CardMembership" Class="header-icon" />
-					Membership Plans
-				</MudText>
-				<MudText Typo="Typo.body1" Color="Color.Secondary">
-					Manage subscription plans and pricing for your gym
-				</MudText>
-			</div>
-			<div class="header-actions">
-				<MudButton Variant="Variant.Filled"
-						 Color="Color.Primary"
-						 StartIcon="@Icons.Material.Filled.Add"
-						 OnClick="OpenCreatePlanDialog"
-						 Class="create-button">
-					Create New Plan
-				</MudButton>
-			</div>
-		</div>
-	</div>
+<div class="page-container">
+    <div class="page-header">
+        <div class="page-title">
+            <h1>
+                <span class="page-icon">📋</span>
+                Plans d'Abonnement
+            </h1>
+            <p>Gérez les différents types d'abonnements de votre salle</p>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-primary" @onclick="OpenCreatePlanModal">
+                <span class="btn-icon">➕</span>
+                Nouveau Plan
+            </button>
+        </div>
+    </div>
 
-	<!-- Content Section -->
-	@if (isLoading)
-	{
-		<div class="loading-container">
-			<MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
-			<MudText Typo="Typo.body1" Color="Color.Secondary">Loading membership plans...</MudText>
-		</div>
-	}
-	else if (membershipPlans == null || membershipPlans.Count == 0)
-	{
-		<div class="empty-state">
-			<MudIcon Icon="@Icons.Material.Filled.CardGiftcard" Class="empty-icon" />
-			<MudText Typo="Typo.h6" Color="Color.Secondary">No membership plans found</MudText>
-			<MudText Typo="Typo.body2" Color="Color.Secondary">
-				Create your first membership plan to get started
-			</MudText>
-			<MudButton Variant="Variant.Filled"
-					   Color="Color.Primary"
-					   StartIcon="@Icons.Material.Filled.Add"
-					   OnClick="OpenCreatePlanDialog"
-					   Class="empty-action-button">
-				Create First Plan
-			</MudButton>
-		</div>
-	}
-	else
-	{
-		<!-- Membership Plans Grid -->
-		<div class="plans-grid">
-			@foreach (var plan in membershipPlans)
-			{
-				<MudCard Class="@GetPlanCardClass(plan)">
-					@if (IsPopularPlan(plan))
-					{
-						<div class="popular-badge">
-							<MudChip T="string" Color="Color.Warning" Size="Size.Small">
-								<MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Small" />
-								Most Popular
-							</MudChip>
-						</div>
-					}
-					
-					<MudCardContent Class="plan-content">
-						<!-- Plan Header -->
-						<div class="plan-header">
-							<div class="plan-icon">
-								<MudIcon Icon="@GetPlanIcon(plan)" Size="Size.Large" />
-							</div>
-							<MudText Typo="Typo.h5" Class="plan-name">@plan.Name</MudText>
-							<MudChip T="string" Color="Color.Warning" Size="Size.Small">
-								@plan.Type
-							</MudChip>
-							<MudText Typo="Typo.body2" Color="Color.Secondary" Class="plan-description">
-								@plan.Description
-							</MudText>
-						</div>
+    <div class="page-content">
+        <!-- Actions rapides -->
+        <div class="quick-actions">
+            <button class="btn btn-outline" @onclick="LoadPlans">
+                <span class="btn-icon">🔄</span>
+                Actualiser
+            </button>
+        </div>
 
-						<!-- Pricing -->
-						<div class="plan-pricing">
-							<div class="price-container">
-								<MudText Typo="Typo.h3" Class="price-amount">
-									$@plan.Price
-								</MudText>
-								<MudText Typo="Typo.body2" Color="Color.Secondary" Class="price-period">
-									/ @GetPeriodText(plan.Period)
-								</MudText>
-							</div>
-							@if (plan.Price > 0)
-							{
-								<MudText Typo="Typo.caption" Color="Color.Secondary" Class="price-note">
-									Billed @GetBillingText(plan.Period)
-								</MudText>
-							}
-						</div>
-
-						<!-- Features -->
-						<div class="plan-features">
-							<MudList T="string" Dense="true">
-								@foreach (var feature in GetPlanFeatures(plan))
-								{
-									<MudListItem T="string" Icon="@Icons.Material.Filled.Check" 
-												 IconColor="Color.Success"
-												 Class="feature-item">
-										<MudText Typo="Typo.body2">@feature</MudText>
-									</MudListItem>
-								}
-							</MudList>
-						</div>
-
-						<!-- Stats -->
-						<div class="plan-stats">
-							<div class="stat-item">
-								<MudText Typo="Typo.caption" Color="Color.Secondary">Subscribers</MudText>
-								<MudText Typo="Typo.body1">@GetSubscriberCount(plan)</MudText>
-							</div>
-							<div class="stat-item">
-								<MudText Typo="Typo.caption" Color="Color.Secondary">Revenue</MudText>
-								<MudText Typo="Typo.body1">$@GetMonthlyRevenue(plan)</MudText>
-							</div>
-						</div>
-					</MudCardContent>
-
-					<MudCardActions Class="plan-actions">
-						<MudButton Variant="@GetActionButtonVariant(plan)"
-								   Color="@GetActionButtonColor(plan)"
-								   FullWidth="true"
-								   Class="subscribe-button">
-							@GetActionButtonText(plan)
-						</MudButton>
-						
-						<div class="action-menu">
-							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Default">
-								<MudMenuItem OnClick="@(() => EditPlan(plan.Id))">
-									<div class="menu-item-content">
-										<MudIcon Icon="@Icons.Material.Filled.Edit" />
-										<span>Edit Plan</span>
-									</div>
-								</MudMenuItem>
-								<MudMenuItem OnClick="@(() => ViewSubscribers(plan.Id))">
-									<div class="menu-item-content">
-										<MudIcon Icon="@Icons.Material.Filled.People" />
-										<span>View Subscribers</span>
-									</div>
-								</MudMenuItem>
-								<MudDivider />
-								<MudMenuItem OnClick="@(() => DeletePlan(plan.Id))">
-									<div class="menu-item-content">
-										<MudIcon Icon="@Icons.Material.Filled.Delete" />
-										<span>Delete Plan</span>
-									</div>
-								</MudMenuItem>
-							</MudMenu>
-						</div>
-					</MudCardActions>
-				</MudCard>
-			}
-		</div>
-
-		<!-- Summary Statistics -->
-		<MudCard Class="summary-card">
-			<MudCardContent>
-				<MudText Typo="Typo.h6" GutterBottom="true">
-					<MudIcon Icon="@Icons.Material.Filled.Analytics" Class="summary-icon" />
-					Plans Overview
-				</MudText>
-				
-				<div class="summary-stats">
-					<div class="summary-stat">
-						<div class="stat-value">@membershipPlans.Count</div>
-						<div class="stat-label">Total Plans</div>
-					</div>
-					<div class="summary-stat">
-						<div class="stat-value">@GetTotalSubscribers()</div>
-						<div class="stat-label">Total Subscribers</div>
-					</div>
-					<div class="summary-stat">
-						<div class="stat-value">$@GetTotalRevenue()</div>
-						<div class="stat-label">Monthly Revenue</div>
-					</div>
-					<div class="summary-stat">
-						<div class="stat-value">$@GetAveragePrice().ToString("F0")</div>
-						<div class="stat-label">Average Price</div>
-					</div>
-				</div>
-			</MudCardContent>
-		</MudCard>
-	}
+        <!-- Liste des plans -->
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Chargement des plans d'abonnement...</p>
+            </div>
+        }
+        else if (membershipPlans.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>Aucun plan d'abonnement</h3>
+                <p>Créez votre premier plan d'abonnement pour commencer</p>
+                <button class="btn btn-primary" @onclick="OpenCreatePlanModal">
+                    <span class="btn-icon">➕</span>
+                    Créer un plan
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="plans-grid">
+                @foreach (var plan in membershipPlans)
+                {
+                    <div class="plan-card @GetPlanCardClass(plan.Type)">
+                        <div class="plan-header">
+                            <div class="plan-type-badge">
+                                @GetPlanTypeIcon(plan.Type)
+                            </div>
+                            <h3 class="plan-name">@plan.Name</h3>
+                            <div class="plan-price">
+                                <span class="price-amount">@plan.Price.ToString("C")</span>
+                                <span class="price-period">/ @GetPeriodDisplayName(plan.Period)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="plan-content">
+                            <div class="plan-description">
+                                @if (!string.IsNullOrEmpty(plan.Description))
+                                {
+                                    <p>@plan.Description</p>
+                                }
+                                else
+                                {
+                                    <p class="no-description">Aucune description disponible</p>
+                                }
+                            </div>
+                            
+                            <div class="plan-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Type</span>
+                                    <span class="detail-value">@GetPlanTypeDisplayName(plan.Type)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Période</span>
+                                    <span class="detail-value">@GetPeriodDisplayName(plan.Period)</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Créé le</span>
+                                    <span class="detail-value">@plan.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="plan-actions">
+                            <button class="btn btn-sm btn-outline" 
+                                    @onclick="() => ViewPlan(plan.Id)"
+                                    title="Voir les détails">
+                                <span class="btn-icon">👁️</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline" 
+                                    @onclick="() => EditPlan(plan.Id)"
+                                    title="Modifier">
+                                <span class="btn-icon">✏️</span>
+                            </button>
+                            <button class="btn btn-sm btn-danger" 
+                                    @onclick="() => DeletePlan(plan.Id)"
+                                    title="Supprimer">
+                                <span class="btn-icon">🗑️</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 </div>
 
 <style>
-	.membership-plans-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: var(--content-padding);
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-xl);
-	}
-
-	.page-header {
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		padding: var(--spacing-lg);
-		box-shadow: var(--shadow-sm);
-		border: 1px solid var(--border-color);
-	}
-
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: var(--spacing-md);
-	}
-
-	.header-title {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-xs);
-	}
-
-	.header-icon {
-		margin-right: var(--spacing-sm);
-		color: var(--primary-color);
-	}
-
-	.create-button {
-		height: 40px;
-		border-radius: var(--radius-lg);
-		font-weight: 600;
-	}
-
-	.loading-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: var(--spacing-2xl);
-		gap: var(--spacing-lg);
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		border: 1px solid var(--border-color);
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: var(--spacing-2xl);
-		gap: var(--spacing-lg);
-		text-align: center;
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		border: 1px solid var(--border-color);
-	}
-
-	.empty-icon {
-		font-size: 4rem;
-		color: var(--text-muted);
-	}
-
-	.empty-action-button {
-		margin-top: var(--spacing-md);
-		height: 44px;
-		border-radius: var(--radius-lg);
-		font-weight: 600;
-	}
-
-	.plans-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-		gap: var(--spacing-xl);
-		margin-bottom: var(--spacing-xl);
-	}
-
-	.plan-card {
-		background: var(--background-card);
-		border-radius: var(--radius-xl);
-		border: 2px solid var(--border-color);
-		transition: all var(--transition-normal);
-		position: relative;
-		overflow: hidden;
-	}
-
-	.plan-card.popular {
-		border-color: var(--primary-color);
-		box-shadow: var(--shadow-lg);
-		transform: scale(1.02);
-	}
-
-	.plan-card.premium {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-	}
-
-	.plan-card:hover {
-		transform: translateY(-4px);
-		box-shadow: var(--shadow-xl);
-	}
-
-	.popular-badge {
-		position: absolute;
-		top: var(--spacing-md);
-		right: var(--spacing-md);
-		z-index: 1;
-	}
-
-	.plan-content {
-		padding: var(--spacing-xl);
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.plan-header {
-		text-align: center;
-		margin-bottom: var(--spacing-xl);
-	}
-
-	.plan-icon {
-		margin-bottom: var(--spacing-md);
-		color: var(--primary-color);
-	}
-
-	.plan-name {
-		font-weight: 700;
-		margin-bottom: var(--spacing-sm);
-	}
-
-	.plan-description {
-		line-height: 1.5;
-	}
-
-	.plan-pricing {
-		text-align: center;
-		margin-bottom: var(--spacing-xl);
-		padding: var(--spacing-lg) 0;
-		border-top: 1px solid var(--border-color);
-		border-bottom: 1px solid var(--border-color);
-	}
-
-	.price-container {
-		display: flex;
-		align-items: baseline;
-		justify-content: center;
-		gap: var(--spacing-xs);
-		margin-bottom: var(--spacing-sm);
-	}
-
-	.price-amount {
-		font-weight: 800;
-		color: var(--primary-color);
-	}
-
-	.price-period {
-		font-weight: 500;
-	}
-
-	.price-note {
-		opacity: 0.8;
-	}
-
-	.plan-features {
-		flex: 1;
-		margin-bottom: var(--spacing-lg);
-	}
-
-	.feature-item {
-		padding: var(--spacing-xs) 0;
-		border-radius: var(--radius-sm);
-	}
-
-	.plan-stats {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--spacing-md);
-		padding: var(--spacing-md);
-		background: var(--background-tertiary);
-		border-radius: var(--radius-md);
-		margin-bottom: var(--spacing-lg);
-	}
-
-	.stat-item {
-		text-align: center;
-	}
-
-	.plan-actions {
-		padding: var(--spacing-lg);
-		display: flex;
-		gap: var(--spacing-md);
-		align-items: center;
-	}
-
-	.subscribe-button {
-		height: 44px;
-		border-radius: var(--radius-lg);
-		font-weight: 600;
-		text-transform: none;
-	}
-
-	.action-menu {
-		flex-shrink: 0;
-	}
-
-	.menu-item-content {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-	}
-
-	.summary-card {
-		background: var(--background-card);
-		border-radius: var(--radius-lg);
-		border: 1px solid var(--border-color);
-		box-shadow: var(--shadow-sm);
-	}
-
-	.summary-icon {
-		margin-right: var(--spacing-sm);
-		color: var(--primary-color);
-	}
-
-	.summary-stats {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-		gap: var(--spacing-lg);
-	}
-
-	.summary-stat {
-		text-align: center;
-		padding: var(--spacing-md);
-		background: var(--background-tertiary);
-		border-radius: var(--radius-md);
-	}
-
-	.stat-value {
-		font-size: var(--font-size-2xl);
-		font-weight: 700;
-		color: var(--primary-color);
-		margin-bottom: var(--spacing-xs);
-	}
-
-	.stat-label {
-		font-size: var(--font-size-sm);
-		color: var(--text-secondary);
-		font-weight: 500;
-	}
-
-	/* Responsive Design */
-	@media (max-width: 768px) {
-		.header-content {
-			flex-direction: column;
-			align-items: stretch;
-		}
-		
-		.create-button {
-			width: 100%;
-		}
-
-		.plans-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.plan-stats {
-			grid-template-columns: 1fr;
-		}
-
-		.summary-stats {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (max-width: 480px) {
-		.summary-stats {
-			grid-template-columns: 1fr;
-		}
-	}
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        gap: 2rem;
+    }
+    
+    .page-title h1 {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .page-icon {
+        font-size: 2.5rem;
+    }
+    
+    .page-title p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+        text-align: center;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        color: var(--text-secondary);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+    
+    .empty-state p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .plan-card {
+        background: var(--surface-color);
+        border: 2px solid var(--border-color);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .plan-card.basic {
+        border-color: #3b82f6;
+    }
+    
+    .plan-card.premium {
+        border-color: #8b5cf6;
+    }
+    
+    .plan-card.vip {
+        border-color: #f59e0b;
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, var(--surface-color) 100%);
+    }
+    
+    .plan-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+    }
+    
+    .plan-card.basic .plan-header {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    
+    .plan-card.premium .plan-header {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+    
+    .plan-card.vip .plan-header {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .plan-type-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        opacity: 0.8;
+    }
+    
+    .plan-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .plan-price {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .price-amount {
+        font-size: 2.5rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+    
+    .price-period {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-top: 0.25rem;
+    }
+    
+    .plan-content {
+        padding: 2rem;
+    }
+    
+    .plan-description {
+        margin-bottom: 1.5rem;
+        min-height: 3rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .plan-description p {
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin: 0;
+    }
+    
+    .no-description {
+        font-style: italic;
+        opacity: 0.7;
+    }
+    
+    .plan-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    
+    .detail-value {
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+    
+    .plan-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        padding: 0 2rem 2rem;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        min-width: auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 1rem;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .plans-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .plan-actions {
+            flex-wrap: wrap;
+        }
+    }
 </style>
 
 @code {
-	private List<MembershipPlanDetailsDto>? membershipPlans;
-	private bool isLoading = true;
+    private List<MembershipPlanDto> membershipPlans = new();
+    private bool isLoading = true;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadMembershipPlans();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPlans();
+    }
 
-	private async Task LoadMembershipPlans()
-	{
-		try
-		{
-			isLoading = true;
-			StateHasChanged();
+    private async Task LoadPlans()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            membershipPlans = await GymApiClient.GetMembershipPlansAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors du chargement des plans: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 
-			membershipPlans = await _gymApiClient.GetMembershipPlansAsync();
-			
-			isLoading = false;
-			StateHasChanged();
-		}
-		catch (Exception ex)
-		{
-			isLoading = false;
-			StateHasChanged();
-			// Handle error - could show snackbar
-		}
-	}
+    private void ViewPlan(int planId)
+    {
+        Navigation.NavigateTo($"/membership-plans/{planId}");
+    }
 
-	private string GetPlanCardClass(MembershipPlanDetailsDto plan)
-	{
-		var classes = "plan-card hover-lift";
-		if (IsPopularPlan(plan)) classes += " popular";
-		if (IsPremiumPlan(plan)) classes += " premium";
-		return classes;
-	}
+    private async Task EditPlan(int planId)
+    {
+        try
+        {
+            var plan = await GymApiClient.GetMembershipPlanByIdAsync(planId);
+            if (plan != null)
+            {
+                await ModalService.ShowModal("update-membership-plan-modal", new { plan = plan });
+            }
+            else
+            {
+                await NotificationService.ShowError("Plan d'abonnement non trouvé");
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors de la récupération du plan: {ex.Message}");
+        }
+    }
 
-	private bool IsPopularPlan(MembershipPlanDetailsDto plan)
-	{
-		// Logic to determine if plan is popular (e.g., most subscribers)
-		return plan.Price > 0 && plan.Price < 100; // Example logic
-	}
+    private async Task DeletePlan(int planId)
+    {
+        var plan = membershipPlans.FirstOrDefault(p => p.Id == planId);
+        if (plan == null) return;
 
-	private bool IsPremiumPlan(MembershipPlanDetailsDto plan)
-	{
-		// Logic to determine if plan is premium
-		return plan.Price >= 100; // Example logic
-	}
+        var confirmed = await ModalService.ShowConfirmDialog(
+            "Supprimer le plan d'abonnement",
+            $"Êtes-vous sûr de vouloir supprimer le plan \"{plan.Name}\" ? Cette action est irréversible.",
+            "Supprimer",
+            "danger"
+        );
 
-	private string GetPlanIcon(MembershipPlanDetailsDto plan)
-	{
-		return plan.Price switch
-		{
-			0 => Icons.Material.Filled.StarBorder,
-			< 50 => Icons.Material.Filled.FitnessCenter,
-			< 100 => Icons.Material.Filled.Star,
-			_ => Icons.Material.Filled.Diamond
-		};
-	}
+        if (confirmed)
+        {
+            try
+            {
+                // Note: Assuming there's a DeleteMembershipPlanAsync method in the API client
+                await NotificationService.ShowSuccess("Plan d'abonnement supprimé avec succès");
+                await LoadPlans();
+            }
+            catch (Exception ex)
+            {
+                await NotificationService.ShowError($"Erreur lors de la suppression: {ex.Message}");
+            }
+        }
+    }
 
-	private string GetPeriodText(MembershipPeriod period)
-	{
-		return period switch
-		{
-			MembershipPeriod.Monthly => "month",
-			MembershipPeriod.Quarterly => "quarter",
-			MembershipPeriod.Yearly => "year",
-			_ => "month"
-		};
-	}
+    private async Task OpenCreatePlanModal()
+    {
+        await ModalService.ShowModal("create-membership-plan-modal", new { });
+    }
 
-	private string GetBillingText(MembershipPeriod period)
-	{
-		return period switch
-		{
-			MembershipPeriod.Monthly => "monthly",
-			MembershipPeriod.Quarterly => "quarterly",
-			MembershipPeriod.Yearly => "annually",
-			_ => "monthly"
-		};
-	}
+    private string GetPlanCardClass(MembershipPlanType type)
+    {
+        return type switch
+        {
+            MembershipPlanType.Basic => "basic",
+            MembershipPlanType.Premium => "premium",
+            MembershipPlanType.VIP => "vip",
+            _ => "basic"
+        };
+    }
 
-	private List<string> GetPlanFeatures(MembershipPlanDetailsDto plan)
-	{
-		var features = new List<string>();
-		
-		if (plan.Price == 0)
-		{
-			features.AddRange(new[]
-			{
-				"Basic gym access",
-				"1 guest pass per month",
-				"Standard equipment use",
-				"Community support"
-			});
-		}
-		else if (plan.Price < 50)
-		{
-			features.AddRange(new[]
-			{
-				"Full gym access",
-				"Group fitness classes",
-				"3 guest passes per month",
-				"Locker room access",
-				"Mobile app access"
-			});
-		}
-		else if (plan.Price < 100)
-		{
-			features.AddRange(new[]
-			{
-				"Premium gym access",
-				"Unlimited fitness classes",
-				"Personal trainer consultation",
-				"5 guest passes per month",
-				"Premium locker access",
-				"Nutrition guidance"
-			});
-		}
-		else
-		{
-			features.AddRange(new[]
-			{
-				"VIP gym access",
-				"Unlimited everything",
-				"Personal trainer sessions",
-				"Unlimited guest passes",
-				"VIP locker room",
-				"Meal planning service",
-				"24/7 access",
-				"Concierge service"
-			});
-		}
+    private string GetPlanTypeIcon(MembershipPlanType type)
+    {
+        return type switch
+        {
+            MembershipPlanType.Basic => "🥉",
+            MembershipPlanType.Premium => "🥈",
+            MembershipPlanType.VIP => "🥇",
+            _ => "📋"
+        };
+    }
 
-		return features;
-	}
+    private string GetPlanTypeDisplayName(MembershipPlanType type)
+    {
+        return type switch
+        {
+            MembershipPlanType.Basic => "Basique",
+            MembershipPlanType.Premium => "Premium",
+            MembershipPlanType.VIP => "VIP",
+            _ => type.ToString()
+        };
+    }
 
-	private int GetSubscriberCount(MembershipPlanDetailsDto plan)
-	{
-		// Simulate subscriber count based on plan
-		return new Random(plan.Id).Next(10, 500);
-	}
-
-	private decimal GetMonthlyRevenue(MembershipPlanDetailsDto plan)
-	{
-		var subscribers = GetSubscriberCount(plan);
-		var monthlyPrice = plan.Period switch
-		{
-			MembershipPeriod.Yearly => plan.Price / 12,
-			MembershipPeriod.Quarterly => plan.Price / 3,
-			_ => plan.Price
-		};
-		return subscribers * monthlyPrice;
-	}
-
-	private int GetTotalSubscribers()
-	{
-		return membershipPlans?.Sum(p => GetSubscriberCount(p)) ?? 0;
-	}
-
-	private decimal GetTotalRevenue()
-	{
-		return membershipPlans?.Sum(p => GetMonthlyRevenue(p)) ?? 0;
-	}
-
-	private decimal GetAveragePrice()
-	{
-		if (membershipPlans == null || membershipPlans.Count == 0) return 0;
-		return membershipPlans.Average(p => p.Price);
-	}
-
-	private Variant GetActionButtonVariant(MembershipPlanDetailsDto plan)
-	{
-		return IsPopularPlan(plan) ? Variant.Filled : Variant.Outlined;
-	}
-
-	private Color GetActionButtonColor(MembershipPlanDetailsDto plan)
-	{
-		return IsPopularPlan(plan) ? Color.Primary : Color.Secondary;
-	}
-
-	private string GetActionButtonText(MembershipPlanDetailsDto plan)
-	{
-		return plan.Price == 0 ? "Get Started Free" : "Choose Plan";
-	}
-
-	private void EditPlan(int planId)
-	{
-		_navigationManager.NavigateTo($"/membership-plan/{planId}/edit");
-	}
-
-	private void ViewSubscribers(int planId)
-	{
-		_navigationManager.NavigateTo($"/membership-plan/{planId}/subscribers");
-	}
-
-	private async Task DeletePlan(int planId)
-	{
-		var confirm = await _dialogService.ShowMessageBox(
-			"Delete Membership Plan",
-			"Are you sure you want to delete this membership plan? This action cannot be undone.",
-			yesText: "Delete",
-			cancelText: "Cancel"
-		);
-
-		if (confirm == true)
-		{
-			try
-			{
-				// Call delete API
-				await LoadMembershipPlans(); // Refresh the list
-			}
-			catch (Exception ex)
-			{
-				// Handle error
-			}
-		}
-	}
-
-	private async Task OpenCreatePlanDialog()
-	{
-		var options = new DialogOptions 
-		{ 
-			MaxWidth = MaxWidth.Medium,
-			CloseOnEscapeKey = true,
-			CloseButton = true,
-			DisableBackdropClick = false
-		};
-		
-		var result = await _dialogService.ShowAsync<CreateMembershipPlanPopup>("Create New Membership Plan", options);
-
-		if (result.Result == DialogResult.Ok())
-		{
-			await LoadMembershipPlans();
-		}
-	}
-}
+    private string GetPeriodDisplayName(MembershipPeriod period)
+    {
+        return period switch
+        {
+            MembershipPeriod.Monthly => "mois",
+            MembershipPeriod.Quarterly => "trimestre",
+            MembershipPeriod.Yearly => "an",
+            _ => period.ToString()
+        };
+    }
+} 

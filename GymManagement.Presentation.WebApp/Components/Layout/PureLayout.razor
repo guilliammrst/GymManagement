@@ -1,0 +1,88 @@
+@inherits LayoutComponentBase
+@inject IAuthManager AuthManager
+@inject AuthenticatedUser AuthenticatedUser
+@inject NavigationManager Navigation
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GymManager</title>
+    <link href="css/pure-theme.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="/" class="brand-link">
+                        <div class="brand-icon">💪</div>
+                        <span class="brand-text">GymManager</span>
+                    </a>
+                </div>
+                
+                <div class="nav-menu">
+                    <a href="/" class="nav-item @(IsActive("/") ? "active" : "")">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">Accueil</span>
+                    </a>
+                    <a href="/users" class="nav-item @(IsActive("/users") ? "active" : "")">
+                        <span class="nav-icon">👥</span>
+                        <span class="nav-text">Utilisateurs</span>
+                    </a>
+                    <a href="/clubs" class="nav-item @(IsActive("/clubs") ? "active" : "")">
+                        <span class="nav-icon">🏢</span>
+                        <span class="nav-text">Clubs</span>
+                    </a>
+                    <a href="/membership-plans" class="nav-item @(IsActive("/membership-plans") ? "active" : "")">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Abonnements</span>
+                    </a>
+                </div>
+                
+                <div class="nav-user">
+                    @if (!string.IsNullOrEmpty(AuthenticatedUser.Token))
+                    {
+                        <div class="user-info">
+                            <span class="user-email">@AuthenticatedUser.Email</span>
+                            <button class="btn btn-outline" @onclick="Logout">Déconnexion</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="/login" class="btn btn-primary">Connexion</a>
+                    }
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            @Body
+        </main>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+    
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
+
+    <script src="js/pure-ui.js"></script>
+</body>
+</html>
+
+@code {
+    private bool IsActive(string href)
+    {
+        return Navigation.Uri.EndsWith(href.TrimStart('/'), StringComparison.OrdinalIgnoreCase) ||
+               (href == "/" && Navigation.Uri.EndsWith("/"));
+    }
+    
+    private void Logout()
+    {
+        AuthManager.Logout();
+    }
+} 

@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -11,8 +12,6 @@
 @using GymManagement.Presentation.WebApp.ApiClients.Auth
 @using GymManagement.Presentation.WebApp.ApiClients.Gym
 @using GymManagement.Presentation.WebApp.Components.Layout
-@using GymManagement.Presentation.WebApp.Components.Log
-@using GymManagement.Presentation.WebApp.Components.Pages.Popups
 @inject NavigationManager _navigationManager
 @inject GymAdminApiClient _gymApiClient
 @inject AuthApiClient _authApiClient
@@ -22,8 +21,6 @@
 @using System.Text.Json;
 @inject AuthenticatedUser _authenticatedUser
 @inject IAuthManager _authManager
-@using MudBlazor
-@using MudBlazor.Services
 @using GymManagement.Application.Interfaces.Services.Users
 @using GymManagement.Application.Interfaces.Services.Addresses
 @using GymManagement.Application.Interfaces.Services.Memberships
@@ -32,5 +29,3 @@
 @using GymManagement.Application.Interfaces.Services.Attendances
 @using GymManagement.Application.Interfaces.Controllers.DTOs
 @using GymManagement.Shared.Core.Enums
-@using GymManagement.Presentation.WebApp.Components.Extensions
-@inject IDialogService _dialogService

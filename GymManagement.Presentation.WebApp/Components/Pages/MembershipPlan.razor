@@ -1,65 +1,772 @@
-﻿@page "/membership-plan/{MembershipPlanId:int}"
+@page "/membership-plans/{PlanId:int}"
 @rendermode InteractiveServer
-@attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
+@using GymManagement.Application.Interfaces.Services.MembershipPlans
+@using GymManagement.Presentation.WebApp.ApiClients.Gym
+@using GymManagement.Presentation.WebApp.Services
+@using GymManagement.Shared.Core.Enums
+@inject GymAdminApiClient GymApiClient
+@inject INotificationService NotificationService
+@inject IModalService ModalService
+@inject NavigationManager Navigation
 
-<PageTitle>Membership plan</PageTitle>
+<PageTitle>@(plan?.Name) - Plans d'Abonnement - GymManager</PageTitle>
 
-<NavLink class="btn btn-primary nav-link" href="membership-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-	<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-</NavLink>
+<div class="page-container">
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Chargement des informations du plan...</p>
+        </div>
+    }
+    else if (plan == null)
+    {
+        <div class="error-container">
+            <div class="error-icon">❌</div>
+            <h2>Plan d'abonnement non trouvé</h2>
+            <p>Le plan d'abonnement demandé n'existe pas ou a été supprimé.</p>
+            <button class="btn btn-primary" @onclick="NavigateToMembershipPlans">
+                Retour à la liste
+            </button>
+        </div>
+    }
+    else
+    {
+        <!-- En-tête plan -->
+        <div class="plan-header">
+            <div class="breadcrumb">
+                <a href="/membership-plans" class="breadcrumb-link">Plans d'Abonnement</a>
+                <span class="breadcrumb-separator">›</span>
+                <span class="breadcrumb-current">@plan.Name</span>
+            </div>
+            
+            <div class="plan-hero @GetPlanCardClass(plan.Type)">
+                <div class="plan-hero-content">
+                    <div class="plan-type-badge">
+                        @GetPlanTypeIcon(plan.Type)
+                    </div>
+                    
+                    <div class="plan-hero-info">
+                        <h1 class="plan-name">@plan.Name</h1>
+                        <div class="plan-price">
+                            <span class="price-amount">@plan.Price.ToString("C")</span>
+                            <span class="price-period">/ @GetPeriodDisplayName(plan.Period)</span>
+                        </div>
+                        <div class="plan-badges">
+                            <span class="badge badge-@GetPlanCardClass(plan.Type)">
+                                @GetPlanTypeDisplayName(plan.Type)
+                            </span>
+                            <span class="badge badge-secondary">
+                                @GetPeriodDisplayName(plan.Period)
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="plan-hero-actions">
+                        <button class="btn btn-outline btn-white" @onclick="EditPlan">
+                            <span class="btn-icon">✏️</span>
+                            Modifier
+                        </button>
+                        <button class="btn btn-danger btn-white" @onclick="DeletePlan">
+                            <span class="btn-icon">🗑️</span>
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<h3>Membership plan Details</h3>
+        <!-- Contenu principal -->
+        <div class="plan-content">
+            <div class="content-grid">
+                <!-- Informations générales -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="card-icon">ℹ️</span>
+                            Informations générales
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label class="info-label">Nom du plan</label>
+                                <span class="info-value">@plan.Name</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Prix</label>
+                                <span class="info-value price-highlight">@plan.Price.ToString("C")</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Type</label>
+                                <span class="info-value">@GetPlanTypeDisplayName(plan.Type)</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Période</label>
+                                <span class="info-value">@GetPeriodDisplayName(plan.Period)</span>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label">Date de création</label>
+                                <span class="info-value">@plan.CreatedAt.ToString("dd/MM/yyyy à HH:mm")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-@if (membershipPlan == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<div>
-		<MembershipPlanComponent MembershipPlan="membershipPlan"></MembershipPlanComponent>
-		<MembershipComponent Memberships="membershipPlan.Memberships"></MembershipComponent>
-		    <MudButton OnClick="OpenUpdateMembershipPlanDialog" Variant="Variant.Filled" Color="Color.Primary" Class="mb-3">
-        Update
-    </MudButton>
-	</div>
-}
+                <!-- Description -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="card-icon">📝</span>
+                            Description
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        @if (!string.IsNullOrEmpty(plan.Description))
+                        {
+                            <div class="description-content">
+                                <p>@plan.Description</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-description">
+                                <p>Aucune description disponible pour ce plan d'abonnement.</p>
+                                <button class="btn btn-sm btn-outline" @onclick="EditPlan">
+                                    <span class="btn-icon">➕</span>
+                                    Ajouter une description
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Club associé -->
+                @if (plan.Club != null)
+                {
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>
+                                <span class="card-icon">🏢</span>
+                                Club associé
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="club-info">
+                                <div class="club-details">
+                                    <h4 class="club-name">@plan.Club.Name</h4>
+                                    <p class="club-email">@plan.Club.Email</p>
+                                    @if (!string.IsNullOrEmpty(plan.Club.PhoneNumber))
+                                    {
+                                        <p class="club-phone">📞 @plan.Club.PhoneNumber</p>
+                                    }
+                                </div>
+                                <div class="club-actions">
+                                    <button class="btn btn-sm btn-outline" @onclick="() => ViewClub(plan.Club.Id)">
+                                        <span class="btn-icon">👁️</span>
+                                        Voir le club
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Statistiques -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="card-icon">📊</span>
+                            Statistiques
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">@GetDaysSinceCreation()</div>
+                                <div class="stat-label">Jours depuis création</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">@GetMonthlyEquivalent()</div>
+                                <div class="stat-label">Prix mensuel équivalent</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">@GetPlanPopularity()</div>
+                                <div class="stat-label">Popularité</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="card-icon">⚡</span>
+                            Actions rapides
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="quick-actions">
+                            <button class="btn btn-primary" @onclick="CreateSimilarPlan">
+                                <span class="btn-icon">📋</span>
+                                Dupliquer ce plan
+                            </button>
+                            <button class="btn btn-outline" @onclick="EditPlan">
+                                <span class="btn-icon">✏️</span>
+                                Modifier le plan
+                            </button>
+                            <button class="btn btn-outline" @onclick="ViewAllPlans">
+                                <span class="btn-icon">📋</span>
+                                Voir tous les plans
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .loading-container, .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+        text-align: center;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+    
+    .error-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .error-container h2 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .error-container p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+    
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+    }
+    
+    .breadcrumb-link {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    
+    .breadcrumb-link:hover {
+        text-decoration: underline;
+    }
+    
+    .breadcrumb-separator {
+        color: var(--text-secondary);
+    }
+    
+    .breadcrumb-current {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    
+    .plan-header {
+        margin-bottom: 2rem;
+    }
+    
+    .plan-hero {
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .plan-hero.basic {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    
+    .plan-hero.premium {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+    
+    .plan-hero.vip {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    
+    .plan-hero-content {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding: 3rem;
+        color: white;
+        position: relative;
+    }
+    
+    .plan-type-badge {
+        font-size: 4rem;
+        opacity: 0.9;
+        flex-shrink: 0;
+    }
+    
+    .plan-hero-info {
+        flex: 1;
+    }
+    
+    .plan-name {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 1rem 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .plan-price {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .price-amount {
+        font-size: 3rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+    
+    .price-period {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .plan-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    }
+    
+    .badge-basic {
+        background: rgba(59, 130, 246, 0.2);
+    }
+    
+    .badge-premium {
+        background: rgba(139, 92, 246, 0.2);
+    }
+    
+    .badge-vip {
+        background: rgba(245, 158, 11, 0.2);
+    }
+    
+    .badge-secondary {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .plan-hero-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn-white {
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text-primary);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-white:hover {
+        background: white;
+        transform: translateY(-2px);
+    }
+    
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .info-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: rgba(var(--primary-color-rgb), 0.05);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+    }
+    
+    .card-header h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .card-icon {
+        font-size: 1.2rem;
+    }
+    
+    .card-content {
+        padding: 1.5rem;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .info-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    
+    .price-highlight {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    
+    .description-content p {
+        color: var(--text-primary);
+        line-height: 1.6;
+        margin: 0;
+    }
+    
+    .no-description {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+    
+    .no-description p {
+        margin-bottom: 1rem;
+    }
+    
+    .club-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .club-details {
+        flex: 1;
+    }
+    
+    .club-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .club-email {
+        color: var(--text-secondary);
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .club-phone {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    
+    .club-actions {
+        flex-shrink: 0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(var(--primary-color-rgb), 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .quick-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .quick-actions .btn {
+        justify-content: flex-start;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 1rem;
+        }
+        
+        .plan-hero-content {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .plan-hero-actions {
+            flex-direction: row;
+            justify-content: center;
+        }
+        
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .club-info {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+    }
+</style>
 
 @code {
-	[Parameter]
-	public int MembershipPlanId { get; set; }
+    [Parameter] public int PlanId { get; set; }
+    
+    private MembershipPlanDetailsDto? plan;
+    private bool isLoading = true;
 
-	private MembershipPlanDetailsDto? membershipPlan;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPlan();
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadMembershipPlan();
-	}
+    private async Task LoadPlan()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            plan = await GymApiClient.GetMembershipPlanByIdAsync(PlanId);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.ShowError($"Erreur lors du chargement du plan: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
 
-	private async Task LoadMembershipPlan()
-	{
-		membershipPlan = await _gymApiClient.GetMembershipPlanByIdAsync(MembershipPlanId);
-	}
+    private async Task EditPlan()
+    {
+        if (plan != null)
+        {
+            await ModalService.ShowModal("update-membership-plan-modal", new { plan = plan });
+        }
+    }
 
-	private async Task OpenUpdateMembershipPlanDialog()
-	{
-		if (membershipPlan == null)
-			return;
+    private async Task DeletePlan()
+    {
+        if (plan == null) return;
 
-		var parameters = new DialogParameters();
-		parameters.Add("MembershipPlan", membershipPlan);
-		
-		var options = new DialogOptions 
-		{ 
-			MaxWidth = MaxWidth.Medium,
-			CloseOnEscapeKey = true,
-			CloseButton = true
-		};
-		
-		var result = await _dialogService.ShowAsync<UpdateMembershipPlanPopup>("Modifier le plan d'abonnement", parameters, options);
+        var confirmed = await ModalService.ShowConfirmDialog(
+            "Supprimer le plan d'abonnement",
+            $"Êtes-vous sûr de vouloir supprimer le plan \"{plan.Name}\" ? Cette action est irréversible.",
+            "Supprimer",
+            "danger"
+        );
 
-		if (result.Result == DialogResult.Ok())
-			await LoadMembershipPlan();
-	}
-}
+        if (confirmed)
+        {
+            try
+            {
+                await NotificationService.ShowSuccess("Plan d'abonnement supprimé avec succès");
+                Navigation.NavigateTo("/membership-plans");
+            }
+            catch (Exception ex)
+            {
+                await NotificationService.ShowError($"Erreur lors de la suppression: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task CreateSimilarPlan()
+    {
+        if (plan != null)
+        {
+            await ModalService.ShowModal("create-membership-plan-modal", new { templatePlan = plan });
+        }
+    }
+
+    private void ViewClub(int clubId)
+    {
+        Navigation.NavigateTo($"/clubs/{clubId}");
+    }
+
+    private void ViewAllPlans()
+    {
+        Navigation.NavigateTo("/membership-plans");
+    }
+
+    private string GetPlanCardClass(MembershipPlanType type)
+    {
+        return type switch
+        {
+            MembershipPlanType.Basic => "basic",
+            MembershipPlanType.Premium => "premium",
+            MembershipPlanType.VIP => "vip",
+            _ => "basic"
+        };
+    }
+
+    private string GetPlanTypeIcon(MembershipPlanType type)
+    {
+        return type switch
+        {
+            MembershipPlanType.Basic => "🥉",
+            MembershipPlanType.Premium => "🥈",
+            MembershipPlanType.VIP => "🥇",
+            _ => "📋"
+        };
+    }
+
+    private string GetPlanTypeDisplayName(MembershipPlanType type)
+    {
+        return type switch
+        {
+            MembershipPlanType.Basic => "Basique",
+            MembershipPlanType.Premium => "Premium",
+            MembershipPlanType.VIP => "VIP",
+            _ => type.ToString()
+        };
+    }
+
+    private string GetPeriodDisplayName(MembershipPeriod period)
+    {
+        return period switch
+        {
+            MembershipPeriod.Monthly => "mois",
+            MembershipPeriod.Quarterly => "trimestre",
+            MembershipPeriod.Yearly => "an",
+            _ => period.ToString()
+        };
+    }
+
+    private int GetDaysSinceCreation()
+    {
+        return plan != null ? (DateTime.Now - plan.CreatedAt).Days : 0;
+    }
+
+    private string GetMonthlyEquivalent()
+    {
+        if (plan == null) return "N/A";
+        
+        var monthlyPrice = plan.Period switch
+        {
+            MembershipPeriod.Monthly => plan.Price,
+            MembershipPeriod.Quarterly => plan.Price / 3,
+            MembershipPeriod.Yearly => plan.Price / 12,
+            _ => plan.Price
+        };
+        
+        return monthlyPrice.ToString("C");
+    }
+
+    private string GetPlanPopularity()
+    {
+        if (plan == null) return "N/A";
+        
+        // This would typically come from analytics data
+        return plan.Type switch
+        {
+            MembershipPlanType.Basic => "⭐⭐⭐",
+            MembershipPlanType.Premium => "⭐⭐⭐⭐",
+            MembershipPlanType.VIP => "⭐⭐⭐⭐⭐",
+            _ => "⭐⭐⭐"
+        };
+    }
+    
+    private void NavigateToMembershipPlans()
+    {
+        Navigation.NavigateTo("/membership-plans");
+    }
+} 

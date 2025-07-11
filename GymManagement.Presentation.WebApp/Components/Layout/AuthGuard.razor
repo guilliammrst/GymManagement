@@ -1,0 +1,64 @@
+@inject IAuthManager AuthManager
+@inject AuthenticatedUser AuthenticatedUser
+@inject NavigationManager Navigation
+
+@if (IsAuthenticated || IsPublicPage)
+{
+    @ChildContent
+}
+else
+{
+    <div class="auth-guard-loading">
+        <div class="loading-spinner"></div>
+        <p>Redirection vers la page de connexion...</p>
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    
+    private bool IsAuthenticated => !string.IsNullOrEmpty(AuthenticatedUser.Token);
+    
+    private bool IsPublicPage
+    {
+        get
+        {
+            var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
+            return currentPath == "" || currentPath == "/" || currentPath.StartsWith("login");
+        }
+    }
+    
+    protected override void OnInitialized()
+    {
+        if (!IsAuthenticated && !IsPublicPage)
+        {
+            AuthManager.RedirectToLogin();
+        }
+    }
+}
+
+<style>
+    .auth-guard-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 50vh;
+        text-align: center;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style> 

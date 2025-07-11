@@ -54,3 +54,10 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* Fix for MudTextField outlined variant label overlapping the border */
+.mud-input-label.mud-input-label-outlined {
+    padding-left: 4px;
+    padding-right: 4px;
+    background-color: var(--mud-palette-surface); /* Uses the surface color from the theme */
+}
