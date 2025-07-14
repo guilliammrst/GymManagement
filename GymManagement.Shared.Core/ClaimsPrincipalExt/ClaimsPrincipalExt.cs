@@ -3,7 +3,7 @@ using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
 
-namespace GymManagement.Shared.Core.ClaimsHelper
+namespace GymManagement.Shared.Core.ClaimsPrincipalExt
 {
     public static class ClaimsPrincipalExt
     {

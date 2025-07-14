@@ -4,7 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using System.Text.Json;
 using GymManagement.Shared.Core.Results;
-using GymManagement.Presentation.WebApp.ApiClients.Auth;
+using GymManagement.Shared.Core.AuthManager;
 
 namespace GymManagement.Presentation.WebApp
 {
@@ -20,12 +20,56 @@ namespace GymManagement.Presentation.WebApp
             _navigationManager.NavigateTo("/");
         }
 
-        public bool Login(string token)
+        public async Task<ModelActionResult> Login(LoginDto loginDto)
+        {
+            var tokenResult = await _authApiClient.Login(loginDto);
+            if (!tokenResult.Success)
+                return ModelActionResult.Fail(tokenResult);
+
+            var token = tokenResult.Results;
+
+            var loginResult = LogUser(token);
+            if (!loginResult.Success)
+                return ModelActionResult.Fail(loginResult);
+
+            return ModelActionResult.Ok;
+        }
+
+        public async Task<ModelActionResult> RefreshToken()
+        {
+            var refreshTokenResult = await _authApiClient.RefreshToken();
+            if (!refreshTokenResult.Success)
+                return ModelActionResult.Fail(refreshTokenResult);
+
+            var token = refreshTokenResult.Results;
+
+            var loginResult = LogUser(token);
+            if (!loginResult.Success)
+                return ModelActionResult.Fail(loginResult);
+
+            return ModelActionResult.Ok;
+        }
+
+        public void Logout()
+        {
+            _authenticatedUser.Token = string.Empty;
+            _authenticatedUser.Email = string.Empty;
+            _authenticatedUser.Role = Role.None;
+            RedirectToLogin(true);
+        }
+
+        public async Task<ModelActionResult> Register(RegisterDto registerDto)
+        {
+            // Register method is not implemented for web app
+            return ModelActionResult.Ok;
+        }
+
+        private ModelActionResult LogUser(string token)
         {
             var claims = ParseClaimsFromJwt(token);
             var role = claims.Where(c => c.Type == ClaimsTypes.Role).FirstOrDefault();
             if (role == null || (role.Value != Role.Staff.ToString() && role.Value != Role.Manager.ToString()))
-                return false;
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthorized);
 
             _authenticatedUser.Token = token;
             _authenticatedUser.Email = claims.Where(c => c.Type == ClaimsTypes.Email).FirstOrDefault()?.Value!;
@@ -37,29 +81,7 @@ namespace GymManagement.Presentation.WebApp
                 _authenticatedUser.TokenExpiration = DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
             }
 
-            return true;
-        }
-
-        public async Task<ModelActionResult> RefreshToken()
-        {
-            var refreshTokenResult = await _authApiClient.RefreshToken();
-            if (!refreshTokenResult.Success)
-                return ModelActionResult.Fail(refreshTokenResult);
-
-            var token = refreshTokenResult.Results;
-
-            if (!Login(token))
-                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
-
             return ModelActionResult.Ok;
-        }
-
-        public void Logout()
-        {
-            _authenticatedUser.Token = string.Empty;
-            _authenticatedUser.Email = string.Empty;
-            _authenticatedUser.Role = Role.None;
-            RedirectToLogin(true);
         }
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)

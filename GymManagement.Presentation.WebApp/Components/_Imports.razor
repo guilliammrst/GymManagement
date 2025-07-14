@@ -1,18 +1,18 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components.Web
-@using static Microsoft.AspNetCore.Components.Web.RenderMode
-@using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.OutputCaching
-@using Microsoft.JSInterop
 @using GymManagement.Presentation.WebApp
-@using GymManagement.Presentation.WebApp.ApiClients.Auth
 @using GymManagement.Presentation.WebApp.ApiClients.Gym
 @using GymManagement.Presentation.WebApp.Components.Layout
 @using GymManagement.Presentation.WebApp.Components.Log
 @using GymManagement.Presentation.WebApp.Components.Pages.Popups
+@using GymManagement.Shared.Core.AuthManager
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.OutputCaching
+@using Microsoft.JSInterop
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
 @inject NavigationManager _navigationManager
 @inject GymAdminApiClient _gymApiClient
 @inject AuthApiClient _authApiClient

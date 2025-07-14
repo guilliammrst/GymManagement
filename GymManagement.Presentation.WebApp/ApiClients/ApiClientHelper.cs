@@ -1,6 +1,6 @@
-﻿using GymManagement.Shared.Core.Enums;
+﻿using GymManagement.Shared.Core.AuthManager;
+using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
-using GymManagement.Shared.Web.Core.Controllers;
 
 namespace GymManagement.Presentation.WebApp.ApiClients
 {
@@ -31,7 +31,7 @@ namespace GymManagement.Presentation.WebApp.ApiClients
                     _authenticatedUser.Email = string.Empty;
                     _authenticatedUser.Role = Role.None;
                     _authManager.RedirectToLogin();
-                    return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+                    return ModelActionResult.Fail(result);
                 }
             }
             return ModelActionResult.Ok;

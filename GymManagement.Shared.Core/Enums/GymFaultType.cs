@@ -12,7 +12,8 @@
         GetTokenFailed = 7,
         TokenValidationFailed = 8,
         QrCodeExpired = 9,
-        
+        RegistrationFailed = 10,
+
         // User
         UserNotFound = 100,
         UserCreationFailed = 101,

@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Aspire + MAUI",
+    "Projects": [
+      {
+        "Path": "GymManagement.Aspire.AppHost\\GymManagement.Aspire.AppHost.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "GymManagement.Presentation.MobileApp\\GymManagement.Presentation.MobileApp.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

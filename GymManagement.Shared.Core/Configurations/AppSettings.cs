@@ -1,4 +1,4 @@
-﻿namespace GymManagement.Core.Configurations
+﻿namespace GymManagement.Shared.Core.Configurations
 {
     public static class AppSettings
     {

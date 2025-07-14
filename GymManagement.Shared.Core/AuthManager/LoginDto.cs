@@ -1,4 +1,4 @@
-﻿namespace GymManagement.Presentation.WebApp.ApiClients.Auth
+﻿namespace GymManagement.Shared.Core.AuthManager
 {
     public class LoginDto
     {

@@ -29,22 +29,14 @@
 
     private async Task HandleLogin()
     {
-        var tokenResult = await _authApiClient.Login(_loginDto);
-        if (tokenResult.Success)
-        {
-            var token = tokenResult.Results;
-            if (_authManager.Login(token))
-			{
+        var loginResult = await _authManager.Login(_loginDto);
+        if (loginResult.Success)
 				_authManager.RedirectToHome();
-			}
-			else
-			{
-				errorMessage = "Vous n'avez pas les permissions.";
-			}
-        }
-        else
-        {
+
+		else if (loginResult.Fault == GymFaultType.GetTokenFailed)
             errorMessage = "Identifiants incorrects.";
-        }
+        
+        else
+            errorMessage = "Vous n'avez pas les permissions.";
     }
 }
