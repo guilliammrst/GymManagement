@@ -41,7 +41,7 @@ namespace GymManagement.Presentation.MobileApp.Pages
 
         private async void OnGoToRegisterClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("RegisterPage");
+            await Shell.Current.GoToAsync(PageNames.RegisterPage);
         }
     }
 }

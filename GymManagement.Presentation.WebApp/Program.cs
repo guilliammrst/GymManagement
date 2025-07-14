@@ -1,9 +1,7 @@
 using GymManagement.Presentation.WebApp;
 using GymManagement.Presentation.WebApp.ApiClients;
-using GymManagement.Presentation.WebApp.ApiClients.Gym;
 using GymManagement.Presentation.WebApp.Components;
 using GymManagement.Shared.Core.AuthManager;
-using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Core.Environments;
 using Radzen;
 

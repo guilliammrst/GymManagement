@@ -1,6 +1,6 @@
 ﻿using GymManagement.Shared.Core.Results;
 
-namespace GymManagement.Presentation.WebApp.ApiClients
+namespace GymManagement.Shared.Core.AuthManager
 {
     public interface IApiClientHelper
     {

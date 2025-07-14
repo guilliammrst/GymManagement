@@ -8,9 +8,10 @@ namespace GymManagement.Presentation.MobileApp
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("LoginPage", typeof(LoginPage));
-            Routing.RegisterRoute("RegisterPage", typeof(RegisterPage));
-            Routing.RegisterRoute("MainPage", typeof(MainPage));
+            Routing.RegisterRoute(PageNames.LoginPage, typeof(LoginPage));
+            Routing.RegisterRoute(PageNames.RegisterPage, typeof(RegisterPage));
+            Routing.RegisterRoute(PageNames.MainPage, typeof(MainPage));
+            Routing.RegisterRoute(PageNames.ProfilePage, typeof(ProfilePage));
         }
     }
 }

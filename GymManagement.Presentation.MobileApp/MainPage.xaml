@@ -28,8 +28,8 @@
     </ScrollView>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Home"/>
-        <ToolbarItem Text="Logout" Clicked="OnLogoutClicked"/>
+        <ToolbarItem Text="Profil" Clicked="OnProfileClicked"/>
+        <ToolbarItem Text="Se déconnecter" Clicked="OnLogoutClicked"/>
     </ContentPage.ToolbarItems>
 
 </ContentPage>

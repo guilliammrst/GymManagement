@@ -1,4 +1,6 @@
-﻿using GymManagement.Shared.Core.AuthManager;
+﻿using GymManagement.Presentation.MobileApp.Pages;
+using GymManagement.Presentation.MobileApp.Services;
+using GymManagement.Shared.Core.AuthManager;
 
 namespace GymManagement.Presentation.MobileApp
 {
@@ -29,6 +31,11 @@ namespace GymManagement.Presentation.MobileApp
                     authManager.RedirectToLogin(true);
                 }
             });
+        }
+
+        private async void OnProfileClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync(PageNames.ProfilePage);
         }
 
         private void OnLogoutClicked(object sender, EventArgs e)

@@ -1,7 +1,7 @@
 ﻿using GymManagement.Shared.Core.AuthManager;
 using System.Text.Json;
 
-namespace GymManagement.Presentation.MobileApp
+namespace GymManagement.Presentation.MobileApp.Services
 {
     public class PreferencesService (AuthenticatedUser _authenticatedUser) : IPreferencesService
     {
@@ -24,7 +24,10 @@ namespace GymManagement.Presentation.MobileApp
                     if (deserializedUser is null || deserializedUser.Token is null)
                         return false;
 
-                    _authenticatedUser = deserializedUser;
+                    _authenticatedUser.Token = deserializedUser.Token;
+                    _authenticatedUser.Email = deserializedUser.Email;
+                    _authenticatedUser.Role = deserializedUser.Role;
+                    _authenticatedUser.TokenExpiration = deserializedUser.TokenExpiration;
 
                     return true;
                 }

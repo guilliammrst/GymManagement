@@ -1,16 +1,13 @@
 ﻿using System.Security.Claims;
-using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.JwtValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace GymManagement.Shared.Web.Core.Identity
 {
-    public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IJwtValidationService _jwtValidationService, IOptions<IssuerOptions> options) : IAuthorizationHandler
+    public class GymAuthorizationHandler(IHttpContextAccessor _httpContextAccessor, IJwtValidationService _jwtValidationService) : IAuthorizationHandler
     {
-        private readonly IssuerOptions _issuerOptions = options.Value;
         private const string REFRESH_TOKEN_PATH = "/api/refresh-token";
 
         private static void ValidateRequirements(AuthorizationHandlerContext context, ClaimsPrincipal principal)

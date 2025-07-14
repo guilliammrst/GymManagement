@@ -1,8 +1,8 @@
-﻿using GymManagement.Shared.Core.AuthManager;
-using GymManagement.Shared.Core.Enums;
+﻿using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
+using System.Net.Http.Json;
 
-namespace GymManagement.Presentation.WebApp.ApiClients
+namespace GymManagement.Shared.Core.AuthManager
 {
     public class ApiClientHelper(AuthenticatedUser _authenticatedUser, IAuthManager _authManager) : IApiClientHelper
     {
@@ -10,8 +10,15 @@ namespace GymManagement.Presentation.WebApp.ApiClients
         {
             if (!response.IsSuccessStatusCode)
             {
-                var errorDto = await response.Content.ReadFromJsonAsync<ErrorDto>();
-                return ModelActionResult.Fail((GymFaultType)errorDto?.FaultCode!, errorDto?.Message!);
+                try
+                {
+                    var errorDto = await response.Content.ReadFromJsonAsync<ErrorDto>();
+                    return ModelActionResult.Fail((GymFaultType)errorDto?.FaultCode!, errorDto?.Message!);
+                }
+                catch (Exception ex)
+                {
+                    return ModelActionResult.Fail(GymFaultType.ApiCallFailed, response.StatusCode.ToString());
+                }
             }
             return ModelActionResult.Ok;
         }

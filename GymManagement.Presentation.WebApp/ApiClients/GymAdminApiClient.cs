@@ -6,7 +6,7 @@ using GymManagement.Shared.Core.AuthManager;
 using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
 
-namespace GymManagement.Presentation.WebApp.ApiClients.Gym
+namespace GymManagement.Presentation.WebApp.ApiClients
 {
     public class GymAdminApiClient(HttpClient _httpClient, AuthenticatedUser _authenticatedUser, IApiClientHelper _apiClientHelper)
     {

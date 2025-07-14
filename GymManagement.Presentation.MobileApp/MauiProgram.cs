@@ -1,5 +1,6 @@
 ﻿using GymManagement.Presentation.MobileApp.ApiClients;
 using GymManagement.Presentation.MobileApp.Pages;
+using GymManagement.Presentation.MobileApp.Services;
 using GymManagement.Shared.Core.AuthManager;
 using GymManagement.Shared.Core.Environments;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,6 @@ namespace GymManagement.Presentation.MobileApp
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-
             builder.Services.AddHttpClient<GymApiClient>(client =>
             {
                 client.BaseAddress = new(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.GymApiUrl));
@@ -35,6 +35,7 @@ namespace GymManagement.Presentation.MobileApp
             builder.Services.AddSingleton<AuthenticatedUser>();
             builder.Services.AddScoped<IAuthManager, AuthManager>();
             builder.Services.AddScoped<IPreferencesService, PreferencesService>();
+            builder.Services.AddScoped<IApiClientHelper, ApiClientHelper>();
 
             builder.Services.RegisterPages();
 
