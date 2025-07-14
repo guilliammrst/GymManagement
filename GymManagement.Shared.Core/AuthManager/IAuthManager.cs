@@ -1,12 +1,13 @@
 ﻿using GymManagement.Shared.Core.Results;
 
-namespace GymManagement.Presentation.WebApp
+namespace GymManagement.Shared.Core.AuthManager
 {
     public interface IAuthManager
     {
         void RedirectToLogin(bool forceLoad = false);
         public void RedirectToHome();
-        bool Login(string token);
+        Task<ModelActionResult> Login(LoginDto loginDto);
+        Task<ModelActionResult> Register(RegisterDto registerDto);
         Task<ModelActionResult> RefreshToken();
         void Logout();
     }

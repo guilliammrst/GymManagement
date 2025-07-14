@@ -5,5 +5,6 @@
         public const string GymApi = "gym-api";
         public const string AuthApi = "auth-api";
         public const string WebApp = "web-app";
+        public const string MobileApp = "mobile-app";
     }
 }

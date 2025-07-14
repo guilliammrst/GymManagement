@@ -1,6 +1,6 @@
 ﻿using GymManagement.Application.Interfaces.Repositories.Users;
 using GymManagement.Application.Interfaces.Services.Users;
-using GymManagement.Shared.Core.ClaimsHelper;
+using GymManagement.Shared.Core.ClaimsPrincipalExt;
 using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
 using System.Security.Claims;

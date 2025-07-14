@@ -1,6 +1,6 @@
 ﻿using GymManagement.Shared.Core.Enums;
 
-namespace GymManagement.Presentation.WebApp
+namespace GymManagement.Shared.Core.AuthManager
 {
     public class AuthenticatedUser
     {

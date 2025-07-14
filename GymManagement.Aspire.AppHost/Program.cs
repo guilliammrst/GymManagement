@@ -1,5 +1,6 @@
 using GymManagement.Shared.Core.Configurations;
 using GymManagement.Shared.Core.Constants;
+using GymManagement.Shared.Core.Environments;
 using GymManagement.Shared.Core.KeyVaultService;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,8 +36,8 @@ var authApiService = builder.AddProject<Projects.GymManagement_Presentation_Auth
 
 builder.AddProject<Projects.GymManagement_Presentation_WebApp>(ProjectNames.WebApp)
     .WithExternalHttpEndpoints()
-    .WithReference(apiService)
-    .WithReference(authApiService)
+    .WithEnvironment(EnvironmentVariables.GymApiUrl, "https://localhost:7114")
+    .WithEnvironment(EnvironmentVariables.AuthApiUrl, "https://localhost:7090")
     .WaitFor(apiService)
     .WaitFor(authApiService);
 

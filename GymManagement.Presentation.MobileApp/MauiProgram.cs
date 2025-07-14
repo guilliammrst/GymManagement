@@ -1,0 +1,44 @@
+﻿using GymManagement.Presentation.MobileApp.ApiClients;
+using GymManagement.Presentation.MobileApp.Pages;
+using GymManagement.Shared.Core.AuthManager;
+using GymManagement.Shared.Core.Environments;
+using Microsoft.Extensions.Logging;
+
+namespace GymManagement.Presentation.MobileApp
+{
+    public static class MauiProgram
+    {
+        public static MauiApp CreateMauiApp()
+        {
+            var builder = MauiApp.CreateBuilder();
+            builder
+                .UseMauiApp<App>()
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                });
+#if DEBUG
+            builder.Logging.AddDebug();
+#endif
+
+            builder.Services.AddHttpClient<GymApiClient>(client =>
+            {
+                client.BaseAddress = new(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.GymApiUrl));
+            });
+
+            builder.Services.AddHttpClient<AuthApiClient>(client =>
+            {
+                client.BaseAddress = new(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.AuthApiUrl));
+            });
+
+            builder.Services.AddSingleton<AuthenticatedUser>();
+            builder.Services.AddScoped<IAuthManager, AuthManager>();
+            builder.Services.AddScoped<IPreferencesService, PreferencesService>();
+
+            builder.Services.RegisterPages();
+
+            return builder.Build();
+        }
+    }
+}

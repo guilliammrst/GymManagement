@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{030EC1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{E8C255DD-D07B-408F-8059-A2D27F1EB99E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymManagement.Presentation.MobileApp", "GymManagement.Presentation.MobileApp\GymManagement.Presentation.MobileApp.csproj", "{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,11 @@ Global
 		{45077477-70FF-4E49-A134-C9BE056AD408}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45077477-70FF-4E49-A134-C9BE056AD408}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45077477-70FF-4E49-A134-C9BE056AD408}.Release|Any CPU.Build.0 = Release|Any CPU
+		{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,5 +117,9 @@ Global
 		{4EC3C34C-8159-47EE-9AD5-D873F0F87DB8} = {FA9BBE57-7716-42FF-A1EF-E566651EEF94}
 		{4BE5EB40-9D93-4B38-871A-167F9B52EAA5} = {FA9BBE57-7716-42FF-A1EF-E566651EEF94}
 		{45077477-70FF-4E49-A134-C9BE056AD408} = {210F936E-A7D1-4319-B3A9-3D5EE4DDCDBA}
+		{588190AF-7CF2-4F4E-A70C-6FDEBAC9BE45} = {FA9BBE57-7716-42FF-A1EF-E566651EEF94}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CF3C5070-87A5-4421-8EED-EA7571B38F9B}
 	EndGlobalSection
 EndGlobal

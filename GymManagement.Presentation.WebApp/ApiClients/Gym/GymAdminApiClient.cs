@@ -2,6 +2,7 @@ using GymManagement.Application.Interfaces.Controllers.DTOs;
 using GymManagement.Application.Interfaces.Services.Clubs;
 using GymManagement.Application.Interfaces.Services.MembershipPlans;
 using GymManagement.Application.Interfaces.Services.Users;
+using GymManagement.Shared.Core.AuthManager;
 using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
 

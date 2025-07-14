@@ -1,7 +1,7 @@
 ﻿using GymManagement.Shared.Core.Enums;
 using System.Text.Json.Serialization;
 
-namespace GymManagement.Shared.Web.Core.Controllers
+namespace GymManagement.Shared.Core.Results
 {
     public class ErrorDto
     {
