@@ -1,4 +1,4 @@
-﻿namespace GymManagement.Presentation.MobileApp
+﻿namespace GymManagement.Presentation.MobileApp.Services
 {
     public interface IPreferencesService
     {

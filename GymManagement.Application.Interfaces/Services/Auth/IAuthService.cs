@@ -8,6 +8,5 @@ namespace GymManagement.Application.Interfaces.Services.Auth
         Task<ModelActionResult<string>> LoginAsync(LoginDto loginDto);
         Task<ModelActionResult<string>> RefreshToken(string email);
         Task<ModelActionResult<string>> RegisterAsync(RegisterDto registerDto);
-        Task<ModelActionResult<UserDetailsDto>> MeAsync(string email);
     }
 }

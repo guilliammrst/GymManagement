@@ -15,12 +15,10 @@ namespace GymManagement.Presentation.MobileApp.Pages
 
             genderPicker.ItemsSource = Enum.GetValues(typeof(Gender))
                                           .Cast<Gender>()
-                                          .Where(g => g != Gender.None)
                                           .ToList();
 
             countryPicker.ItemsSource = Enum.GetValues(typeof(Country))
                                            .Cast<Country>()
-                                           .Where(c => c != Country.None)
                                            .ToList();
         }
 
@@ -62,7 +60,7 @@ namespace GymManagement.Presentation.MobileApp.Pages
 
         private async void OnGoToLoginClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//LoginPage");
+            await Shell.Current.GoToAsync("//" + PageNames.LoginPage);
         }
     }
 }

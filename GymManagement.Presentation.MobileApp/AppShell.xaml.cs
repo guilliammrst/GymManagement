@@ -1,4 +1,5 @@
 ﻿using GymManagement.Presentation.MobileApp.Pages;
+using GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow;
 
 namespace GymManagement.Presentation.MobileApp
 {
@@ -8,9 +9,14 @@ namespace GymManagement.Presentation.MobileApp
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("LoginPage", typeof(LoginPage));
-            Routing.RegisterRoute("RegisterPage", typeof(RegisterPage));
-            Routing.RegisterRoute("MainPage", typeof(MainPage));
+            Routing.RegisterRoute(PageNames.RegisterPage, typeof(RegisterPage));
+            Routing.RegisterRoute(PageNames.ProfilePage, typeof(ProfilePage));
+            Routing.RegisterRoute(PageNames.MembershipsPage, typeof(MembershipsPage));
+            Routing.RegisterRoute(PageNames.MembershipDetailsPage, typeof(MembershipDetailsPage));
+            Routing.RegisterRoute(PageNames.SubscriptionDetailsPage, typeof(SubscriptionDetailsPage));
+            Routing.RegisterRoute(PageNames.SubscribePage, typeof(SubscribePage));
+            Routing.RegisterRoute(PageNames.SubscriptionClubPage, typeof(SubscriptionClubPage));
+            Routing.RegisterRoute(PageNames.PaymentPage, typeof(PaymentPage));
         }
     }
 }

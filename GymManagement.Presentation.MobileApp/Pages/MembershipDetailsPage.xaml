@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GymManagement.Presentation.MobileApp.Converters"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.MembershipDetailsPage"
+             Title="Détails de l'abonnement">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+			<local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Label Text="Détails de l'abonnement"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Label Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}"/>
+            <Label Text="{Binding EndDate, StringFormat='Fin : {0:dd/MM/yyyy}'}"/>
+            <Label Text="{Binding IsActive, StringFormat='Actif : {0}'}"/>
+            <Label Text="{Binding RenewWhenExpiry, StringFormat='Renouvellement auto : {0}'}"/>
+            <Label Text="{Binding IsExpired, StringFormat='Expiré : {0}'}"/>
+
+            <Label Text="{Binding HomeClub.Name, StringFormat='Club : {0}'}"/>
+
+            <Label Text="{Binding MembershipPlan.Description, StringFormat='Abonnement : {0}'}"/>
+            <Label Text="{Binding MembershipPlan.MembershipPlanType, StringFormat='Type : {0}'}"/>
+
+            <Label Text="Informations de paiement :"
+                   FontAttributes="Bold"
+                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+
+            <Label Text="{Binding PaymentDetail.PaymentStatus, StringFormat='Paiement : {0}'}"
+                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+
+            <Label Text="{Binding PaymentDetail.PaymentMethod, StringFormat='Méthode : {0}'}"
+                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+
+            <Label Text="{Binding PaymentDetail.PaymentDate, StringFormat='Payé le : {0:dd/MM/yyyy}'}"
+                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+
+			<Button Text="Payer l'abonnement"
+                BackgroundColor="Green"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolToVisibility}}"
+                Clicked="OnPayClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -6,5 +6,6 @@ namespace GymManagement.Application.Interfaces.Services.Users
     {
         Task<ModelActionResult<UserDetailsDto>> GetUserByIdAsync(int id);
         Task<ModelActionResult<List<UserDto>>> GetUsersAsync(UserServiceFilter filter);
+        Task<ModelActionResult<UserDetailsDto>> MeAsync(string email);
     }
 }

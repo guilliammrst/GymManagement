@@ -1,4 +1,5 @@
 ﻿using GymManagement.Application.Interfaces.Repositories.Users;
+using GymManagement.Infrastructure.Persistence.Models;
 using GymManagement.Infrastructure.Repositories.Converters;
 using GymManagement.Infrastructure.Repositories.DbContexts;
 using GymManagement.Shared.Core.Enums;
@@ -78,6 +79,19 @@ namespace GymManagement.Infrastructure.Repositories.Users
 
                 if (userUpdateDto.Gender.HasValue)
                     userModel.Gender = userUpdateDto.Gender.Value;
+
+                if (userModel.Address == null && userUpdateDto.Country.HasValue && !string.IsNullOrWhiteSpace(userUpdateDto.City) && !string.IsNullOrWhiteSpace(userUpdateDto.Street) && !string.IsNullOrWhiteSpace(userUpdateDto.PostalCode) && !string.IsNullOrWhiteSpace(userUpdateDto.Number))
+                {
+                    var addressModel = new AddressModel
+                    {
+                        Country = userUpdateDto.Country.Value,
+                        City = userUpdateDto.City,
+                        Street = userUpdateDto.Street,
+                        PostalCode = userUpdateDto.PostalCode,
+                        Number = userUpdateDto.Number
+                    };
+                    userModel.Address = addressModel;
+                }
 
                 if (userUpdateDto.Country.HasValue && userModel.Address != null)
                     userModel.Address.Country = userUpdateDto.Country.Value;

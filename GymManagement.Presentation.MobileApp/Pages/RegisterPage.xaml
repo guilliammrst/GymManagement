@@ -25,11 +25,20 @@
 			<Entry x:Name="streetEntry" Placeholder="Rue"/>
 			<Entry x:Name="postalCodeEntry" Placeholder="Code postal"/>
 			<Entry x:Name="numberEntry" Placeholder="Numéro"/>
+            
+            <Button 
+				Text="Créer mon compte" 
+				Clicked="OnRegisterClicked" 
+				BackgroundColor="LightGray" 
+				TextColor="Black"/>
 
-			<Button Text="Créer mon compte" Clicked="OnRegisterClicked"/>
-			<Button Text="Se connecter" Clicked="OnGoToLoginClicked"/>
+			<Button 
+				Text="Se connecter" 
+				Clicked="OnGoToLoginClicked" 
+				BackgroundColor="DodgerBlue" 
+				TextColor="White"/>
 
-		</StackLayout>
+        </StackLayout>
 	</ScrollView>
 
 </ContentPage>

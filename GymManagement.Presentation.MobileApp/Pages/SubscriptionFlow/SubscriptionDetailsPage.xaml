@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow.SubscriptionDetailsPage"
+             Title="Détails de l'abonnement">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Détails de l'abonnement"
+               FontSize="24"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+        <Label Text="Date de début" />
+        <DatePicker x:Name="startDatePicker"
+                    MinimumDate="{x:Static sys:DateTime.Today}" />
+
+        <Label Text="Renouveler automatiquement ?" />
+        <Switch x:Name="renewSwitch" IsToggled="True" />
+
+        <Label Text="Durée de l'abonnement" />
+        <Picker x:Name="periodPicker" Title="Choisir une période">
+			<Picker.ItemsSource>
+				<x:Array Type="{x:Type x:String}">
+					<x:String>Aucune</x:String>
+					<x:String>4 semaines</x:String>
+					<x:String>1 an</x:String>
+				</x:Array>
+			</Picker.ItemsSource>
+        </Picker>
+
+        <Button Text="Créer mon abonnement"
+                x:Name="finishButton"
+                IsEnabled="False"
+                Clicked="OnFinishClicked"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                CornerRadius="8" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

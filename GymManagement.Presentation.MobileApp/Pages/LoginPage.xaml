@@ -9,8 +9,16 @@
         <Label Text="Connexion" FontSize="24" HorizontalOptions="Center"/>
         <Entry x:Name="emailEntry" Placeholder="Email" Keyboard="Email"/>
         <Entry x:Name="passwordEntry" Placeholder="Mot de passe" IsPassword="True"/>
-        <Button Text="Se connecter" Clicked="OnLoginClicked"/>
-        <Button Text="Créer un compte" Clicked="OnGoToRegisterClicked"/>
+        
+        <Button Text="Se connecter" 
+                Clicked="OnLoginClicked" 
+				BackgroundColor="LightGray" 
+				TextColor="Black"/>
+
+        <Button Text="Créer un compte"
+                Clicked="OnGoToRegisterClicked"
+				BackgroundColor="DodgerBlue" 
+				TextColor="White"/>
     </StackLayout>
 
 </ContentPage>

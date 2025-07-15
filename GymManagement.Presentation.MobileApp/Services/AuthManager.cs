@@ -1,11 +1,12 @@
-﻿using GymManagement.Shared.Core.AuthManager;
+﻿using GymManagement.Presentation.MobileApp.Pages;
+using GymManagement.Shared.Core.AuthManager;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace GymManagement.Presentation.MobileApp
+namespace GymManagement.Presentation.MobileApp.Services
 {
     public class AuthManager(AuthenticatedUser _authenticatedUser, IPreferencesService _preferencesService, AuthApiClient _authApiClient) : IAuthManager
     {
@@ -14,7 +15,7 @@ namespace GymManagement.Presentation.MobileApp
             if (Shell.Current == null)
                 return;
 
-            await Shell.Current.GoToAsync("//LoginPage", true);
+            await Shell.Current.GoToAsync("//" + PageNames.LoginPage, true);
         }
 
         public async void RedirectToHome()
@@ -22,7 +23,7 @@ namespace GymManagement.Presentation.MobileApp
             if (Shell.Current == null)
                 return;
 
-            await Shell.Current.GoToAsync("//MainPage");
+            await Shell.Current.GoToAsync("//" + PageNames.MainPage);
         }
 
         public async Task<ModelActionResult> Login(LoginDto loginDto)

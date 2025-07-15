@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.ProfilePage"
+             Title="Profil">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="Informations personnelles" FontSize="20" FontAttributes="Bold" />
+
+            <Entry x:Name="nameEntry" Placeholder="Prénom" />
+            <Entry x:Name="surnameEntry" Placeholder="Nom" />
+            <DatePicker x:Name="birthdatePicker" MaximumDate="{x:Static sys:DateTime.Now}" />
+
+            <Entry x:Name="emailEntry" Placeholder="Email" Keyboard="Email" />
+            <Entry x:Name="phoneEntry" Placeholder="Téléphone" Keyboard="Telephone" />
+            <Entry x:Name="passwordEntry" Placeholder="Mot de passe" IsPassword="True" />
+
+
+			<Picker x:Name="genderPicker" Title="Genre"/>
+
+            <Label Text="Adresse" FontSize="18" FontAttributes="Bold" />
+
+			<Picker x:Name="countryPicker" Title="Pays"/>
+
+            <Entry x:Name="cityEntry" Placeholder="Ville" />
+            <Entry x:Name="streetEntry" Placeholder="Rue" />
+            <Entry x:Name="postalCodeEntry" Placeholder="Code Postal" Keyboard="Numeric" />
+            <Entry x:Name="numberEntry" Placeholder="Numéro" />
+
+            <Button Text="Mettre à jour" 
+				Clicked="OnUpdateClicked"
+				BackgroundColor="DodgerBlue"
+				TextColor="White" />
+            <Button Text="Supprimer mon compte" 
+				Clicked="OnDeleteClicked"
+				BackgroundColor="Red"
+				TextColor="White" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+	<ContentPage.ToolbarItems>
+		<ToolbarItem Text="Home" Clicked="OnHomeClicked"/>
+		<ToolbarItem Text="Se déconnecter" Clicked="OnLogoutClicked"/>
+	</ContentPage.ToolbarItems>
+
+</ContentPage>

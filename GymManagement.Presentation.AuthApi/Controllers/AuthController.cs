@@ -72,24 +72,5 @@ namespace GymManagement.Presentation.AuthApi.Controllers
 
             return StatusCode(StatusCodes.Status201Created, token);
         }
-
-        [HttpGet("me")]
-        [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
-        public async Task<ActionResult> Me()
-        {
-            var emailResult = User.GetEmail();
-            if (!emailResult.Success)
-                return ConvertActionResult(emailResult);
-
-            var email = emailResult.Results;
-
-            var userResult = await _authService.MeAsync(email);
-            if (!userResult.Success)
-                return ConvertActionResult(userResult);
-
-            var user = userResult.Results;
-            
-            return Ok(user);
-        }
     }
 }
