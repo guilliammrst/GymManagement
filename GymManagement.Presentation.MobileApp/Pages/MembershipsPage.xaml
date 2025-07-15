@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.MembershipsPage"
+             Title="Mes abonnements">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+            <Label Text="Mes abonnements" FontSize="24" HorizontalOptions="Center"/>
+
+			 <Button Text="S'abonner"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                Clicked="OnSubscribeClicked"
+                HorizontalOptions="Fill"
+                Margin="0,20,0,0" />
+
+            <CollectionView x:Name="subscriptionsView"
+                SelectionMode="Single"
+                SelectionChanged="OnSubscriptionSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="DodgerBlue" BackgroundColor="DodgerBlue" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10">
+                            <StackLayout>
+                                <Label Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}"/>
+                                <Label Text="{Binding EndDate, StringFormat='Fin : {0:dd/MM/yyyy}'}"/>
+                                <Label Text="{Binding IsActive, StringFormat='Actif : {0}'}"/>
+                                <Label Text="{Binding RenewWhenExpiry, StringFormat='Renouvellement auto : {0}'}"/>
+                                <Label Text="{Binding IsExpired, StringFormat='Expiré : {0}'}"/>
+                            </StackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+            <Label x:Name="emptyLabel"
+                   Text="Aucun abonnement trouvé."
+                   IsVisible="False"
+                   HorizontalOptions="Center"
+                   FontAttributes="Italic"
+                   FontSize="16"/>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

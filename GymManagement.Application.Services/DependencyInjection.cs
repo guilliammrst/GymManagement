@@ -10,6 +10,8 @@ using GymManagement.Application.Interfaces.Services.MembershipPlans;
 using GymManagement.Application.Services.MembershipPlans;
 using GymManagement.Application.Interfaces.Services.QrCodes;
 using GymManagement.Application.Services.QrCodes;
+using GymManagement.Application.Interfaces.Services.Memberships;
+using GymManagement.Application.Services.Memberships;
 
 namespace GymManagement.Application.Services
 {
@@ -20,6 +22,7 @@ namespace GymManagement.Application.Services
             return services.RegisterAuthService(configuration)
                 .RegisterUserServices()
                 .RegisterClubServices()
+                .RegisterMembershipServices()
                 .RegisterMembershipPlanServices()
                 .RegisterQrCodeServices();
         }
@@ -28,6 +31,11 @@ namespace GymManagement.Application.Services
         {
             return services.AddTransient<IQrCodeGenerationService, QrCodeGenerationService>()
                 .AddTransient<IQrCodeValidationService, QrCodeValidationService>();
+        }
+
+        private static IServiceCollection RegisterMembershipServices(this IServiceCollection services)
+        {
+            return services.AddTransient<IMembershipQueryService, MembershipQueryService>();
         }
 
         private static IServiceCollection RegisterMembershipPlanServices(this IServiceCollection services)

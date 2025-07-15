@@ -33,6 +33,7 @@ namespace GymManagement.Presentation.MobileApp
             });
 
             builder.Services.AddSingleton<AuthenticatedUser>();
+            builder.Services.AddSingleton<SubscriptionFlowData>();
             builder.Services.AddScoped<IAuthManager, AuthManager>();
             builder.Services.AddScoped<IPreferencesService, PreferencesService>();
             builder.Services.AddScoped<IApiClientHelper, ApiClientHelper>();

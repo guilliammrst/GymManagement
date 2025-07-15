@@ -1,5 +1,6 @@
 ﻿using GymManagement.Application.Interfaces.Services.QrCodes;
 using GymManagement.Application.Interfaces.Services.Users;
+using GymManagement.Shared.Core.ClaimsPrincipalExt;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
 using GymManagement.Shared.Web.Core.RequestExt;
@@ -28,6 +29,30 @@ namespace GymManagement.Presentation.Api.Controllers.App.QrCodes
                 return ConvertActionResult(verificationResult);
 
             var qrCodeResult = await _qrCodeGenerationService.GenerateQrCodeAsync(userId, token);
+            if (!qrCodeResult.Success)
+                return ConvertActionResult(qrCodeResult);
+
+            var qrCode = qrCodeResult.Results;
+
+            return Content(qrCode, "image/svg+xml");
+        }
+
+        [HttpGet("qr-code")]
+        public async Task<ActionResult> GenerateQrCode()
+        {
+            var tokenResult = Request.GetToken();
+            if (!tokenResult.Success)
+                return ConvertActionResult(tokenResult);
+
+            var token = tokenResult.Results;
+
+            var getEmailResult = User.GetEmail();
+            if (!getEmailResult.Success)
+                return ConvertActionResult(getEmailResult);
+
+            var email = getEmailResult.Results;
+
+            var qrCodeResult = await _qrCodeGenerationService.GenerateQrCodeAsync(email, token);
             if (!qrCodeResult.Success)
                 return ConvertActionResult(qrCodeResult);
 

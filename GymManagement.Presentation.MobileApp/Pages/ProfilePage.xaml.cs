@@ -92,6 +92,10 @@ namespace GymManagement.Presentation.MobileApp.Pages
 
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
+            var confirm = await DisplayAlert("Suppresion compte", "Voulez-vous vraiment supprimer votre compte?", "Oui", "Non");
+            if (!confirm)
+                return;
+
             var result = await _gymApiClient.DeleteUserAsync(UserId);
 
             if (result.Success)

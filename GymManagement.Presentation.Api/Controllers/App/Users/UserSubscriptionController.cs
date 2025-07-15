@@ -10,7 +10,7 @@ namespace GymManagement.Presentation.Api.Controllers.App.Users
     [ApiController]
     [Route("api/app/users")]
     [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
-    public class UserSubscribtionController(IUserVerificationService _userVerificationService, 
+    public class UserSubscriptionController(IUserVerificationService _userVerificationService, 
         IUserSubscriptionService _userSubscriptionService) : GymBaseController
     {
         [HttpPost("{userId}/subscribe")]
@@ -32,9 +32,9 @@ namespace GymManagement.Presentation.Api.Controllers.App.Users
             if (!subscriptionResult.Success)
                 return ConvertActionResult(subscriptionResult);
 
-            var subscription = subscriptionResult.Results;
+            var userDetails = subscriptionResult.Results;
 
-            return Ok(subscription);
+            return Ok(userDetails);
         }
 
         [HttpPost("{userId}/memberships/{membershipId}")]
