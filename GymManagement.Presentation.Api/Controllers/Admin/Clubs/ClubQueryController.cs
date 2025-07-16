@@ -8,7 +8,7 @@ namespace GymManagement.Presentation.Api.Controllers.Admin.Clubs
 {
     [ApiController]
     [Route("api/admin/clubs")]
-    [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
+    [Authorize(Roles = RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
     public class ClubQueryController(IClubQueryService _clubQueryService) : GymBaseController
     {
         [HttpGet("{clubId}")]

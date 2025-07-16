@@ -1,0 +1,68 @@
+﻿<EditForm Model="@plan" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Description :</label>
+        <InputText class="form-control" @bind-Value="plan.Description" />
+    </div>
+
+    <div class="mb-2">
+        <label>Prix (€) :</label>
+        <InputNumber class="form-control" @bind-Value="plan.Price" Step="0.01" />
+    </div>
+
+    <div class="mb-2">
+        <label>Club :</label>
+        <InputSelect class="form-control" @bind-Value="plan.ClubId">
+            <option value="">-- Sélectionner un club --</option>
+            @foreach (var club in clubs)
+            {
+                <option value="@club.Id">@club.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <RadzenButton Text="Créer" Type="Submit" Style="margin-right: 10px;" />
+    <RadzenButton Text="Annuler" ButtonStyle="ButtonStyle.Secondary" Click="Close" />
+</EditForm>
+
+@code {
+    private CreateCoachingPlanDto plan = new();
+    private string errorMessage = string.Empty;
+
+    private List<ClubDto> clubs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        clubs = await _gymApiClient.GetClubsAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var meResult = await _gymApiClient.MeAsync();
+        if (!meResult.Success)
+        {
+            errorMessage = meResult.ErrorMessage;
+            return;
+		}
+		plan.CoachId = meResult.Results.Id;
+
+        var result = await _gymApiClient.CreateCoachingPlanAsync(plan);
+
+        if (!result.Success)
+        {
+            errorMessage = result.ErrorMessage;
+            return;
+        }
+
+        _dialogService.Close(true);
+    }
+
+    private void Close() => _dialogService.Close(false);
+}

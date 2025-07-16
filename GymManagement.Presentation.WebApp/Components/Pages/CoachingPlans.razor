@@ -1,0 +1,58 @@
+﻿@page "/coaching-plans"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Coaching plans</PageTitle>
+
+<h3>Coaching plans</h3>
+
+@if (coachingPlans == null)
+{
+	<p><em>Loading...</em></p>
+}
+else if (coachingPlans.Count == 0)
+{
+	<p>Aucun coaching plan trouvé.</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Description</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var coachingPlan in coachingPlans)
+			{
+				var href = $"coaching-plan/{coachingPlan.Id}";
+				<tr>
+					<td>@coachingPlan.Id</td>
+					<td>@coachingPlan.Description</td>
+					<td>
+						<NavLink class="btn btn-primary nav-link" href="@href">
+							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
+						</NavLink>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<CoachingPlanDto>? coachingPlans;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadCoachingPlans();
+	}
+
+	private async Task LoadCoachingPlans()
+	{
+		coachingPlans = await _gymApiClient.GetCoachingPlansAsync();
+	}
+}

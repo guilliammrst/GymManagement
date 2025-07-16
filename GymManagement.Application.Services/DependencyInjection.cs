@@ -12,6 +12,8 @@ using GymManagement.Application.Interfaces.Services.QrCodes;
 using GymManagement.Application.Services.QrCodes;
 using GymManagement.Application.Interfaces.Services.Memberships;
 using GymManagement.Application.Services.Memberships;
+using GymManagement.Application.Interfaces.Services.CoachingPlans;
+using GymManagement.Application.Services.CoachingPlans;
 
 namespace GymManagement.Application.Services
 {
@@ -24,7 +26,14 @@ namespace GymManagement.Application.Services
                 .RegisterClubServices()
                 .RegisterMembershipServices()
                 .RegisterMembershipPlanServices()
-                .RegisterQrCodeServices();
+                .RegisterQrCodeServices()
+                .RegisterCoachingPlanServices();
+        }
+
+        private static IServiceCollection RegisterCoachingPlanServices(this IServiceCollection services)
+        {
+            return services.AddTransient<ICoachingPlanQueryService, CoachingPlanQueryService>()
+                .AddTransient<ICoachingPlanCommandService, CoachingPlanCommandService>();
         }
 
         private static IServiceCollection RegisterQrCodeServices(this IServiceCollection services)

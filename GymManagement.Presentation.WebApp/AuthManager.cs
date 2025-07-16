@@ -68,7 +68,7 @@ namespace GymManagement.Presentation.WebApp
         {
             var claims = ParseClaimsFromJwt(token);
             var role = claims.Where(c => c.Type == ClaimsTypes.Role).FirstOrDefault();
-            if (role == null || (role.Value != Role.Staff.ToString() && role.Value != Role.Manager.ToString()))
+            if (role == null || (role.Value != Role.Coach.ToString() && role.Value != Role.Staff.ToString() && role.Value != Role.Manager.ToString()))
                 return ModelActionResult.Fail(GymFaultType.UserNotAuthorized);
 
             _authenticatedUser.Token = token;

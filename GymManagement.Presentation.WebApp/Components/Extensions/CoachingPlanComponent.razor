@@ -1,0 +1,37 @@
+﻿<ul>
+    @if (CoachingPlan == null)
+    {
+        <ul>
+            <li>No coaching plan.</li>
+        </ul>
+    }
+    else
+    {
+        <li><strong>ID:</strong> @CoachingPlan.Id</li>
+        <li><strong>Created At:</strong> @CoachingPlan.CreatedAt.ToString("g")</li>
+        <li><strong>Updated At:</strong> @CoachingPlan.UpdatedAt?.ToString("g")</li>
+        <li><strong>Description:</strong> @CoachingPlan.Description</li>
+        <li><strong>Base price:</strong> @CoachingPlan.Price.ToString("C")</li>
+        <li><strong>Is valid:</strong> @CoachingPlan.IsValid</li>
+            <li><strong>Coachings</strong></li>
+            @foreach (var coaching in CoachingPlan.Coachings)
+            {
+                <ul>
+                    <li><strong>Id:</strong> @coaching.Id</li>
+                    <li><strong>Created At:</strong> @CoachingPlan.CreatedAt.ToString("g")</li>
+                    <li><strong>Updated At:</strong> @CoachingPlan.UpdatedAt?.ToString("g")</li>
+                    <li><strong>Start Date:</strong> @coaching.StartDate.ToString("g")</li>
+                    <li><strong>End Date:</strong> @coaching.EndDate.ToString("g")</li>
+                    <li><strong>Is Active:</strong> @coaching.IsActive</li>
+                    <li><strong>Renew When Expiry:</strong> @coaching.RenewWhenExpiry</li>
+                    <li><strong>Week Day:</strong> @coaching.WeekDay</li>
+                    <li><strong>Hour:</strong> @coaching.Hour</li>
+                </ul>
+            }
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public CoachingPlanDetailsDto? CoachingPlan { get; set; }
+}

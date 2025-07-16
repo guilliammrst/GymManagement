@@ -19,4 +19,8 @@
     <ProjectReference Include="..\GymManagement.Shared.Core\GymManagement.Shared.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Coachings\" />
+  </ItemGroup>
+
 </Project>

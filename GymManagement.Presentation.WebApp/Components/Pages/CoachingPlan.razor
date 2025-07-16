@@ -1,0 +1,56 @@
+﻿@page "/coaching-plan/{CoachingPlanId:int}"
+@using GymManagement.Presentation.WebApp.ApiClients
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Membership plan</PageTitle>
+
+@if (_authenticatedUser.Role == Role.Coach)
+{
+	<NavLink class="btn btn-primary nav-link" href="my-coaching-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+	</NavLink>
+}
+else
+{
+	<NavLink class="btn btn-primary nav-link" href="coaching-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+	</NavLink>
+}
+
+<h3>Coaching plan Details</h3>
+
+@if (coachingPlan == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div>
+		<CoachingPlanComponent CoachingPlan="coachingPlan"></CoachingPlanComponent>
+		<ul>
+			<li><strong>Coach</strong></li>
+			<UserComponent User="coachingPlan.Coach"></UserComponent>
+			<li><strong>Club</strong></li>
+			<ClubComponent Club="coachingPlan.Club"></ClubComponent>
+		</ul>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public int CoachingPlanId { get; set; }
+
+	private CoachingPlanDetailsDto? coachingPlan;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadMembershipPlan();
+	}
+
+	private async Task LoadMembershipPlan()
+	{
+		coachingPlan = await _gymApiClient.GetCoachingPlanByIdAsync(CoachingPlanId);
+	}
+}

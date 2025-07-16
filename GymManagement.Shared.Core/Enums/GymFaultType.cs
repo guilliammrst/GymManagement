@@ -49,5 +49,9 @@
         MembershipExpired = 502,
         MembershipPaymentDetailNotFound = 503,
         MembershipPaymentFailed = 504,
+
+        // Coaching plan
+        CoachingPlanNotFound = 600,
+        CoachingPlanCreationFailed = 601,
     }
 }
