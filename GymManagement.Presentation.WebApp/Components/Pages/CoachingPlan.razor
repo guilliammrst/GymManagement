@@ -4,7 +4,7 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Membership plan</PageTitle>
+<PageTitle>Coaching plan</PageTitle>
 
 @if (_authenticatedUser.Role == Role.Coach)
 {
@@ -46,10 +46,10 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		await LoadMembershipPlan();
+		await LoadCoachingPlan();
 	}
 
-	private async Task LoadMembershipPlan()
+	private async Task LoadCoachingPlan()
 	{
 		coachingPlan = await _gymApiClient.GetCoachingPlanByIdAsync(CoachingPlanId);
 	}

@@ -9,8 +9,11 @@ namespace GymManagement.Infrastructure.Repositories.CoachingPlans
 {
     public class CoachingPlanQueryRepository(GymDbContext _context) : ICoachingPlanQueryRepository
     {
-        public async Task<ModelActionResult<CoachingPlanDetailsDao>> GetCoachingPlanByIdAsync(int id)
+        public async Task<ModelActionResult<CoachingPlanDetailsDao>> GetCoachingPlanByIdAsync(int? id)
         {
+            if (id == null)
+                return ModelActionResult<CoachingPlanDetailsDao>.Fail(GymFaultType.BadParameter, "Get coaching plan failed: coaching plan id null.");
+
             var coachingPlanModel = await _context.CoachingPlans
                 .Include(mp => mp.Coachings)
                 .Include(mp => mp.Coach)

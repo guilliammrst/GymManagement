@@ -40,7 +40,7 @@ namespace GymManagement.Infrastructure.Repositories.Converters
                 RenewWhenExpiry = userSubscribeDto.RenewWhenExpiry,
                 MembershipPlan = membershipPlan,
                 HomeClub = club,
-                PaymentDetail = new PaymentDetailModel()
+                PaymentDetail = new PaymentDetailModel
                 {
                     Amount = userSubscribeDto.Amount
                 }

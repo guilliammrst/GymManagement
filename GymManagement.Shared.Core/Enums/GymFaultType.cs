@@ -27,6 +27,7 @@
         UserNotAuthorized = 109,
         UserHasNoMembership = 110,
         UserHasNoActiveMembership = 111,
+        UserAddCoachingFailed = 112,
 
         // Club
         ClubNotFound = 200,
@@ -53,5 +54,10 @@
         // Coaching plan
         CoachingPlanNotFound = 600,
         CoachingPlanCreationFailed = 601,
+
+        // Coaching
+        CoachingNotFound = 700,
+        CoachingCreationFailed = 701,
+        CoachingPaymentDetailNotFound = 702,
     }
 }

@@ -59,7 +59,7 @@ namespace GymManagement.Infrastructure.Repositories.Users
                     .Include(m => m.MembershipPlan)
                     .Include(m => m.HomeClub)
                     .Include(m => m.Member)
-                    .FirstOrDefaultAsync(m => m.Id == userPaymentDao.MembershipId);
+                    .FirstOrDefaultAsync(m => m.Id == userPaymentDao.EntityId);
                 if (membershipModel == null)
                     return ModelActionResult<MembershipDetailsDao>.Fail(GymFaultType.MembershipNotFound, "Membership payment failed: membership not found.");
 

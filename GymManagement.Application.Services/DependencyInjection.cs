@@ -14,6 +14,8 @@ using GymManagement.Application.Interfaces.Services.Memberships;
 using GymManagement.Application.Services.Memberships;
 using GymManagement.Application.Interfaces.Services.CoachingPlans;
 using GymManagement.Application.Services.CoachingPlans;
+using GymManagement.Application.Services.Coachings;
+using GymManagement.Application.Interfaces.Services.Coachings;
 
 namespace GymManagement.Application.Services
 {
@@ -27,7 +29,13 @@ namespace GymManagement.Application.Services
                 .RegisterMembershipServices()
                 .RegisterMembershipPlanServices()
                 .RegisterQrCodeServices()
-                .RegisterCoachingPlanServices();
+                .RegisterCoachingPlanServices()
+                .RegisterCoachingServices();
+        }
+
+        private static IServiceCollection RegisterCoachingServices(this IServiceCollection services)
+        {
+            return services.AddTransient<ICoachingQueryService, CoachingQueryService>();
         }
 
         private static IServiceCollection RegisterCoachingPlanServices(this IServiceCollection services)
@@ -69,6 +77,7 @@ namespace GymManagement.Application.Services
             return services.AddTransient<IUserQueryService, UserQueryService>()
                 .AddTransient<IUserCommandService, UserCommandService>()
                 .AddTransient<IUserSubscriptionService, UserSubscriptionService>()
+                .AddTransient<IUserCoachingService, UserCoachingService>()
                 .AddTransient<IUserVerificationService, UserVerificationService>();
         }
     }

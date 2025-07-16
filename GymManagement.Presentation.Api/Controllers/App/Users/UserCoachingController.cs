@@ -1,5 +1,6 @@
 ﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
 using GymManagement.Application.Interfaces.Services.Users;
+using GymManagement.Application.Services.Users;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -10,44 +11,45 @@ namespace GymManagement.Presentation.Api.Controllers.App.Users
     [ApiController]
     [Route("api/app/users")]
     [Authorize(Roles = RoleConstants.None + ", " + RoleConstants.Member + ", " + RoleConstants.Coach + ", " + RoleConstants.Staff + ", " + RoleConstants.Manager)]
-    public class UserSubscriptionController(IUserVerificationService _userVerificationService, 
-        IUserSubscriptionService _userSubscriptionService) : GymBaseController
+    public class UserCoachingController(IUserVerificationService _userVerificationService,
+        IUserCoachingService _userCoachingService) : GymBaseController
     {
-        [HttpPost("{userId}/subscribe")]
-        public async Task<ActionResult> SubscribeUser(int userId, [FromBody] SubscribeUserDto subscribeUserDto)
+        [HttpPost("{userId}/coachings")]
+        public async Task<ActionResult> SubscribeToCoachingUser(int userId, [FromBody] CoachingUserDto coachingUserDto)
         {
             var verificationResult = await _userVerificationService.VerifyAuthenticatedUser(userId, User);
             if (!verificationResult.Success)
                 return ConvertActionResult(verificationResult);
 
-            var subscriptionResult = await _userSubscriptionService.AddUserSubscriptionAsync(new UserSubscribeDto
+            var addCoachingResult = await _userCoachingService.AddUserCoachingAsync(new UserCoachingDto
             {
-                UserId = userId,
-                MembershipPlanId = subscribeUserDto.MembershipPlanId,
-                StartDate = subscribeUserDto.StartDate,
-                RenewWhenExpiry = subscribeUserDto.RenewWhenExpiry,
-                HomeClubId = subscribeUserDto.HomeClubId,
-                MembershipPeriod = subscribeUserDto.MembershipPeriod
+                MemberId = userId,
+                CoachingPlanId = coachingUserDto.CoachingPlanId,
+                StartDate = coachingUserDto.StartDate,
+                RenewWhenExpiry = coachingUserDto.RenewWhenExpiry,
+                WeekDay = coachingUserDto.WeekDay,
+                Hour = coachingUserDto.Hour
             });
-            if (!subscriptionResult.Success)
-                return ConvertActionResult(subscriptionResult);
+            if (!addCoachingResult.Success)
+                return ConvertActionResult(addCoachingResult);
 
-            var userDetails = subscriptionResult.Results;
+            var userDetails = addCoachingResult.Results;
 
             return Ok(userDetails);
         }
 
-        [HttpPost("{userId}/memberships/{membershipId}")]
-        public async Task<ActionResult> PaySubscription(int userId, int membershipId, [FromBody] PaymentDto paymentDto)
+
+        [HttpPost("{userId}/coachings/{coachingId}")]
+        public async Task<ActionResult> PayCoaching(int userId, int coachingId, [FromBody] PaymentDto paymentDto)
         {
             var verificationResult = await _userVerificationService.VerifyAuthenticatedUser(userId, User);
             if (!verificationResult.Success)
                 return ConvertActionResult(verificationResult);
 
-            var paymentResult = await _userSubscriptionService.PayUserSubscriptionAsync(new UserPaymentDto
+            var paymentResult = await _userCoachingService.PayUserCoachingAsync(new UserPaymentDto
             {
                 UserId = userId,
-                EntityId = membershipId,
+                EntityId = coachingId,
                 PaymentMethod = paymentDto.PaymentMethod
             });
             if (!paymentResult.Success)

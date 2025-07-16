@@ -7,14 +7,14 @@ namespace GymManagement.Application.Services.Converters
     public static class CoachingPlanConverter
     {
         public static CoachingPlanCreateDao ToCreateDao(this CoachingPlan coachingPlan)
-            {
+        {
             return new CoachingPlanCreateDao
             {
                 Description = coachingPlan.Description,
                 Price = coachingPlan.Price,
                 IsValid = coachingPlan.IsValid,
-                CoachId = coachingPlan.CoachId,
-                ClubId = coachingPlan.ClubId
+                CoachId = coachingPlan.CoachId!.Value,
+                ClubId = coachingPlan.ClubId!.Value
             };
         }
 

@@ -15,11 +15,20 @@ namespace GymManagement.Domain
             ClubId = clubId;
         }
 
+        private CoachingPlan(int id, DateTime createdAt, DateTime? updatedAt, bool isValid, string description, decimal price, int? coachId, int? clubId) : base(id, createdAt, updatedAt)
+        {
+            Description = description;
+            Price = price;
+            IsValid = isValid;
+            CoachId = coachId;
+            ClubId = clubId;
+        }
+
         public string Description { get; }
         public decimal Price { get; }
         public bool IsValid { get; }
-        public int CoachId { get; }
-        public int ClubId { get; }
+        public int? CoachId { get; }
+        public int? ClubId { get; }
 
         public static ModelActionResult<CoachingPlan> Create(string? description, decimal? price, int? coachId, int? clubId)
         {
@@ -36,6 +45,11 @@ namespace GymManagement.Domain
                 return ModelActionResult<CoachingPlan>.Fail(GymFaultType.BadParameter, "Coaching plan creation failed: field ClubId must be greater than zero.");
 
             return ModelActionResult<CoachingPlan>.Ok(new CoachingPlan(description, price.Value, coachId.Value, clubId.Value));
+        }
+
+        public static ModelActionResult<CoachingPlan> Build(int id, DateTime createdAt, DateTime? updatedAt, bool isValid, string description, decimal price, int? coachId = null, int? clubId = null)
+        {
+            return ModelActionResult<CoachingPlan>.Ok(new CoachingPlan(id, createdAt, updatedAt, isValid, description, price, coachId, clubId));
         }
     }
 }
