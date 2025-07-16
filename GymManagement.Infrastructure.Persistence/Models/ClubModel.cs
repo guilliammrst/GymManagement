@@ -19,5 +19,7 @@ namespace GymManagement.Infrastructure.Persistence.Models
         public ICollection<MembershipModel> Memberships { get; set; } = [];
 
         public ICollection<AttendanceModel> Attendances { get; set; } = [];
+
+        public ICollection<CoachingPlanModel> CoachingPlans { get; set; } = [];
     }
 }
