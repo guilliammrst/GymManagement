@@ -1,20 +1,24 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using GymManagement.Infrastructure.Repositories.Auth;
+﻿using GymManagement.Application.Interfaces.Repositories.Addresses;
 using GymManagement.Application.Interfaces.Repositories.Auth;
-using GymManagement.Application.Interfaces.Repositories.Users;
-using GymManagement.Infrastructure.Repositories.DbContexts;
-using GymManagement.Infrastructure.Repositories.Users;
-using GymManagement.Shared.Core.Environments;
-using GymManagement.Shared.Core.Constants;
-using GymManagement.Shared.Core.Configurations;
 using GymManagement.Application.Interfaces.Repositories.Clubs;
-using GymManagement.Infrastructure.Repositories.Clubs;
-using GymManagement.Application.Interfaces.Repositories.Addresses;
-using GymManagement.Infrastructure.Repositories.Addresses;
+using GymManagement.Application.Interfaces.Repositories.CoachingPlans;
+using GymManagement.Application.Interfaces.Repositories.Coachings;
 using GymManagement.Application.Interfaces.Repositories.MembershipPlans;
+using GymManagement.Application.Interfaces.Repositories.Memberships;
+using GymManagement.Application.Interfaces.Repositories.Users;
+using GymManagement.Infrastructure.Repositories.Addresses;
+using GymManagement.Infrastructure.Repositories.Auth;
+using GymManagement.Infrastructure.Repositories.Clubs;
+using GymManagement.Infrastructure.Repositories.CoachingPlans;
+using GymManagement.Infrastructure.Repositories.Coachings;
+using GymManagement.Infrastructure.Repositories.DbContexts;
 using GymManagement.Infrastructure.Repositories.MembershipPlans;
 using GymManagement.Infrastructure.Repositories.Memberships;
-using GymManagement.Application.Interfaces.Repositories.Memberships;
+using GymManagement.Infrastructure.Repositories.Users;
+using GymManagement.Shared.Core.Configurations;
+using GymManagement.Shared.Core.Constants;
+using GymManagement.Shared.Core.Environments;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GymManagement.Infrastructure.Repositories
 {
@@ -30,9 +34,22 @@ namespace GymManagement.Infrastructure.Repositories
                 .RegisterClubRepositories()
                 .RegisterAddressRepositories()
                 .RegisterMembershipPlanRepositories()
-                .RegisterMembershipRepositories();
+                .RegisterMembershipRepositories()
+                .RegisterCoachingPlanRepositories()
+                .RegisterCoachingRepositories();
         }
-        
+
+        private static IServiceCollection RegisterCoachingRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<ICoachingQueryRepository, CoachingQueryRepository>();
+        }
+
+        private static IServiceCollection RegisterCoachingPlanRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<ICoachingPlanQueryRepository, CoachingPlanQueryRepository>()
+                .AddScoped<ICoachingPlanCommandRepository, CoachingPlanCommandRepository>();
+        }
+
         private static IServiceCollection RegisterMembershipRepositories(this IServiceCollection services)
         {
             return services.AddScoped<IMembershipQueryRepository, MembershipQueryRepository>();
@@ -64,7 +81,8 @@ namespace GymManagement.Infrastructure.Repositories
         {
             return services.AddScoped<IUserQueryRepository, UserQueryRepository>()
                 .AddScoped<IUserCommandRepository, UserCommandRepository>()
-                .AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
+                .AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>()
+                .AddScoped<IUserCoachingRepository, UserCoachingRepository>();
         }
 
         private static IServiceCollection RegisterDbContext(this IServiceCollection services)

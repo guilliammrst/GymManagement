@@ -20,6 +20,8 @@ namespace GymManagement.Infrastructure.Persistence.DbContexts
         public DbSet<MembershipPlanModel> MembershipPlans { get; set; }
         public DbSet<PaymentDetailModel> PaymentDetails { get; set; }
         public DbSet<AttendanceModel> Attendances { get; set; }
+        public DbSet<CoachingModel> Coachings { get; set; }
+        public DbSet<CoachingPlanModel> CoachingPlans { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -83,6 +85,36 @@ namespace GymManagement.Infrastructure.Persistence.DbContexts
                 .HasOne(a => a.Club)
                 .WithMany(c => c.Attendances)
                 .HasForeignKey(a => a.ClubId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CoachingPlanModel>()
+                .HasOne(c => c.Coach)
+                .WithMany()
+                .HasForeignKey(c => c.CoachId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CoachingPlanModel>()
+                .HasOne(c => c.Club)
+                .WithMany(mp => mp.CoachingPlans)
+                .HasForeignKey(c => c.ClubId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<CoachingPlanModel>()
+                .HasMany(mp => mp.Coachings)
+                .WithOne(c => c.CoachingPlan)
+                .HasForeignKey(c => c.CoachingPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CoachingModel>()
+                .HasOne(c => c.Member)
+                .WithMany()
+                .HasForeignKey(c => c.MemberId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CoachingModel>()
+                .HasOne(c => c.PaymentDetail)
+                .WithOne(pd => pd.Coaching)
+                .HasForeignKey<CoachingModel>(c => c.PaymentDetailId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

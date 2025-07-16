@@ -1,0 +1,60 @@
+﻿@page "/coachings"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Coachings</PageTitle>
+
+<h3>Coachings</h3>
+
+@if (coachings == null)
+{
+	<p><em>Loading...</em></p>
+}
+else if (coachings.Count == 0)
+{
+	<p>Aucun coaching trouvé.</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Start date</th>
+				<th>End date</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var coaching in coachings)
+			{
+				var href = $"coaching/{coaching.Id}";
+				<tr>
+					<td>@coaching.Id</td>
+					<td>@coaching.StartDate</td>
+					<td>@coaching.EndDate</td>
+					<td>
+						<NavLink class="btn btn-primary nav-link" href="@href">
+							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
+						</NavLink>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<CoachingDto>? coachings;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadCoachings();
+	}
+
+	private async Task LoadCoachings()
+	{
+		coachings = await _gymApiClient.GetCoachingsAsync();
+	}
+}

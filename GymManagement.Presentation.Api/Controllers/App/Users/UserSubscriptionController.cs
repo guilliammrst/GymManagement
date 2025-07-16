@@ -47,7 +47,7 @@ namespace GymManagement.Presentation.Api.Controllers.App.Users
             var paymentResult = await _userSubscriptionService.PayUserSubscriptionAsync(new UserPaymentDto
             {
                 UserId = userId,
-                MembershipId = membershipId,
+                EntityId = membershipId,
                 PaymentMethod = paymentDto.PaymentMethod
             });
             if (!paymentResult.Success)

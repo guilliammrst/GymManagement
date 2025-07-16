@@ -42,8 +42,13 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.UserHasNoActiveMembership:
                 case GymFaultType.UserHasNoMembership:
                 case GymFaultType.QrCodeExpired:
+                case GymFaultType.UserAddCoachingFailed:
+                case GymFaultType.CoachingPlanCreationFailed:
+                case GymFaultType.CoachingCreationFailed:
                     return BadRequest(error);
 
+                case GymFaultType.CoachingPaymentDetailNotFound:
+                case GymFaultType.CoachingNotFound:
                 case GymFaultType.UserNotFound:
                 case GymFaultType.ClubNotFound:
                 case GymFaultType.ClubManagerNotFound:
@@ -52,6 +57,7 @@ namespace GymManagement.Shared.Web.Core.Controllers
                 case GymFaultType.MembershipNotFound:
                 case GymFaultType.MembershipPaymentDetailNotFound:
                 case GymFaultType.GetTokenFailed:
+                case GymFaultType.CoachingPlanNotFound:
                     return NotFound(error);
 
                 case GymFaultType.DatabaseUnavailable:

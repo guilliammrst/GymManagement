@@ -4,7 +4,7 @@ namespace GymManagement.Application.Interfaces.Repositories.Users
 {
     public class UserPaymentDao
     {
-        public required int MembershipId { get; set; }
+        public required int EntityId { get; set; }
         public required bool IsActive { get; set; }
         public required DateTime PaymentDate { get; set; }
         public required PaymentMethod PaymentMethod { get; set; }

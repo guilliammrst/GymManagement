@@ -146,6 +146,118 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                     b.ToTable("clubs");
                 });
 
+            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.CoachingModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoachingPlanId")
+                        .HasColumnType("integer")
+                        .HasColumnName("coaching_plan_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_date");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("integer")
+                        .HasColumnName("hour");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("integer")
+                        .HasColumnName("member_id");
+
+                    b.Property<int>("PaymentDetailId")
+                        .HasColumnType("integer")
+                        .HasColumnName("payment_detail_id");
+
+                    b.Property<bool>("RenewWhenExpiry")
+                        .HasColumnType("boolean")
+                        .HasColumnName("renew_when_expiry");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("WeekDay")
+                        .HasColumnType("integer")
+                        .HasColumnName("week_day");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoachingPlanId");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("PaymentDetailId")
+                        .IsUnique();
+
+                    b.ToTable("coachings");
+                });
+
+            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.CoachingPlanModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClubId")
+                        .HasColumnType("integer")
+                        .HasColumnName("club_id");
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("integer")
+                        .HasColumnName("coach_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_valid");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClubId");
+
+                    b.HasIndex("CoachId");
+
+                    b.ToTable("coaching-plans");
+                });
+
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.MembershipModel", b =>
                 {
                     b.Property<int>("Id")
@@ -403,6 +515,52 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                     b.Navigation("Manager");
                 });
 
+            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.CoachingModel", b =>
+                {
+                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.CoachingPlanModel", "CoachingPlan")
+                        .WithMany("Coachings")
+                        .HasForeignKey("CoachingPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.UserModel", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.PaymentDetailModel", "PaymentDetail")
+                        .WithOne("Coaching")
+                        .HasForeignKey("GymManagement.Infrastructure.Persistence.Models.CoachingModel", "PaymentDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CoachingPlan");
+
+                    b.Navigation("Member");
+
+                    b.Navigation("PaymentDetail");
+                });
+
+            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.CoachingPlanModel", b =>
+                {
+                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.ClubModel", "Club")
+                        .WithMany("CoachingPlans")
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("GymManagement.Infrastructure.Persistence.Models.UserModel", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Club");
+
+                    b.Navigation("Coach");
+                });
+
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.MembershipModel", b =>
                 {
                     b.HasOne("GymManagement.Infrastructure.Persistence.Models.ClubModel", "HomeClub")
@@ -452,7 +610,14 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("Attendances");
 
+                    b.Navigation("CoachingPlans");
+
                     b.Navigation("Memberships");
+                });
+
+            modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.CoachingPlanModel", b =>
+                {
+                    b.Navigation("Coachings");
                 });
 
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.MembershipPlanModel", b =>
@@ -462,6 +627,8 @@ namespace GymManagement.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("GymManagement.Infrastructure.Persistence.Models.PaymentDetailModel", b =>
                 {
+                    b.Navigation("Coaching");
+
                     b.Navigation("Membership");
                 });
 

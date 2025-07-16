@@ -10,7 +10,7 @@ namespace GymManagement.Presentation.Api.Controllers.Admin.Users
     [ApiController]
     [Route("api/admin/users")]
     [Authorize(Roles = RoleConstants.Staff + ", " + RoleConstants.Manager)]
-    public class UserSubscribtionController(IUserSubscriptionService _userSubscriptionService) : GymBaseController
+    public class UserSubscriptionController(IUserSubscriptionService _userSubscriptionService) : GymBaseController
     {
         [HttpPost("{userId}/subscribe")]
         public async Task<ActionResult> SubscribeUser(int userId, [FromBody] SubscribeUserDto subscribeUserDto)
@@ -38,7 +38,7 @@ namespace GymManagement.Presentation.Api.Controllers.Admin.Users
             var paymentResult = await _userSubscriptionService.PayUserSubscriptionAsync(new UserPaymentDto
             {
                 UserId = userId,
-                MembershipId = membershipId,
+                EntityId = membershipId,
                 PaymentMethod = paymentDto.PaymentMethod
             });
             if (!paymentResult.Success)

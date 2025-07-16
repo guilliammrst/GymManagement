@@ -1,5 +1,7 @@
 using GymManagement.Application.Interfaces.Controllers.DTOs;
 using GymManagement.Application.Interfaces.Services.Clubs;
+using GymManagement.Application.Interfaces.Services.CoachingPlans;
+using GymManagement.Application.Interfaces.Services.Coachings;
 using GymManagement.Application.Interfaces.Services.MembershipPlans;
 using GymManagement.Application.Interfaces.Services.Users;
 using GymManagement.Shared.Core.AuthManager;
@@ -10,6 +12,32 @@ namespace GymManagement.Presentation.WebApp.ApiClients
 {
     public class GymAdminApiClient(HttpClient _httpClient, AuthenticatedUser _authenticatedUser, IApiClientHelper _apiClientHelper)
     {
+        public async Task<ModelActionResult<UserDetailsDto>> MeAsync()
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult<UserDetailsDto>.Fail(result);
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+
+            try
+            {
+                var response = await _httpClient.GetAsync("api/app/users/me");
+                response.EnsureSuccessStatusCode();
+
+                var user = await response.Content.ReadFromJsonAsync<UserDetailsDto>();
+                if (user == null)
+                    return ModelActionResult<UserDetailsDto>.Fail(GymFaultType.ApiCallFailed);
+
+                return ModelActionResult<UserDetailsDto>.Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult<UserDetailsDto>.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
         public async Task<UserDetailsDto?> GetUserByIdAsync(int id)
         {
             var result = await _apiClientHelper.CheckAuthenticatedUser();
@@ -270,6 +298,96 @@ namespace GymManagement.Presentation.WebApp.ApiClients
             {
                 return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
             }
+        }
+
+        public async Task<List<CoachingPlanDto>> GetCoachingPlansAsync(bool onlyAuthenticatedCoach = false)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return [];
+
+            var path = "api/admin/coaching-plans";
+            if (onlyAuthenticatedCoach)
+                path += "?coachEmail=" + _authenticatedUser.Email;
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+            var response = await _httpClient.GetAsync(path);
+            response.EnsureSuccessStatusCode();
+            var coachingPlans = await response.Content.ReadFromJsonAsync<List<CoachingPlanDto>>();
+            return coachingPlans ?? [];
+        }
+
+        public async Task<CoachingPlanDetailsDto?> GetCoachingPlanByIdAsync(int id)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return null;
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+            var response = await _httpClient.GetAsync("api/admin/coaching-plans/" + id);
+            response.EnsureSuccessStatusCode();
+            var coachingPlan = await response.Content.ReadFromJsonAsync<CoachingPlanDetailsDto>();
+            return coachingPlan;
+        }
+
+        public async Task<ModelActionResult> CreateCoachingPlanAsync(CreateCoachingPlanDto coachingPlanCreateDto)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+                var response = await _httpClient.PostAsJsonAsync("api/admin/coaching-plans", coachingPlanCreateDto);
+
+                return await _apiClientHelper.GenerateActionResult(response);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<List<CoachingDto>> GetCoachingsAsync(bool onlyAuthenticatedCoach = false)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return [];
+
+            var meResult = await MeAsync();
+            if (!meResult.Success)
+                return [];
+
+            var me = meResult.Results;
+
+            var path = "api/admin/coachings";
+            if (onlyAuthenticatedCoach)
+                path += "?coachId=" + me.Id;
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+            var response = await _httpClient.GetAsync(path);
+            response.EnsureSuccessStatusCode();
+            var coachingPlans = await response.Content.ReadFromJsonAsync<List<CoachingDto>>();
+            return coachingPlans ?? [];
+        }
+
+        public async Task<CoachingDetailsDto?> GetCoachingByIdAsync(int id)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return null;
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+            var response = await _httpClient.GetAsync("api/admin/coachings/" + id);
+            response.EnsureSuccessStatusCode();
+            var coaching = await response.Content.ReadFromJsonAsync<CoachingDetailsDto>();
+            return coaching;
         }
     }
 }

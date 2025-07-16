@@ -19,5 +19,7 @@ namespace GymManagement.Infrastructure.Persistence.Models
         public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.None;
 
         public MembershipModel? Membership { get; set; }
+
+        public CoachingModel? Coaching { get; set; }
     }
 }

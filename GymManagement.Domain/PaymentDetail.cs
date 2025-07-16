@@ -48,6 +48,14 @@ namespace GymManagement.Domain
             return ModelActionResult<PaymentDetail>.Ok(new PaymentDetail(amount));
         }
 
+        public static ModelActionResult<PaymentDetail> Create(decimal? price)
+        {
+            if (!price.HasValue || price <= 0)
+                return ModelActionResult<PaymentDetail>.Fail(GymFaultType.BadParameter, "Payment detail creation failed: field Amount must be greater than zero.");
+            
+            return ModelActionResult<PaymentDetail>.Ok(new PaymentDetail(price.Value));
+        }
+
         public static ModelActionResult<PaymentDetail> Build(int id, DateTime createdAt, DateTime? updatedAt, decimal amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus, DateTime? paymentDate)
         {
             return ModelActionResult<PaymentDetail>.Ok(new PaymentDetail(id, createdAt, updatedAt, amount, paymentMethod, paymentStatus, paymentDate));

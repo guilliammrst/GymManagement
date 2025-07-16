@@ -64,7 +64,7 @@ namespace GymManagement.Application.Services.Users
 
         public async Task<ModelActionResult<MembershipDetailsDto>> PayUserSubscriptionAsync(UserPaymentDto userPaymentDto)
         {
-            var membershipResult = await _membershipQueryRepository.GetMembershipByIdAsync(userPaymentDto.MembershipId);
+            var membershipResult = await _membershipQueryRepository.GetMembershipByIdAsync(userPaymentDto.EntityId);
             if (!membershipResult.Success)
                 return ModelActionResult<MembershipDetailsDto>.Fail(membershipResult);
 

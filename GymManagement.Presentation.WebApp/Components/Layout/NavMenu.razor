@@ -15,22 +15,52 @@
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="users">
-                <span class="bi bi-list-nested" aria-hidden="true"></span> Users
-            </NavLink>
-        </div>
+        @if (_authenticatedUser.IsAuthenticated && _authenticatedUser.Role != Role.Coach)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> Users
+                </NavLink>
+            </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="clubs">
-                <span class="bi bi-list-nested" aria-hidden="true"></span> Clubs
-            </NavLink>
-        </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="clubs">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> Clubs
+                </NavLink>
+            </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="membership-plans">
-                <span class="bi bi-list-nested" aria-hidden="true"></span> Membership plans
-            </NavLink>
-        </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="membership-plans">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> Membership plans
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="coaching-plans">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> Coaching plans
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="coachings">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> Coachings
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="my-coaching-plans">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> My coaching plans
+                </NavLink>
+            </div>
+
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="my-coachings">
+                    <span class="bi bi-list-nested" aria-hidden="true"></span> My coachings
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>

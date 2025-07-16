@@ -58,7 +58,7 @@ namespace GymManagement.Application.Services.Converters
         {
             return new UserPaymentDao
             {
-                MembershipId = membership.Id,
+                EntityId = membership.Id,
                 PaymentMethod = membership.PaymentDetail!.PaymentMethod,
                 PaymentStatus = membership.PaymentDetail.PaymentStatus,
                 PaymentDate = membership.PaymentDetail.PaymentDate!.Value,

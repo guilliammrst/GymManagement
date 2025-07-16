@@ -1,0 +1,36 @@
+﻿<ul>
+    @if (Coaching == null)
+    {
+        <ul>
+            <li>No coaching.</li>
+        </ul>
+    }
+    else
+    {
+        <li><strong>ID:</strong> @Coaching.Id</li>
+        <li><strong>Created At:</strong> @Coaching.CreatedAt.ToString("g")</li>
+        <li><strong>Updated At:</strong> @Coaching.UpdatedAt?.ToString("g")</li>
+        <li><strong>Start Date:</strong> @Coaching.StartDate.ToString("g")</li>
+        <li><strong>End Date:</strong> @Coaching.EndDate.ToString("g")</li>
+        <li><strong>Is Active:</strong> @Coaching.IsActive</li>
+        <li><strong>Renew When Expiry:</strong> @Coaching.RenewWhenExpiry</li>
+        <li><strong>Week Day:</strong> @Coaching.WeekDay</li>
+        <li><strong>Hour:</strong> @Coaching.Hour</li>
+        <li><strong>Coaching plan</strong></li>
+        <ul>
+            <li><strong>Id:</strong> @Coaching.CoachingPlan.Id</li>
+            <li><strong>Created At:</strong> @Coaching.CoachingPlan.CreatedAt.ToString("g")</li>
+            <li><strong>Updated At:</strong> @Coaching.CoachingPlan.UpdatedAt?.ToString("g")</li>
+            <li><strong>Description:</strong> @Coaching.CoachingPlan.Description</li>
+            <li><strong>Base price:</strong> @Coaching.CoachingPlan.Price.ToString("C")</li>
+            <li><strong>Is valid:</strong> @Coaching.CoachingPlan.IsValid</li>
+        </ul>
+        <li><strong>Member</strong></li>
+        <UserComponent User="Coaching.Member"></UserComponent>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public CoachingDetailsDto? Coaching { get; set; }
+}

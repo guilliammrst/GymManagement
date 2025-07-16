@@ -1,0 +1,49 @@
+﻿@page "/coaching/{CoachingId:int}"
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Coaching</PageTitle>
+
+@if (_authenticatedUser.Role == Role.Coach)
+{
+	<NavLink class="btn btn-primary nav-link" href="my-coachings" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+	</NavLink>
+}
+else
+{
+	<NavLink class="btn btn-primary nav-link" href="coachings" style="margin-bottom: 20px; width: 100px; display: inline-block;">
+		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
+	</NavLink>
+}
+
+<h3>Coaching Details</h3>
+
+@if (coaching == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<div>
+		<CoachingComponent Coaching="coaching"></CoachingComponent>
+	</div>
+}
+
+@code {
+	[Parameter]
+	public int CoachingId { get; set; }
+
+	private CoachingDetailsDto? coaching;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadCoaching();
+	}
+
+	private async Task LoadCoaching()
+	{
+		coaching = await _gymApiClient.GetCoachingByIdAsync(CoachingId);
+	}
+}
