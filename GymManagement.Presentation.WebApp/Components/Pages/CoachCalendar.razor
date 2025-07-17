@@ -1,0 +1,254 @@
+﻿@page "/coach-calendar"
+@using GymManagement.Presentation.WebApp.ApiClients
+@rendermode InteractiveServer
+@attribute [StreamRendering(true)]
+@attribute [OutputCache(Duration = 5)]
+
+<PageTitle>Mon calendrier - GymManagement</PageTitle>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">📅 Mon calendrier de coaching</h1>
+            <p class="page-description">Visualisez vos séances de coaching programmées</p>
+        </div>
+        <div class="page-actions">
+            <div class="calendar-controls">
+                <RadzenButton Text="← Semaine précédente" 
+                             Click="PreviousWeek" 
+                             ButtonStyle="ButtonStyle.Secondary"
+                             class="nav-btn" />
+                <span class="current-period">@GetCurrentPeriodDisplay()</span>
+                <RadzenButton Text="Semaine suivante →" 
+                             Click="NextWeek" 
+                             ButtonStyle="ButtonStyle.Secondary"
+                             class="nav-btn" />
+            </div>
+            <RadzenButton Text="Aujourd'hui" 
+                         Click="GoToToday" 
+                         ButtonStyle="ButtonStyle.Primary"
+                         class="today-btn" />
+        </div>
+    </div>
+</div>
+
+<div class="calendar-section">
+    @if (!_authenticatedUser.IsAuthenticated || _authenticatedUser.Role != Role.Coach)
+    {
+        <div class="access-denied">
+            <div class="access-denied-content">
+                <span class="access-denied-icon">🚫</span>
+                <h3>Accès non autorisé</h3>
+                <p>Cette page est réservée aux coachs.</p>
+                <NavLink href="/" class="btn btn-primary">Retour à l'accueil</NavLink>
+            </div>
+        </div>
+    }
+    else if (coachings == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement de votre planning...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="calendar-container">
+            <!-- En-tête du calendrier -->
+            <div class="calendar-header">
+                <div class="time-column-header">Heure</div>
+                @foreach (var day in GetWeekDays())
+                {
+                    <div class="day-header @(IsToday(day) ? "today" : "")">
+                        <div class="day-name">@GetDayName(day)</div>
+                        <div class="day-date">@day.ToString("dd/MM")</div>
+                        <div class="day-sessions-count">@GetDaySessionsCount(day) séance(s)</div>
+                    </div>
+                }
+            </div>
+
+            <!-- Grille du calendrier -->
+            <div class="calendar-grid">
+                <!-- Colonne des heures -->
+                <div class="time-column">
+                    @for (int hour = 6; hour <= 22; hour++)
+                    {
+                        <div class="time-slot">
+                            <span class="time-text">@hour:00</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Colonnes des jours -->
+                @foreach (var day in GetWeekDays())
+                {
+                    <div class="day-column @(IsToday(day) ? "today" : "")">
+                        @for (int hour = 6; hour <= 22; hour++)
+                        {
+                            var sessionAtThisTime = GetSessionAtDateTime(day, hour);
+                            <div class="time-slot @(sessionAtThisTime != null ? "has-session" : "")">
+                                @if (sessionAtThisTime != null)
+                                {
+                                    <div class="coaching-session" @onclick="() => ViewSessionDetails(sessionAtThisTime)">
+                                        <div class="session-title">
+                                            🎯 Session #@sessionAtThisTime.Id
+                                        </div>
+                                        <div class="session-time">
+                                            @hour:00
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (!GetWeekSessions().Any())
+        {
+            <div class="empty-week">
+                <div class="empty-week-content">
+                    <span class="empty-week-icon">📅</span>
+                    <h3>Aucune séance cette semaine</h3>
+                    <p>Vous n'avez aucun coaching programmé pour la semaine du @currentWeekStart.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<CoachingDto>? coachings;
+    private DateTime currentWeekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1); // Lundi de cette semaine
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Vérifier que l'utilisateur est bien un coach
+        if (!_authenticatedUser.IsAuthenticated || _authenticatedUser.Role != Role.Coach)
+        {
+            return; // Le template gérera l'affichage de l'erreur
+        }
+
+        await LoadCoachings();
+    }
+
+    private async Task LoadCoachings()
+    {
+        try
+        {
+            coachings = await _gymApiClient.GetCoachingsAsync(true); // true pour mes coachings
+        }
+        catch (Exception ex)
+        {
+            // Log error
+            coachings = new List<CoachingDto>();
+        }
+    }
+
+    private void PreviousWeek()
+    {
+        currentWeekStart = currentWeekStart.AddDays(-7);
+        StateHasChanged();
+    }
+
+    private void NextWeek()
+    {
+        currentWeekStart = currentWeekStart.AddDays(7);
+        StateHasChanged();
+    }
+
+    private void GoToToday()
+    {
+        currentWeekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+        StateHasChanged();
+    }
+
+    private List<DateTime> GetWeekDays()
+    {
+        var days = new List<DateTime>();
+        for (int i = 0; i < 7; i++)
+        {
+            days.Add(currentWeekStart.AddDays(i));
+        }
+        return days;
+    }
+
+    private string GetCurrentPeriodDisplay()
+    {
+        var weekEnd = currentWeekStart.AddDays(6);
+        return $"{currentWeekStart:dd/MM} - {weekEnd:dd/MM/yyyy}";
+    }
+
+    private bool IsToday(DateTime date)
+    {
+        return date.Date == DateTime.Today;
+    }
+
+    private string GetDayName(DateTime date)
+    {
+        return date.ToString("dddd", new System.Globalization.CultureInfo("fr-FR"));
+    }
+
+    private int GetDaySessionsCount(DateTime date)
+    {
+        if (coachings == null) return 0;
+        
+        return coachings.Count(c => 
+            IsCoachingActiveOnDate(c, date) && 
+            GetWeekDayFromDate(date) == GetWeekDayString(c.WeekDay)
+        );
+    }
+
+    private CoachingDto? GetSessionAtDateTime(DateTime date, int hour)
+    {
+        if (coachings == null) return null;
+        
+        return coachings.FirstOrDefault(c => 
+            IsCoachingActiveOnDate(c, date) && 
+            GetWeekDayFromDate(date) == GetWeekDayString(c.WeekDay) && 
+            c.Hour == hour
+        );
+    }
+
+    private bool IsCoachingActiveOnDate(CoachingDto coaching, DateTime date)
+    {
+        return date >= coaching.StartDate.Date && date <= coaching.EndDate.Date;
+    }
+
+    private string GetWeekDayFromDate(DateTime date)
+    {
+        return date.DayOfWeek.ToString();
+    }
+
+    private string GetWeekDayString(object weekDay)
+    {
+        if (weekDay == null) return "";
+        return weekDay.ToString() ?? "";
+    }
+
+    private List<CoachingDto> GetWeekSessions()
+    {
+        if (coachings == null) return new List<CoachingDto>();
+        
+        var weekDays = GetWeekDays();
+        return coachings.Where(c => 
+            weekDays.Any(day => IsCoachingActiveOnDate(c, day) && 
+                               GetWeekDayFromDate(day) == GetWeekDayString(c.WeekDay))
+        ).ToList();
+    }
+
+    private string GetMemberName(CoachingDto coaching)
+    {
+        // Si le coaching a des informations de membre, les utiliser
+        // Sinon, afficher un nom générique
+        return "Client"; // Placeholder - ajustez selon votre structure de données
+    }
+
+    private void ViewSessionDetails(CoachingDto coaching)
+    {
+        _navigationManager.NavigateTo($"/coaching/{coaching.Id}");
+    }
+}

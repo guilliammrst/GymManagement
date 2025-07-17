@@ -30,11 +30,11 @@
                     }
                     else
                     {
-                        <a href="/my-coachings" class="btn btn-primary btn-lg">
-                            🎯 Mes coachings
+                        <a href="/coach-calendar" class="btn btn-primary btn-lg">
+                            📅 Mon calendrier
                         </a>
-                        <a href="/my-coaching-plans" class="btn btn-secondary btn-lg">
-                            📝 Mes plans
+                        <a href="/my-coachings" class="btn btn-secondary btn-lg">
+                            🎯 Mes coachings
                         </a>
                     }
                 </div>
@@ -108,16 +108,22 @@
             <div class="quick-actions-grid">
                 @if (_authenticatedUser.Role != Role.Coach)
                 {
-                    <a href="/users" class="action-card">
+                    <a href="/users" class="action-card featured">
                         <span class="action-icon">👥</span>
                         <h3>Gérer les utilisateurs</h3>
                         <p>Ajouter, modifier ou consulter les profils utilisateurs</p>
                     </a>
-                    
-                    <a href="/clubs" class="action-card">
+
+                    <a href="/clubs" class="action-card featured">
                         <span class="action-icon">🏢</span>
                         <h3>Gérer les clubs</h3>
                         <p>Administrer les salles de sport partenaires</p>
+                    </a>
+
+                    <a href="/membership-plans" class="action-card featured">
+                        <span class="action-icon">📋</span>
+                        <h3>Gérer les plans d'adhésion</h3>
+                        <p>Configurer les offres d'abonnement</p>
                     </a>
                     
                     <a href="/coachings" class="action-card">
@@ -131,15 +137,15 @@
                         <h3>Plans de coaching</h3>
                         <p>Consulter les plans de coaching</p>
                     </a>
-                    
-                    <a href="/membership-plans" class="action-card">
-                        <span class="action-icon">📋</span>
-                        <h3>Plans d'adhésion</h3>
-                        <p>Configurer les offres d'abonnement</p>
-                    </a>
                 }
                 else
                 {
+                    <a href="/coach-calendar" class="action-card featured">
+                        <span class="action-icon">📅</span>
+                        <h3>Mon calendrier</h3>
+                        <p>Visualisez vos séances de coaching programmées</p>
+                    </a>
+                    
                     <a href="/my-coachings" class="action-card">
                         <span class="action-icon">🎯</span>
                         <h3>Mes coachings</h3>
