@@ -29,13 +29,8 @@ namespace GymManagement.Infrastructure.Repositories.Coachings
         {
             var coachings = await _context.Coachings
                 .Include(mp => mp.CoachingPlan)
+                .Where(c => (!filter.MemberId.HasValue || c.MemberId == filter.MemberId) && (!filter.CoachId.HasValue || c.CoachingPlan!.CoachId == filter.CoachId.Value))
                 .ToListAsync();
-
-            if (filter.CoachId.HasValue)
-                coachings = [.. coachings.Where(mp => mp.CoachingPlan!.CoachId == filter.CoachId.Value)];
-
-            if (filter.MemberId.HasValue)
-                coachings = [.. coachings.Where(mp => mp.MemberId == filter.MemberId)];
 
             return ModelActionResult<List<CoachingDao>>.Ok(coachings.ToDao());
         }

@@ -38,6 +38,7 @@
                                HasShadow="False">
 
 							<VerticalStackLayout>
+                                <Label Text="{Binding MembershipPlanType}" FontSize="10" TextColor="White"/>
 								<Label Text="{Binding Description}" FontSize="12" TextColor="White"/>
 								<Label Text="{Binding BasePrice, StringFormat='Prix : {0:C}'}" TextColor="White" />
 								<Label Text="{Binding RegistrationFees, StringFormat='Frais : {0:C}'}" TextColor="White" />

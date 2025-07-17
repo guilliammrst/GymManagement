@@ -106,6 +106,11 @@ namespace GymManagement.Presentation.MobileApp
             await Shell.Current.GoToAsync(PageNames.MembershipsPage);
         }
 
+        private async void OnCoachingClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync(PageNames.CoachingsPage);
+        }
+
         private async void OnProfileClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync(PageNames.ProfilePage);

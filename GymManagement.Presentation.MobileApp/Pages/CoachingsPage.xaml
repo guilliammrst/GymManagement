@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingsPage"
+             Title="Mes coachings">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+            <Label Text="Mes coachings" FontSize="24" HorizontalOptions="Center" />
+
+			<Button Text="S'inscrire à un coaching"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                Clicked="OnCoachingClicked"
+                HorizontalOptions="Fill"
+                Margin="0,20,0,0" />
+			
+            <CollectionView x:Name="coachingsView"
+                            SelectionMode="Single"
+                            SelectionChanged="OnCoachingSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="MediumSeaGreen" BackgroundColor="MediumSeaGreen" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10">
+                            <StackLayout>
+                                <Label Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}" />
+                                <Label Text="{Binding EndDate, StringFormat='Fin : {0:dd/MM/yyyy}'}" />
+                                <Label Text="{Binding IsActive, StringFormat='Actif : {0}'}" />
+                                <Label Text="{Binding RenewWhenExpiry, StringFormat='Renouvellement auto : {0}'}" />
+                                <Label Text="{Binding WeekDay, StringFormat='Jour : {0}'}" />
+                                <Label Text="{Binding Hour, StringFormat='Heure : {0}:00'}" />
+                            </StackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Label x:Name="emptyLabel"
+                   Text="Aucun coaching trouvé."
+                   IsVisible="False"
+                   HorizontalOptions="Center"
+                   FontAttributes="Italic"
+                   FontSize="16" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,6 +1,8 @@
 ﻿using Azure;
 using GymManagement.Application.Interfaces.Controllers.DTOs;
 using GymManagement.Application.Interfaces.Services.Clubs;
+using GymManagement.Application.Interfaces.Services.CoachingPlans;
+using GymManagement.Application.Interfaces.Services.Coachings;
 using GymManagement.Application.Interfaces.Services.MembershipPlans;
 using GymManagement.Application.Interfaces.Services.Memberships;
 using GymManagement.Application.Interfaces.Services.Users;
@@ -287,6 +289,157 @@ namespace GymManagement.Presentation.MobileApp.ApiClients
             catch (Exception ex)
             {
                 return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult> PayCoachingAsync(int userId, int coachingId, PaymentDto paymentDto)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult.Fail(GymFaultType.UserNotAuthenticated);
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"api/app/users/{userId}/coachings/{coachingId}", paymentDto);
+
+                return await _apiClientHelper.GenerateActionResult(response);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult<List<CoachingDto>>> GetCoachingsAsync(int userId)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult<List<CoachingDto>>.Fail(result);
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+
+            try
+            {
+                var response = await _httpClient.GetAsync("api/app/users/" + userId + "/coachings");
+                response.EnsureSuccessStatusCode();
+
+                var coachings = await response.Content.ReadFromJsonAsync<List<CoachingDto>>();
+                if (coachings == null)
+                    return ModelActionResult<List<CoachingDto>>.Fail(GymFaultType.ApiCallFailed);
+
+                return ModelActionResult<List<CoachingDto>>.Ok(coachings);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult<List<CoachingDto>>.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult<CoachingDetailsDto>> GetCoachingByIdAsync(int userId, int coachingId)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.UserNotAuthenticated);
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/app/users/{userId}/coachings/{coachingId}");
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    var errorDto = await response.Content.ReadFromJsonAsync<ErrorDto>();
+                    if (errorDto != null)
+                        return ModelActionResult<CoachingDetailsDto>.Fail((GymFaultType)errorDto.FaultCode, errorDto.Message);
+
+                    return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.ApiCallFailed);
+                }
+
+                var coaching = await response.Content.ReadFromJsonAsync<CoachingDetailsDto>();
+                if (coaching == null)
+                    return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.ApiCallFailed);
+
+                return ModelActionResult<CoachingDetailsDto>.Ok(coaching);
+            }
+            catch (Exception ex)
+            {
+
+                return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult<List<CoachingPlanDto>>> GetCoachingPlansAsync()
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult<List<CoachingPlanDto>>.Fail(result);
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+
+            try
+            {
+                var response = await _httpClient.GetAsync("api/app/coaching-plans");
+                response.EnsureSuccessStatusCode();
+
+                var coachingPlans = await response.Content.ReadFromJsonAsync<List<CoachingPlanDto>>();
+                if (coachingPlans == null)
+                    return ModelActionResult<List<CoachingPlanDto>>.Fail(GymFaultType.ApiCallFailed);
+
+                return ModelActionResult<List<CoachingPlanDto>>.Ok(coachingPlans);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult<List<CoachingPlanDto>>.Fail(GymFaultType.ApiCallFailed, ex.Message);
+            }
+        }
+
+        public async Task<ModelActionResult<CoachingDetailsDto>> SubscribeCoachingAsync(CoachingFlowData coachingFlowData)
+        {
+            var result = await _apiClientHelper.CheckAuthenticatedUser();
+            if (!result.Success)
+                return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.UserNotAuthenticated);
+
+            var coachingUserDto = new CoachingUserDto
+            {
+                CoachingPlanId = coachingFlowData.CoachingPlan.Id,
+                WeekDay = coachingFlowData.WeekDay,
+                Hour = coachingFlowData.Hour,
+                StartDate = coachingFlowData.StartDate,
+                RenewWhenExpiry = coachingFlowData.RenewWhenExpiry,
+            };
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _authenticatedUser.Token);
+
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/app/users/" + coachingFlowData.UserId + "/coachings", coachingUserDto);
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    var errorDto = await response.Content.ReadFromJsonAsync<ErrorDto>();
+                    if (errorDto != null)
+                        return ModelActionResult<CoachingDetailsDto>.Fail((GymFaultType)errorDto.FaultCode, errorDto.Message);
+
+                    return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.ApiCallFailed);
+                }
+
+                var coachingDetails = await response.Content.ReadFromJsonAsync<CoachingDetailsDto>();
+                if (coachingDetails == null)
+                    return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.ApiCallFailed);
+
+                return ModelActionResult<CoachingDetailsDto>.Ok(coachingDetails);
+            }
+            catch (Exception ex)
+            {
+                return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.ApiCallFailed, ex.Message);
             }
         }
     }

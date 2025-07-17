@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingFlow.CoachingFlowDetailsPage"
+             Title="Détails du coaching">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Détails du coaching"
+               FontSize="24"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+        <Label Text="Date de début" />
+        <DatePicker x:Name="startDatePicker"
+                    MinimumDate="{x:Static sys:DateTime.Today}" />
+
+        <Label Text="Renouveler automatiquement ?" />
+        <Switch x:Name="renewSwitch" IsToggled="True" />
+
+		<Label Text="Jour de coaching" />
+		<Picker x:Name="weekDayPicker"
+                Title="Sélectionner un jour" />
+
+        <Label Text="Heure (entre 8h et 20h)" />
+        <Entry x:Name="hourEntry"
+               Keyboard="Numeric"
+               Placeholder="Entrez une heure"
+               MaxLength="2" />
+
+        <Button Text="Créer mon coaching"
+                x:Name="finishButton"
+                IsEnabled="False"
+                Clicked="OnFinishClicked"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                CornerRadius="8" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

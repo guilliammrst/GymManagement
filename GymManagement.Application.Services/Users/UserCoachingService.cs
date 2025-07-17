@@ -16,11 +16,11 @@ namespace GymManagement.Application.Services.Users
         ICoachingPlanQueryRepository _coachingPlanQueryRepository,
         ICoachingQueryRepository _coachingQueryRepository) : IUserCoachingService
     {
-        public async Task<ModelActionResult<UserDetailsDto>> AddUserCoachingAsync(UserCoachingDto userCoachingDto)
+        public async Task<ModelActionResult<CoachingDetailsDto>> AddUserCoachingAsync(UserCoachingDto userCoachingDto)
         {
             var userResult = await _userQueryRepository.GetUserByIdAsync(userCoachingDto.MemberId);
             if (!userResult.Success)
-                return ModelActionResult<UserDetailsDto>.Fail(userResult);
+                return ModelActionResult<CoachingDetailsDto>.Fail(userResult);
 
             var userDao = userResult.Results;
             var user = User.Build(userDao.Id, userDao.CreatedAt, userDao.UpdatedAt, userDao.Name, userDao.Surname, userDao.Birthdate,
@@ -29,7 +29,7 @@ namespace GymManagement.Application.Services.Users
 
             var coachingPlanResult = await _coachingPlanQueryRepository.GetCoachingPlanByIdAsync(userCoachingDto.CoachingPlanId);
             if (!coachingPlanResult.Success)
-                return ModelActionResult<UserDetailsDto>.Fail(coachingPlanResult);
+                return ModelActionResult<CoachingDetailsDto>.Fail(coachingPlanResult);
 
             var coachingPlanDao = coachingPlanResult.Results;
             var coachingPlan = CoachingPlan.Build(coachingPlanDao.Id, coachingPlanDao.CreatedAt, coachingPlanDao.UpdatedAt,
@@ -37,16 +37,16 @@ namespace GymManagement.Application.Services.Users
 
             var coachingResult = Coaching.Create(userCoachingDto.StartDate, userCoachingDto.RenewWhenExpiry, userCoachingDto.WeekDay, userCoachingDto.Hour, coachingPlan, user);
             if (!coachingResult.Success)
-                return ModelActionResult<UserDetailsDto>.Fail(coachingResult);
+                return ModelActionResult<CoachingDetailsDto>.Fail(coachingResult);
 
             var coaching = coachingResult.Results;
 
             var userCoachingResult = await _userCoachingRepository.AddUserCoachingAsync(coaching.ToUserCoachingDao());
             if (!userCoachingResult.Success)
-                return ModelActionResult<UserDetailsDto>.Fail(userCoachingResult);
+                return ModelActionResult<CoachingDetailsDto>.Fail(userCoachingResult);
 
             var updatedUserDao = userCoachingResult.Results;
-            return ModelActionResult<UserDetailsDto>.Ok(updatedUserDao.ToDetailsDto());
+            return ModelActionResult<CoachingDetailsDto>.Ok(updatedUserDao.ToDetailsDto());
         }
 
         public async Task<ModelActionResult<CoachingDetailsDto>> PayUserCoachingAsync(UserPaymentDto userPaymentDto)

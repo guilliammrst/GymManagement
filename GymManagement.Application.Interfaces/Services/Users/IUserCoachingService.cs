@@ -5,7 +5,7 @@ namespace GymManagement.Application.Interfaces.Services.Users
 {
     public interface IUserCoachingService
     {
-        Task<ModelActionResult<UserDetailsDto>> AddUserCoachingAsync(UserCoachingDto userCoachingDto);
+        Task<ModelActionResult<CoachingDetailsDto>> AddUserCoachingAsync(UserCoachingDto userCoachingDto);
         Task<ModelActionResult<CoachingDetailsDto>> PayUserCoachingAsync(UserPaymentDto userPaymentDto);
     }
 }

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingFlow.CoachingPage"
+             Title="Choisir un coaching">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Choisissez un coaching"
+               FontSize="24"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+        <CollectionView x:Name="coachingPlansCollectionView"
+                        SelectionMode="Single"
+                        SelectionChanged="OnCoachingPlanSelected">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <ContentView>
+
+                        <ContentView.VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="LightGreen" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </ContentView.VisualStateManager.VisualStateGroups>
+
+                        <Frame BorderColor="DarkGreen"
+                               BackgroundColor="DarkGreen"
+                               Padding="10"
+                               Margin="5"
+                               CornerRadius="10"
+                               HasShadow="False">
+
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Description}" FontSize="12" TextColor="White" />
+                                <Label Text="{Binding Price, StringFormat='Prix : {0:C}'}" TextColor="White" />
+                            </VerticalStackLayout>
+
+                        </Frame>
+
+                    </ContentView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+        <Button Text="Continuer"
+                x:Name="continueButton"
+                IsEnabled="False"
+                Clicked="OnContinueClicked"
+                BackgroundColor="#007AFF"
+                TextColor="White"
+                CornerRadius="8" />
+
+    </VerticalStackLayout>
+</ContentPage>

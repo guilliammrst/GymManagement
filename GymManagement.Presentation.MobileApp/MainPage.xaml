@@ -23,6 +23,17 @@
             CornerRadius="6"
             HorizontalOptions="Center" />
 
+        <Button 
+            Text="Mes coachings" 
+            Clicked="OnCoachingClicked"
+            BackgroundColor="DodgerBlue"
+            TextColor="White"
+            FontSize="12"
+            HeightRequest="32"
+            Padding="10,4"
+            CornerRadius="6"
+            HorizontalOptions="Center" />
+
     </VerticalStackLayout>
 
     <ContentPage.ToolbarItems>
