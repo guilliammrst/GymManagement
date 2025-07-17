@@ -2,46 +2,170 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingsPage"
-             Title="Mes coachings">
+             Title="🏋️ Mes Coachings">
 
-    <ScrollView>
-        <StackLayout Padding="20" Spacing="15">
-            <Label Text="Mes coachings" FontSize="24" HorizontalOptions="Center" />
+    <Grid>
+        <ScrollView>
+            <StackLayout Padding="20" Spacing="20">
+                
+                <!-- Header avec titre -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Accent}" Padding="24,20">
+                    <StackLayout Spacing="8">
+                        <Label Text="Mes Coachings" 
+                               Style="{StaticResource TitleMedium}" 
+                               TextColor="White" 
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Suivez vos séances d'entraînement personnalisées" 
+                               Style="{StaticResource BodyMedium}" 
+                               TextColor="White" 
+                               Opacity="0.9"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                </Frame>
 
-			<Button Text="S'inscrire à un coaching"
-                BackgroundColor="#007AFF"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="8"
-                Clicked="OnCoachingClicked"
-                HorizontalOptions="Fill"
-                Margin="0,20,0,0" />
-			
-            <CollectionView x:Name="coachingsView"
-                            SelectionMode="Single"
-                            SelectionChanged="OnCoachingSelected">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Stroke="MediumSeaGreen" BackgroundColor="MediumSeaGreen" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10">
-                            <StackLayout>
-                                <Label Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}" />
-                                <Label Text="{Binding EndDate, StringFormat='Fin : {0:dd/MM/yyyy}'}" />
-                                <Label Text="{Binding IsActive, StringFormat='Actif : {0}'}" />
-                                <Label Text="{Binding RenewWhenExpiry, StringFormat='Renouvellement auto : {0}'}" />
-                                <Label Text="{Binding WeekDay, StringFormat='Jour : {0}'}" />
-                                <Label Text="{Binding Hour, StringFormat='Heure : {0}:00'}" />
-                            </StackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                <!-- Section appel à l'action -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Secondary}" Padding="20">
+                    <StackLayout Spacing="12">
+                        <Label Text="💪 Prêt à vous dépasser ?" 
+                               Style="{StaticResource TitleSmall}" 
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        
+                        <Label Text="Inscrivez-vous à un coaching personnalisé avec nos experts" 
+                               Style="{StaticResource BodyMedium}" 
+                               TextColor="White"
+                               Opacity="0.9"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                               
+                        <Button Text="🎯 S'INSCRIRE À UN COACHING"
+                                BackgroundColor="White"
+                                TextColor="{StaticResource Secondary}"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                CornerRadius="12"
+                                Clicked="OnCoachingClicked"
+                                HorizontalOptions="Fill"
+                                Margin="0,8,0,0" />
+                    </StackLayout>
+                </Frame>
 
-            <Label x:Name="emptyLabel"
-                   Text="Aucun coaching trouvé."
-                   IsVisible="False"
-                   HorizontalOptions="Center"
-                   FontAttributes="Italic"
-                   FontSize="16" />
-        </StackLayout>
-    </ScrollView>
+                <!-- Liste des coachings -->
+                <StackLayout Spacing="16">
+                    <Label Text="📅 Vos Séances Programmées" 
+                           Style="{StaticResource TitleSmall}"
+                           FontAttributes="Bold"
+                           Margin="0,8,0,0"/>
+
+                    <CollectionView x:Name="coachingsView"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnCoachingSelected">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Style="{StaticResource CardFrame}" Margin="0,4">
+                                    <Grid ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Icône de coaching -->
+                                        <Frame Grid.Column="0" 
+                                               BackgroundColor="{StaticResource Accent}"
+                                               CornerRadius="30"
+                                               HeightRequest="60"
+                                               WidthRequest="60"
+                                               HasShadow="False"
+                                               Padding="0">
+                                            <Label Text="🏋️" 
+                                                   FontSize="24" 
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center"/>
+                                        </Frame>
+                                        
+                                        <!-- Informations du coaching -->
+                                        <StackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                            <Label Text="{Binding WeekDay, StringFormat='📅 {0}'}"
+                                                   Style="{StaticResource BodyLarge}"
+                                                   FontAttributes="Bold"/>
+                                            <Label Text="{Binding Hour, StringFormat='🕐 {0}:00'}"
+                                                   Style="{StaticResource BodyMedium}"/>
+                                            <Label Text="{Binding StartDate, StringFormat='Du {0:dd/MM/yyyy}'}"
+                                                   Style="{StaticResource Caption}"/>
+                                            <Label Text="{Binding EndDate, StringFormat='Au {0:dd/MM/yyyy}'}"
+                                                   Style="{StaticResource Caption}"/>
+                                        </StackLayout>
+                                        
+                                        <!-- Badges de statut -->
+                                        <StackLayout Grid.Column="2" VerticalOptions="Center" Spacing="4">
+                                            <Frame Style="{StaticResource Badge}" 
+                                                   HorizontalOptions="End">
+                                                <Frame.Triggers>
+                                                    <DataTrigger TargetType="Frame" Binding="{Binding IsActive}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Success}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Frame" Binding="{Binding IsActive}" Value="False">
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Danger}"/>
+                                                    </DataTrigger>
+                                                </Frame.Triggers>
+                                                <Label FontSize="12" FontAttributes="Bold" TextColor="White">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                                            <Setter Property="Text" Value="✅ Actif"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="False">
+                                                            <Setter Property="Text" Value="❌ Inactif"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Frame>
+                                            
+                                            <Frame Style="{StaticResource Badge}" 
+                                                   BackgroundColor="{StaticResource Info}"
+                                                   IsVisible="{Binding RenewWhenExpiry}"
+                                                   HorizontalOptions="End">
+                                                <Label Text="🔄 Auto" 
+                                                       TextColor="White" 
+                                                       FontSize="12" 
+                                                       FontAttributes="Bold"/>
+                                            </Frame>
+                                        </StackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+
+                <!-- Message d'état vide -->
+                <Frame x:Name="emptyFrame"
+                       Style="{StaticResource CardFrame}"
+                       IsVisible="False"
+                       BackgroundColor="{StaticResource Gray50}"
+                       Padding="40,60">
+                    <StackLayout Spacing="16">
+                        <Label Text="🏋️" 
+                               FontSize="48" 
+                               HorizontalOptions="Center"
+                               Opacity="0.6"/>
+                        <Label Text="Aucun coaching trouvé"
+                               Style="{StaticResource TitleSmall}"
+                               HorizontalOptions="Center"
+                               TextColor="{StaticResource Gray600}"/>
+                        <Label Text="Commencez votre transformation avec un coaching personnalisé !"
+                               Style="{StaticResource BodyMedium}"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{StaticResource Gray500}"/>
+                    </StackLayout>
+                </Frame>
+                
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+    
 </ContentPage>

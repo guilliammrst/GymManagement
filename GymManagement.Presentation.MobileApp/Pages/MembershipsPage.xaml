@@ -2,46 +2,167 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymManagement.Presentation.MobileApp.Pages.MembershipsPage"
-             Title="Mes abonnements">
+             Title="💳 Mes Abonnements">
 
-    <ScrollView>
-        <StackLayout Padding="20" Spacing="15">
-            <Label Text="Mes abonnements" FontSize="24" HorizontalOptions="Center"/>
+    <Grid>
+        <ScrollView>
+            <StackLayout Padding="20" Spacing="20">
+                
+                <!-- Header avec titre -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="24,20">
+                    <StackLayout Spacing="8">
+                        <Label Text="Mes Abonnements" 
+                               Style="{StaticResource TitleMedium}" 
+                               TextColor="White" 
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Gérez vos abonnements et découvrez nos offres" 
+                               Style="{StaticResource BodyMedium}" 
+                               TextColor="White" 
+                               Opacity="0.9"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                    </StackLayout>
+                </Frame>
 
-			 <Button Text="S'abonner"
-                BackgroundColor="#007AFF"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="8"
-                Clicked="OnSubscribeClicked"
-                HorizontalOptions="Fill"
-                Margin="0,20,0,0" />
+                <!-- Bouton S'abonner mis en évidence -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Success}" Padding="20">
+                    <StackLayout Spacing="12">
+                        <Label Text="🌟 Nouveau membre ?" 
+                               Style="{StaticResource TitleSmall}" 
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        
+                        <Label Text="Découvrez nos offres d'abonnement adaptées à vos besoins" 
+                               Style="{StaticResource BodyMedium}" 
+                               TextColor="White"
+                               Opacity="0.9"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                               
+                        <Button Text="🎯 S'ABONNER MAINTENANT"
+                                BackgroundColor="White"
+                                TextColor="{StaticResource Success}"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                CornerRadius="12"
+                                Clicked="OnSubscribeClicked"
+                                HorizontalOptions="Fill"
+                                Margin="0,8,0,0" />
+                    </StackLayout>
+                </Frame>
 
-            <CollectionView x:Name="subscriptionsView"
-                SelectionMode="Single"
-                SelectionChanged="OnSubscriptionSelected">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Stroke="DodgerBlue" BackgroundColor="DodgerBlue" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10">
-                            <StackLayout>
-                                <Label Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}"/>
-                                <Label Text="{Binding EndDate, StringFormat='Fin : {0:dd/MM/yyyy}'}"/>
-                                <Label Text="{Binding IsActive, StringFormat='Actif : {0}'}"/>
-                                <Label Text="{Binding RenewWhenExpiry, StringFormat='Renouvellement auto : {0}'}"/>
-                                <Label Text="{Binding IsExpired, StringFormat='Expiré : {0}'}"/>
-                            </StackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                <!-- Liste des abonnements -->
+                <StackLayout Spacing="16">
+                    <Label Text="📋 Vos Abonnements Actifs" 
+                           Style="{StaticResource TitleSmall}"
+                           FontAttributes="Bold"
+                           Margin="0,8,0,0"/>
 
+                    <CollectionView x:Name="subscriptionsView"
+                        SelectionMode="Single"
+                        SelectionChanged="OnSubscriptionSelected">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Style="{StaticResource CardFrame}" Margin="0,4">
+                                    <Grid ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Icône d'abonnement -->
+                                        <Frame Grid.Column="0" 
+                                               BackgroundColor="{StaticResource Primary}"
+                                               CornerRadius="30"
+                                               HeightRequest="60"
+                                               WidthRequest="60"
+                                               HasShadow="False"
+                                               Padding="0">
+                                            <Label Text="💳" 
+                                                   FontSize="24" 
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center"/>
+                                        </Frame>
+                                        
+                                        <!-- Informations de l'abonnement -->
+                                        <StackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                            <Label Text="{Binding StartDate, StringFormat='📅 Début : {0:dd/MM/yyyy}'}"
+                                                   Style="{StaticResource BodyLarge}"
+                                                   FontAttributes="Bold"/>
+                                            <Label Text="{Binding EndDate, StringFormat='📅 Fin : {0:dd/MM/yyyy}'}"
+                                                   Style="{StaticResource BodyMedium}"/>
+                                            <Label Text="{Binding RenewWhenExpiry, StringFormat='🔄 Renouvellement : {0}'}"
+                                                   Style="{StaticResource Caption}"/>
+                                        </StackLayout>
+                                        
+                                        <!-- Badge de statut simplifié -->
+                                        <StackLayout Grid.Column="2" VerticalOptions="Center" Spacing="4">
+                                            <Frame Style="{StaticResource Badge}" 
+                                                   HorizontalOptions="End">
+                                                <Frame.Triggers>
+                                                    <DataTrigger TargetType="Frame" Binding="{Binding IsActive}" Value="True">
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Success}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Frame" Binding="{Binding IsActive}" Value="False">
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource Danger}"/>
+                                                    </DataTrigger>
+                                                </Frame.Triggers>
+                                                <Label FontSize="12" FontAttributes="Bold" TextColor="White">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                                            <Setter Property="Text" Value="✅ Actif"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="False">
+                                                            <Setter Property="Text" Value="❌ Inactif"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Frame>
+                                            
+                                            <Frame Style="{StaticResource BadgeDanger}" 
+                                                   IsVisible="{Binding IsExpired}"
+                                                   HorizontalOptions="End">
+                                                <Label Text="⏰ Expiré" 
+                                                       TextColor="White" 
+                                                       FontSize="12" 
+                                                       FontAttributes="Bold"/>
+                                            </Frame>
+                                        </StackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
 
-            <Label x:Name="emptyLabel"
-                   Text="Aucun abonnement trouvé."
-                   IsVisible="False"
-                   HorizontalOptions="Center"
-                   FontAttributes="Italic"
-                   FontSize="16"/>
-        </StackLayout>
-    </ScrollView>
+                <!-- Message d'état vide -->
+                <Frame x:Name="emptyFrame"
+                       Style="{StaticResource CardFrame}"
+                       IsVisible="False"
+                       BackgroundColor="{StaticResource Gray50}"
+                       Padding="40,60">
+                    <StackLayout Spacing="16">
+                        <Label Text="📋" 
+                               FontSize="48" 
+                               HorizontalOptions="Center"
+                               Opacity="0.6"/>
+                        <Label Text="Aucun abonnement trouvé"
+                               Style="{StaticResource TitleSmall}"
+                               HorizontalOptions="Center"
+                               TextColor="{StaticResource Gray600}"/>
+                        <Label Text="Commencez votre parcours fitness en souscrivant à un abonnement !"
+                               Style="{StaticResource BodyMedium}"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{StaticResource Gray500}"/>
+                    </StackLayout>
+                </Frame>
+                
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+    
 </ContentPage>

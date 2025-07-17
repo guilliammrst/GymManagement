@@ -3,40 +3,243 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingFlow.CoachingFlowDetailsPage"
-             Title="Détails du coaching">
+             Title="📋 Détails du Coaching"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray900}}">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <Grid Padding="20" RowSpacing="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Label Text="Détails du coaching"
-               FontSize="24"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
+            <!-- Header avec progression -->
+            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Accent}" Padding="20">
+                <StackLayout Spacing="12">
+                    <Label Text="📋 Configuration du Coaching" 
+                           Style="{StaticResource TitleMedium}"
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    
+                    <!-- Indicateur de progression -->
+                    <Grid ColumnSpacing="8" HorizontalOptions="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Ellipse Grid.Column="0" Fill="White" WidthRequest="8" HeightRequest="8"/>
+                        <Rectangle Grid.Column="1" Fill="White" HeightRequest="2" VerticalOptions="Center"/>
+                        <Ellipse Grid.Column="2" Fill="White" WidthRequest="8" HeightRequest="8"/>
+                        <Rectangle Grid.Column="3" Fill="{StaticResource Gray300}" HeightRequest="2" VerticalOptions="Center"/>
+                        <Ellipse Grid.Column="4" Fill="{StaticResource Gray300}" WidthRequest="8" HeightRequest="8"/>
+                    </Grid>
+                    
+                    <Label Text="Étape 2 sur 3" 
+                           Style="{StaticResource Caption}"
+                           TextColor="White"
+                           Opacity="0.9"
+                           HorizontalOptions="Center"/>
+                </StackLayout>
+            </Frame>
 
-        <Label Text="Date de début" />
-        <DatePicker x:Name="startDatePicker"
-                    MinimumDate="{x:Static sys:DateTime.Today}" />
+            <!-- Instructions -->
+            <Frame Grid.Row="1" Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                <StackLayout Spacing="8">
+                    <Label Text="🎯 Planifiez vos séances" 
+                           Style="{StaticResource BodyLarge}"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                    <Label Text="Configurez votre planning d'entraînement selon vos disponibilités et préférences." 
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                </StackLayout>
+            </Frame>
 
-        <Label Text="Renouveler automatiquement ?" />
-        <Switch x:Name="renewSwitch" IsToggled="True" />
+            <!-- Formulaire de configuration -->
+            <StackLayout Grid.Row="2" Spacing="20">
 
-		<Label Text="Jour de coaching" />
-		<Picker x:Name="weekDayPicker"
-                Title="Sélectionner un jour" />
+                <!-- Date de début -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="16">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Border BackgroundColor="{StaticResource Success}" 
+                                    StrokeShape="RoundRectangle 20"
+                                    WidthRequest="40" 
+                                    HeightRequest="40">
+                                <Label Text="📅" 
+                                       FontSize="20" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Date de début" 
+                                       Style="{StaticResource BodyLarge}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Label Text="Quand commencer votre coaching ?" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                Padding="16,12">
+                            <DatePicker x:Name="startDatePicker"
+                                        MinimumDate="{x:Static sys:DateTime.Today}"
+                                        Date="{x:Static sys:DateTime.Today}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                        </Border>
+                    </StackLayout>
+                </Frame>
 
-        <Label Text="Heure (entre 8h et 20h)" />
-        <Entry x:Name="hourEntry"
-               Keyboard="Numeric"
-               Placeholder="Entrez une heure"
-               MaxLength="2" />
+                <!-- Jour de la semaine -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="16">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Border BackgroundColor="{StaticResource Warning}" 
+                                    StrokeShape="RoundRectangle 20"
+                                    WidthRequest="40" 
+                                    HeightRequest="40">
+                                <Label Text="📆" 
+                                       FontSize="20" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Jour de coaching" 
+                                       Style="{StaticResource BodyLarge}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Label Text="Sélectionnez votre jour préféré" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                Padding="16,12">
+                            <Picker x:Name="weekDayPicker"
+                                    Title="Sélectionner un jour"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                        </Border>
+                    </StackLayout>
+                </Frame>
 
-        <Button Text="Créer mon coaching"
-                x:Name="finishButton"
-                IsEnabled="False"
-                Clicked="OnFinishClicked"
-                BackgroundColor="#007AFF"
-                TextColor="White"
-                CornerRadius="8" />
+                <!-- Heure de coaching -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="16">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Border BackgroundColor="{StaticResource Info}" 
+                                    StrokeShape="RoundRectangle 20"
+                                    WidthRequest="40" 
+                                    HeightRequest="40">
+                                <Label Text="⏰" 
+                                       FontSize="20" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Heure de coaching" 
+                                       Style="{StaticResource BodyLarge}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Label Text="Entre 8h et 20h (format 24h)" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                Padding="16,12">
+                            <Entry x:Name="hourEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Ex: 14 (pour 14h00)"
+                                   MaxLength="2"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                   TextChanged="HourEntry_TextChanged"/>
+                        </Border>
+                        
+                        <!-- Aide pour l'heure -->
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <Label Text="💡" FontSize="16"/>
+                            <Label Text="Exemples : 9 (9h00), 14 (14h00), 18 (18h00)" 
+                                   Style="{StaticResource BodySmall}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource TextSecondaryDark}}"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
 
-    </VerticalStackLayout>
+                <!-- Renouvellement automatique -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="16">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Border BackgroundColor="{StaticResource Primary}" 
+                                    StrokeShape="RoundRectangle 20"
+                                    WidthRequest="40" 
+                                    HeightRequest="40">
+                                <Label Text="🔄" 
+                                       FontSize="20" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+                            <StackLayout VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                <Label Text="Renouvellement automatique" 
+                                       Style="{StaticResource BodyLarge}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Label Text="Renouveler automatiquement vos séances" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                            <Switch x:Name="renewSwitch" 
+                                    IsToggled="True"
+                                    OnColor="{StaticResource Primary}"
+                                    ThumbColor="White"/>
+                        </StackLayout>
+                        
+                        <!-- Info sur le renouvellement -->
+                        <Border BackgroundColor="{StaticResource Primary}"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="12,8"
+                                IsVisible="{Binding Source={x:Reference renewSwitch}, Path=IsToggled}">
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="ℹ️" FontSize="16"/>
+                                <Label Text="Vos séances seront automatiquement programmées chaque semaine. Vous pouvez modifier cela à tout moment." 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="White"
+                                       HorizontalOptions="FillAndExpand"/>
+                            </StackLayout>
+                        </Border>
+                    </StackLayout>
+                </Frame>
 
+            </StackLayout>
+
+            <!-- Bouton Créer -->
+            <Button Grid.Row="3"
+                    x:Name="finishButton"
+                    Text="✨ CRÉER MON COACHING"
+                    IsEnabled="False"
+                    Clicked="OnFinishClicked"
+                    Style="{StaticResource PrimaryButton}"
+                    Margin="0,16,0,0"/>
+
+        </Grid>
+    </ScrollView>
 </ContentPage>

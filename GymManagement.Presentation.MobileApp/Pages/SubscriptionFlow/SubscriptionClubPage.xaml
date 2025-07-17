@@ -2,62 +2,187 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow.SubscriptionClubPage"
-             Title="Choisir un club">
+             Title="🏢 Choisir un club"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray900}}">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <Grid Padding="20" RowSpacing="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Label Text="Choisissez votre club"
-               FontSize="24"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
+            <!-- Header avec progression -->
+            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="20">
+                <StackLayout Spacing="12">
+                    <Label Text="🏢 Sélection du Club" 
+                           Style="{StaticResource TitleMedium}"
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    
+                    <!-- Indicateur de progression -->
+                    <Grid ColumnSpacing="8" HorizontalOptions="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Ellipse Grid.Column="0" Fill="White" WidthRequest="8" HeightRequest="8"/>
+                        <Rectangle Grid.Column="1" Fill="White" HeightRequest="2" VerticalOptions="Center"/>
+                        <Ellipse Grid.Column="2" Fill="White" WidthRequest="8" HeightRequest="8"/>
+                        <Rectangle Grid.Column="3" Fill="{StaticResource Gray300}" HeightRequest="2" VerticalOptions="Center"/>
+                        <Ellipse Grid.Column="4" Fill="{StaticResource Gray300}" WidthRequest="8" HeightRequest="8"/>
+                        <Rectangle Grid.Column="5" Fill="{StaticResource Gray300}" HeightRequest="2" VerticalOptions="Center"/>
+                        <Ellipse Grid.Column="6" Fill="{StaticResource Gray300}" WidthRequest="8" HeightRequest="8"/>
+                    </Grid>
+                    
+                    <Label Text="Étape 2 sur 4" 
+                           Style="{StaticResource Caption}"
+                           TextColor="White"
+                           Opacity="0.9"
+                           HorizontalOptions="Center"/>
+                </StackLayout>
+            </Frame>
 
-        <CollectionView x:Name="clubsCollectionView"
-                        SelectionMode="Single"
-                        SelectionChanged="OnClubSelected">
+            <!-- Instructions -->
+            <Frame Grid.Row="1" Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                <StackLayout Spacing="8">
+                    <Label Text="🎯 Choisissez votre club principal" 
+                           Style="{StaticResource BodyLarge}"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                    <Label Text="Sélectionnez le club où vous souhaitez vous entraîner le plus souvent. Vous pourrez accéder aux autres clubs selon votre formule." 
+                           Style="{StaticResource BodyMedium}"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                </StackLayout>
+            </Frame>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <ContentView>
+            <!-- Liste des clubs -->
+            <CollectionView Grid.Row="2" 
+                            x:Name="clubsCollectionView"
+                            SelectionMode="Single"
+                            SelectionChanged="OnClubSelected">
 
-                        <ContentView.VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup Name="CommonStates">
-                                <VisualState Name="Normal" />
-                                <VisualState Name="Selected">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="LightYellow" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </ContentView.VisualStateManager.VisualStateGroups>
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="16"/>
+                </CollectionView.ItemsLayout>
 
-                        <Frame BorderColor="DodgerBlue"
-                               BackgroundColor="DodgerBlue"
-                               Padding="10"
-                               Margin="5"
-                               CornerRadius="10"
-                               HasShadow="False">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeShape="RoundRectangle 16"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                StrokeThickness="1"
+                                Padding="0">
+                            
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Stroke" Value="{StaticResource Primary}"/>
+                                    <Setter Property="StrokeThickness" Value="2"/>
+                                </DataTrigger>
+                            </Border.Triggers>
 
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Name}" FontAttributes="Bold" TextColor="White"/>
-                                <Label Text="{Binding Address.Country}" FontSize="12" TextColor="White"/>
-                                <Label Text="{Binding Address.City}" FontSize="12" TextColor="White"/>
-                            </VerticalStackLayout>
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource Gray400}"
+                                        Offset="0,2"
+                                        Radius="8"
+                                        Opacity="0.1"/>
+                            </Border.Shadow>
 
-                        </Frame>
+                            <Grid Padding="20" RowSpacing="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                    </ContentView>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
+                                <!-- Nom du club avec icône -->
+                                <StackLayout Grid.Row="0" Orientation="Horizontal" Spacing="12">
+                                    <Border BackgroundColor="{StaticResource Secondary}" 
+                                            StrokeShape="RoundRectangle 20"
+                                            WidthRequest="40" 
+                                            HeightRequest="40">
+                                        <Label Text="🏢" 
+                                               FontSize="20" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center"/>
+                                    </Border>
+                                    <StackLayout VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" 
+                                               Style="{StaticResource TitleSmall}"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray800}, Dark={StaticResource TextPrimaryDark}}"/>
+                                    </StackLayout>
+                                </StackLayout>
 
-        </CollectionView>
+                                <!-- Adresse -->
+                                <StackLayout Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                                    <Label Text="📍" FontSize="16"/>
+                                    <StackLayout>
+                                        <Label Text="{Binding Address.City}" 
+                                               Style="{StaticResource BodyMedium}"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                        <Label Text="{Binding Address.Country}" 
+                                               Style="{StaticResource BodySmall}"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                                    </StackLayout>
+                                </StackLayout>
 
-        <Button Text="Continuer"
-                x:Name="continueButton"
-                IsEnabled="False"
-                Clicked="OnContinueClicked"
-                BackgroundColor="#007AFF"
-                TextColor="White"
-                CornerRadius="8" />
+                                <!-- Adresse complète -->
+                                <StackLayout Grid.Row="2" Orientation="Horizontal" Spacing="8">
+                                    <Label Text="🏠" FontSize="16"/>
+                                    <Label Style="{StaticResource BodySmall}"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Address.Number}"/>
+                                                <Span Text=" "/>
+                                                <Span Text="{Binding Address.Street}"/>
+                                                <Span Text=", "/>
+                                                <Span Text="{Binding Address.PostalCode}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </StackLayout>
 
-    </VerticalStackLayout>
+                                <!-- Indicateur de sélection -->
+                                <Border Grid.Row="3" 
+                                        BackgroundColor="{StaticResource Primary}"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="12,6"
+                                        IsVisible="{Binding IsSelected}"
+                                        Margin="0,8,0,0">
+                                    <Label Text="✓ Club sélectionné" 
+                                           Style="{StaticResource BodyMedium}"
+                                           FontAttributes="Bold"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Bouton Continuer -->
+            <Button Grid.Row="3"
+                    x:Name="continueButton"
+                    Text="🚀 CONTINUER"
+                    IsEnabled="False"
+                    Clicked="OnContinueClicked"
+                    Style="{StaticResource PrimaryButton}"
+                    Margin="0,16,0,0"/>
+
+        </Grid>
+    </ScrollView>
 </ContentPage>

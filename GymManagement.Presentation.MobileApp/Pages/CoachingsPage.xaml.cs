@@ -43,18 +43,18 @@ namespace GymManagement.Presentation.MobileApp.Pages
                     if (coachings != null && coachings.Any())
                     {
                         coachingsView.ItemsSource = coachings;
-                        emptyLabel.IsVisible = false;
+                        emptyFrame.IsVisible = false;
                     }
                     else
                     {
                         coachingsView.ItemsSource = null;
-                        emptyLabel.IsVisible = true;
+                        emptyFrame.IsVisible = true;
                     }
                 }
                 else
                 {
                     coachingsView.ItemsSource = null;
-                    emptyLabel.IsVisible = true;
+                    emptyFrame.IsVisible = true;
                 }
 
                 UserId = user.Id;

@@ -4,17 +4,29 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:GymManagement.Presentation.MobileApp"
-    Title="GymManagement.Presentation.MobileApp"
+    Title="GymFit"
     FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <!-- Styles pour la navigation -->
+    <Shell.Resources>
+        <Style x:Key="BaseShellItemStyle" TargetType="ShellContent">
+            <Setter Property="Shell.NavBarIsVisible" Value="True"/>
+            <Setter Property="Shell.TabBarIsVisible" Value="False"/>
+        </Style>
+    </Shell.Resources>
 
+    <!-- Page principale -->
+    <ShellContent
+        Title="🏠 Accueil"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage"
+        Style="{StaticResource BaseShellItemStyle}" />
+
+    <!-- Page de connexion -->
     <ShellContent 
-        Title="Login"
+        Title="🔐 Connexion"
         Route="LoginPage" 
-        ContentTemplate="{DataTemplate local:Pages.LoginPage}" />
+        ContentTemplate="{DataTemplate local:Pages.LoginPage}"
+        Style="{StaticResource BaseShellItemStyle}" />
 
 </Shell>

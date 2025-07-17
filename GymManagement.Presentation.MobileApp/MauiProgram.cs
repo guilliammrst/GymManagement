@@ -18,10 +18,14 @@ namespace GymManagement.Presentation.MobileApp
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    // Ajout de plus de variantes de polices pour un design plus riche
+                    fonts.AddFont("OpenSans-Bold.ttf", "OpenSansBold");
+                    fonts.AddFont("OpenSans-Light.ttf", "OpenSansLight");
                 });
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
             builder.Services.AddHttpClient<GymApiClient>(client =>
             {
                 client.BaseAddress = new(EnvironmentVariables.GetEnvironmentVariable(EnvironmentVariables.GymApiUrl));

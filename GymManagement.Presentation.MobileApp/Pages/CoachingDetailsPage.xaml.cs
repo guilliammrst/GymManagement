@@ -11,7 +11,7 @@ namespace GymManagement.Presentation.MobileApp.Pages
         public int UserId { get; set; }
 
         private readonly GymApiClient _gymApiClient;
-        private CoachingDetailsDto _coachingDetails;
+        private CoachingDetailsDto? _coachingDetails;
 
         private CoachingDetailsPage(GymApiClient gymApiClient)
         {
@@ -31,25 +31,51 @@ namespace GymManagement.Presentation.MobileApp.Pages
 
         private async Task LoadCoachingDetails()
         {
-            var coachingDetailsResult = await _gymApiClient.GetCoachingByIdAsync(UserId, Coaching.Id);
-            if (coachingDetailsResult.Success)
+            try
             {
-                _coachingDetails = coachingDetailsResult.Results;
-                BindingContext = _coachingDetails;
+                var coachingDetailsResult = await _gymApiClient.GetCoachingByIdAsync(UserId, Coaching.Id);
+                if (coachingDetailsResult.Success)
+                {
+                    _coachingDetails = coachingDetailsResult.Results;
+                    BindingContext = _coachingDetails;
+                }
+                else
+                {
+                    await DisplayAlert("❌ Erreur",
+                        $"Impossible de charger les détails du coaching :\n{coachingDetailsResult.ErrorMessage}",
+                        "OK");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await DisplayAlert("Erreur", "Impossible de charger les détails du coaching.", "OK");
+                await DisplayAlert("❌ Erreur",
+                    $"Une erreur inattendue s'est produite :\n{ex.Message}",
+                    "OK");
             }
         }
 
         private async void OnPayClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync(PageNames.CoachingPaymentPage, new Dictionary<string, object>
+            try
             {
-                { "CoachingId", Coaching.Id },
-                { "UserId", UserId }
-            });
+                if (_coachingDetails == null)
+                {
+                    await DisplayAlert("⚠️ Attention", "Les détails du coaching ne sont pas encore chargés.", "OK");
+                    return;
+                }
+
+                await Shell.Current.GoToAsync(PageNames.CoachingPaymentPage, new Dictionary<string, object>
+                {
+                    { "CoachingId", Coaching.Id },
+                    { "UserId", UserId }
+                });
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("❌ Erreur",
+                    $"Impossible d'accéder au paiement :\n{ex.Message}",
+                    "OK");
+            }
         }
     }
 }

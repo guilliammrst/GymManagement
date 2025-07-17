@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GymManagement.Presentation.MobileApp.Converters"
              x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingDetailsPage"
-             Title="Détails du coaching">
+             Title="🏋️ Détails du Coaching"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray900}}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -13,45 +14,291 @@
     </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-            <Label Text="Détails du coaching"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+        <Grid Padding="20" RowSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <Label Text="{Binding StartDate, StringFormat='Début : {0:dd/MM/yyyy}'}"/>
-            <Label Text="{Binding EndDate, StringFormat='Fin : {0:dd/MM/yyyy}'}"/>
-            <Label Text="{Binding WeekDay, StringFormat='Jour : {0}'}"/>
-            <Label Text="{Binding Hour, StringFormat='Heure : {0}:00'}"/>
-            <Label Text="{Binding IsActive, StringFormat='Actif : {0}'}"/>
-            <Label Text="{Binding RenewWhenExpiry, StringFormat='Renouvellement auto : {0}'}"/>
+            <!-- Header avec statut -->
+            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Accent}" Padding="20">
+                <StackLayout Spacing="12">
+                    <Label Text="🏋️ Mon Coaching Personnalisé" 
+                           Style="{StaticResource TitleMedium}"
+                           TextColor="White"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    
+                    <!-- Statut du coaching -->
+                    <Border BackgroundColor="White" 
+                            StrokeShape="RoundRectangle 16"
+                            Padding="12,6"
+                            HorizontalOptions="Center">
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <Label Text="{Binding IsActive, Converter={StaticResource BoolToVisibility}}"
+                                   IsVisible="{Binding IsActive}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                        <Setter Property="Text" Value="✅ Actif"/>
+                                        <Setter Property="TextColor" Value="{StaticResource Success}"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="False">
+                                        <Setter Property="Text" Value="⏳ En attente de paiement"/>
+                                        <Setter Property="TextColor" Value="{StaticResource Warning}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </StackLayout>
+                    </Border>
+                </StackLayout>
+            </Frame>
 
-            <Label Text="Informations du plan"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0"/>
+            <!-- Informations du coaching -->
+            <Frame Grid.Row="1" Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                <StackLayout Spacing="16">
+                    <Label Text="📋 Informations de votre coaching" 
+                           Style="{StaticResource TitleSmall}"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
 
-            <Label Text="{Binding CoachingPlan.Description, StringFormat='Plan : {0}'}"/>
-            <Label Text="{Binding CoachingPlan.Price, StringFormat='Prix : {0} €'}"/>
-            <Label Text="{Binding CoachingPlan.IsValid, StringFormat='Valide : {0}'}"/>
+                    <Grid ColumnDefinitions="*,Auto" 
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowSpacing="12">
+                        <Label Grid.Column="0" Grid.Row="0"
+                               Text="📅 Date de début :"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                        <Label Grid.Column="1" Grid.Row="0"
+                               Text="{Binding StartDate, StringFormat='{0:dd MMMM yyyy}'}"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
 
-            <Label Text="Informations de paiement"
-                   FontAttributes="Bold"
-                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+                        <Label Grid.Column="0" Grid.Row="1"
+                               Text="📅 Date de fin :"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                        <Label Grid.Column="1" Grid.Row="1"
+                               Text="{Binding EndDate, StringFormat='{0:dd MMMM yyyy}'}"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
 
-            <Label Text="{Binding PaymentDetail.PaymentStatus, StringFormat='Paiement : {0}'}"
-                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
-            <Label Text="{Binding PaymentDetail.PaymentMethod, StringFormat='Méthode : {0}'}"
-                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
-            <Label Text="{Binding PaymentDetail.PaymentDate, StringFormat='Payé le : {0:dd/MM/yyyy}'}"
-                   IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}" />
+                        <Label Grid.Column="0" Grid.Row="2"
+                               Text="🔄 Renouvellement :"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                        <Label Grid.Column="1" Grid.Row="2"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding RenewWhenExpiry}" Value="True">
+                                    <Setter Property="Text" Value="Automatique"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding RenewWhenExpiry}" Value="False">
+                                    <Setter Property="Text" Value="Manuel"/>
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" 
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          RowSpacing="12">
+                        
+                        <Label Grid.Column="0" Grid.Row="1"
+                               Text="⏰ Heure :"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                        <Label Grid.Column="1" Grid.Row="1"
+                               Text="{Binding Hour, StringFormat='{0:00}h00'}"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
 
-            <Button Text="Payer le coaching"
-                    BackgroundColor="Green"
+                        <Label Grid.Column="0" Grid.Row="2"
+                               Text="🗓️ Jour de la semaine :"
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                        <Label Grid.Column="1" Grid.Row="2"
+                               Text="{Binding WeekDay}"
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                    </Grid>
+                </StackLayout>
+            </Frame>
+
+            <!-- Détails du plan et paiement -->
+            <StackLayout Grid.Row="2" Spacing="20">
+                
+                <!-- Plan de coaching -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="16">
+                        <Label Text="🎯 Plan de coaching" 
+                               Style="{StaticResource TitleSmall}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+
+                        <Grid ColumnDefinitions="*,Auto" 
+                              RowDefinitions="Auto,Auto,Auto,Auto"
+                              RowSpacing="12">
+                            <Label Grid.Column="0" Grid.Row="0"
+                                   Text="Programme :"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            <Label Grid.Column="1" Grid.Row="0"
+                                   Text="{Binding CoachingPlan.Description}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            
+                            <Label Grid.Column="0" Grid.Row="1"
+                                   Text="💰 Prix par session :"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            <Label Grid.Column="1" Grid.Row="1"
+                                   Text="{Binding CoachingPlan.Price, StringFormat='{0:C}'}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Accent}"/>
+                            
+                            <Label Grid.Column="0" Grid.Row="2"
+                                   Text="✅ Statut du plan :"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            <Label Grid.Column="1" Grid.Row="2"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding CoachingPlan.IsValid}" Value="True">
+                                        <Setter Property="Text" Value="Valide"/>
+                                        <Setter Property="TextColor" Value="{StaticResource Success}"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding CoachingPlan.IsValid}" Value="False">
+                                        <Setter Property="Text" Value="Expiré"/>
+                                        <Setter Property="TextColor" Value="{StaticResource Error}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Grid>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Informations de paiement -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                       IsVisible="{Binding IsActive, Converter={StaticResource BoolToVisibility}}">
+                    <StackLayout Spacing="16">
+                        <Label Text="💳 Informations de paiement" 
+                               Style="{StaticResource TitleSmall}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+
+                        <Grid ColumnDefinitions="*,Auto" 
+                              RowDefinitions="Auto,Auto,Auto,Auto"
+                              RowSpacing="12">
+                            <Label Grid.Column="0" Grid.Row="0"
+                                   Text="💰 Montant payé :"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            <Label Grid.Column="1" Grid.Row="0"
+                                   Text="{Binding PaymentDetail.Amount, StringFormat='{0:C}'}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Success}"/>
+                            
+                            <Label Grid.Column="0" Grid.Row="1"
+                                   Text="💳 Méthode :"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            <Label Grid.Column="1" Grid.Row="1"
+                                   Text="{Binding PaymentDetail.PaymentMethod}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            
+                            <Label Grid.Column="0" Grid.Row="2"
+                                   Text="📅 Date de paiement :"
+                                   Style="{StaticResource BodyMedium}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            <Label Grid.Column="1" Grid.Row="2"
+                                   Text="{Binding PaymentDetail.PaymentDate, StringFormat='{0:dd MMMM yyyy}'}"
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                        </Grid>
+
+                        <!-- Badge de statut -->
+                        <Border BackgroundColor="{StaticResource Success}" 
+                                StrokeShape="RoundRectangle 8"
+                                Padding="12,6"
+                                HorizontalOptions="Center">
+                            <Label Text="✅ Paiement confirmé" 
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="White"/>
+                        </Border>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Avantages du coaching -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="12">
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <Label Text="✨" FontSize="16"/>
+                            <Label Text="Ce que votre coaching inclut" 
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                        </StackLayout>
+                        
+                        <StackLayout Spacing="6">
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
+                                <Label Text="Séances personnalisées avec votre coach" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
+                                <Label Text="Suivi de vos progrès et performances" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
+                                <Label Text="Conseils nutritionnels et lifestyle" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
+                                <Label Text="Accès prioritaire aux équipements" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+
+            <!-- Bouton de paiement -->
+            <Button Grid.Row="3"
+                    Text="💳 PROCÉDER AU PAIEMENT"
+                    Clicked="OnPayClicked"
+                    BackgroundColor="{StaticResource Success}"
                     TextColor="White"
                     FontAttributes="Bold"
-                    CornerRadius="8"
+                    FontSize="16"
+                    CornerRadius="12"
+                    HeightRequest="56"
                     IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolToVisibility}}"
-                    Clicked="OnPayClicked" />
-        </VerticalStackLayout>
+                    Margin="0,16,0,0"/>
+
+        </Grid>
     </ScrollView>
 </ContentPage>

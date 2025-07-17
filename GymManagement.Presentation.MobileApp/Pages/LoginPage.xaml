@@ -1,24 +1,114 @@
 <?xml version = "1.0" encoding = "utf-8" ?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymManagement.Presentation.MobileApp.Pages.LoginPage"
-             Title="Connexion">
+             Title="🔐 Connexion">
 
-	<StackLayout Padding="30" Spacing="20">
-        <Label Text="Connexion" FontSize="24" HorizontalOptions="Center"/>
-        <Entry x:Name="emailEntry" Placeholder="Email" Keyboard="Email"/>
-        <Entry x:Name="passwordEntry" Placeholder="Mot de passe" IsPassword="True"/>
-        
-        <Button Text="Se connecter" 
-                Clicked="OnLoginClicked" 
-				BackgroundColor="LightGray" 
-				TextColor="Black"/>
+    <Grid>
+        <ScrollView>
+            <StackLayout Padding="30" Spacing="24" VerticalOptions="Center">
 
-        <Button Text="Créer un compte"
-                Clicked="OnGoToRegisterClicked"
-				BackgroundColor="DodgerBlue" 
-				TextColor="White"/>
-    </StackLayout>
+                <!-- Logo/Header -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="30,24" Margin="0,20,0,0">
+                    <StackLayout Spacing="12">
+                        <Label Text="🏋️ GymFit" 
+                               Style="{StaticResource TitleLarge}"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Votre salle de sport digitale" 
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="White"
+                               Opacity="0.9"
+                               HorizontalOptions="Center"/>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Formulaire de connexion -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                       Padding="24">
+                    <StackLayout Spacing="20">
+                        
+                        <Label Text="Se Connecter" 
+                               Style="{StaticResource TitleSmall}"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+
+                        <!-- Champ Email -->
+                        <StackLayout Spacing="8">
+                            <Label Text="📧 Email" 
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                    Padding="16,12">
+                                <Entry x:Name="emailEntry" 
+                                       Placeholder="votre.email@exemple.com" 
+                                       Keyboard="Email"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                            </Border>
+                        </StackLayout>
+
+                        <!-- Champ Mot de passe -->
+                        <StackLayout Spacing="8">
+                            <Label Text="🔒 Mot de passe" 
+                                   Style="{StaticResource BodyMedium}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                    Padding="16,12">
+                                <Entry x:Name="passwordEntry" 
+                                       Placeholder="Votre mot de passe" 
+                                       IsPassword="True"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                            </Border>
+                        </StackLayout>
+
+                        <!-- Boutons d'action -->
+                        <StackLayout Spacing="12" Margin="0,20,0,0">
+                            <Button Text="🚀 SE CONNECTER" 
+                                    Clicked="OnLoginClicked"
+                                    FontAttributes="Bold"
+                                    FontSize="16" />
+
+                            <Button Text="👤 CRÉER UN COMPTE"
+                                    Clicked="OnGoToRegisterClicked"
+                                    Style="{StaticResource SecondaryButton}" />
+                        </StackLayout>
+
+                    </StackLayout>
+                </Frame>
+
+                <!-- Section aide -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray800}}" 
+                       Padding="20">
+                    <StackLayout Spacing="8">
+                        <Label Text="💡 Première fois ?" 
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                        <Label Text="Créez votre compte pour accéder à tous nos services et commencer votre parcours fitness !" 
+                               Style="{StaticResource Caption}"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 
 </ContentPage>

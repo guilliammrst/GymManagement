@@ -39,12 +39,12 @@ namespace GymManagement.Presentation.MobileApp.Pages
                 if (user.Memberships != null && user.Memberships.Any())
                 {
                     subscriptionsView.ItemsSource = user.Memberships;
-                    emptyLabel.IsVisible = false;
+                    emptyFrame.IsVisible = false;
                 }
                 else
                 {
                     subscriptionsView.ItemsSource = null;
-                    emptyLabel.IsVisible = true;
+                    emptyFrame.IsVisible = true;
                 }
 
                 UserId = user.Id;

@@ -9,6 +9,7 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
         private readonly GymApiClient _gymApiClient;
         private readonly SubscriptionFlowData _subscriptionFlowData;
         private ClubDto? _selectedClub;
+        private List<ClubDtoWithSelection>? _clubsWithSelection;
 
         private SubscriptionClubPage(GymApiClient gymApiClient, SubscriptionFlowData subscriptionFlowData)
         {
@@ -35,20 +36,65 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
 
         private async Task LoadClubsAsync()
         {
-            var result = await _gymApiClient.GetClubsAsync();
-            if (result.Success)
+            try
             {
-                clubsCollectionView.ItemsSource = result.Results;
+                var result = await _gymApiClient.GetClubsAsync();
+                if (result.Success)
+                {
+                    _clubsWithSelection = result.Results
+                        .Select(c => new ClubDtoWithSelection
+                        {
+                            Club = c,
+                            IsSelected = false,
+                            Id = c.Id,
+                            Name = c.Name,
+                            Address = c.Address,
+                            CreatedAt = c.CreatedAt,
+                            UpdatedAt = c.UpdatedAt
+                        })
+                        .ToList();
+
+                    clubsCollectionView.ItemsSource = _clubsWithSelection;
+                }
+                else
+                {
+                    await DisplayAlert("❌ Erreur", "Impossible de charger la liste des clubs. Veuillez réessayer.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("❌ Erreur", $"Une erreur inattendue s'est produite : {ex.Message}", "OK");
             }
         }
 
         private void OnClubSelected(object sender, SelectionChangedEventArgs e)
         {
-            _selectedClub = e.CurrentSelection.FirstOrDefault() as ClubDto;
-            continueButton.IsEnabled = _selectedClub != null;
-            if (_selectedClub != null)
+            // Désélectionner tous les clubs
+            if (_clubsWithSelection != null)
             {
+                foreach (var club in _clubsWithSelection)
+                {
+                    club.IsSelected = false;
+                }
+            }
+
+            // Sélectionner le club choisi
+            var selectedClubWithSelection = e.CurrentSelection.FirstOrDefault() as ClubDtoWithSelection;
+            if (selectedClubWithSelection != null)
+            {
+                selectedClubWithSelection.IsSelected = true;
+                _selectedClub = selectedClubWithSelection.Club;
+                continueButton.IsEnabled = true;
                 _subscriptionFlowData.HomeClub = _selectedClub;
+
+                // Rafraîchir l'affichage
+                clubsCollectionView.ItemsSource = null;
+                clubsCollectionView.ItemsSource = _clubsWithSelection;
+            }
+            else
+            {
+                _selectedClub = null;
+                continueButton.IsEnabled = false;
             }
         }
 
@@ -56,12 +102,32 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
         {
             if (_selectedClub == null)
             {
-                await DisplayAlert("Erreur", "Veuillez sélectionner un club.", "OK");
+                await DisplayAlert("⚠️ Attention", "Veuillez sélectionner un club pour continuer.", "OK");
                 return;
             }
 
-            _subscriptionFlowData.HomeClub = _selectedClub;
-            await Shell.Current.GoToAsync(PageNames.SubscriptionDetailsPage);
+            try
+            {
+                // Animation du bouton
+                continueButton.IsEnabled = false;
+                await continueButton.ScaleTo(0.95, 100);
+                await continueButton.ScaleTo(1.0, 100);
+
+                _subscriptionFlowData.HomeClub = _selectedClub;
+                await Shell.Current.GoToAsync(PageNames.SubscriptionDetailsPage);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("❌ Erreur", $"Impossible de continuer : {ex.Message}", "OK");
+                continueButton.IsEnabled = true;
+            }
         }
+    }
+
+    // Classe helper pour gérer la sélection visuelle
+    public class ClubDtoWithSelection : ClubDto
+    {
+        public ClubDto Club { get; set; } = new();
+        public bool IsSelected { get; set; }
     }
 }

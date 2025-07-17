@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:GymManagement.Presentation.MobileApp"
+             xmlns:converters="clr-namespace:GymManagement.Presentation.MobileApp.Converters"
              x:Class="GymManagement.Presentation.MobileApp.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,13 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Convertisseurs globaux -->
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+            <converters:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
