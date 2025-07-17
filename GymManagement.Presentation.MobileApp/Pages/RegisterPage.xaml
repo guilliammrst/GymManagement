@@ -1,44 +1,368 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-			 xmlns:sys="clr-namespace:System;assembly=netstandard"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GymManagement.Presentation.MobileApp.Pages.RegisterPage"
-             Title="Inscription">
+             Title="📝 Inscription"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray900}}">
 
-	<ScrollView>
-		<StackLayout Padding="30" Spacing="15">
+    <Grid>
+        <ScrollView>
+            <StackLayout Padding="20" Spacing="20" VerticalOptions="Start">
 
-			<Label Text="Inscription" FontSize="24" HorizontalOptions="Center"/>
+                <!-- Header avec progression -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="24" Margin="0,10,0,0">
+                    <StackLayout Spacing="12">
+                        <Label Text="🏋️ GymFit" 
+                               Style="{StaticResource TitleLarge}"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+                        <Label Text="Rejoignez notre communauté fitness" 
+                               Style="{StaticResource BodyMedium}"
+                               TextColor="White"
+                               Opacity="0.9"
+                               HorizontalOptions="Center"/>
+                        
+                        <!-- Indicateur de progression -->
+                        <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="8" Margin="0,16,0,0">
+                            <Ellipse Fill="White" WidthRequest="8" HeightRequest="8"/>
+                            <Label Text="Création de votre compte" 
+                                   Style="{StaticResource Caption}"
+                                   TextColor="White"
+                                   Opacity="0.9"/>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
 
-			<Entry x:Name="nameEntry" Placeholder="Nom"/>
-			<Entry x:Name="surnameEntry" Placeholder="Prénom"/>
-			<DatePicker x:Name="birthdatePicker" Date="{x:Static sys:DateTime.Today}" />
-			<Entry x:Name="emailEntry" Placeholder="Email" Keyboard="Email"/>
-			<Entry x:Name="passwordEntry" Placeholder="Mot de passe" IsPassword="True"/>
-			<Entry x:Name="phoneEntry" Placeholder="Téléphone"/>
+                <!-- Informations personnelles -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                       Padding="20">
+                    <StackLayout Spacing="16">
+                        
+                        <Label Text="👤 Informations personnelles" 
+                               Style="{StaticResource TitleSmall}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
 
-			<Picker x:Name="genderPicker" Title="Genre"/>
-			<Picker x:Name="countryPicker" Title="Pays"/>
+                        <!-- Nom et Prénom -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <StackLayout Grid.Column="0" Spacing="8">
+                                <Label Text="Nom *" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Entry x:Name="nameEntry" 
+                                           Placeholder="Votre nom"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                                </Border>
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Column="1" Spacing="8">
+                                <Label Text="Prénom *" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Entry x:Name="surnameEntry" 
+                                           Placeholder="Votre prénom"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                                </Border>
+                            </StackLayout>
+                        </Grid>
 
-			<Entry x:Name="cityEntry" Placeholder="Ville"/>
-			<Entry x:Name="streetEntry" Placeholder="Rue"/>
-			<Entry x:Name="postalCodeEntry" Placeholder="Code postal"/>
-			<Entry x:Name="numberEntry" Placeholder="Numéro"/>
-            
-            <Button 
-				Text="Créer mon compte" 
-				Clicked="OnRegisterClicked" 
-				BackgroundColor="LightGray" 
-				TextColor="Black"/>
+                        <!-- Email -->
+                        <StackLayout Spacing="8">
+                            <Label Text="📧 Email *" 
+                                   Style="{StaticResource BodySmall}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                    Padding="12,10">
+                                <Entry x:Name="emailEntry" 
+                                       Placeholder="votre.email@exemple.com"
+                                       Keyboard="Email"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                            </Border>
+                        </StackLayout>
 
-			<Button 
-				Text="Se connecter" 
-				Clicked="OnGoToLoginClicked" 
-				BackgroundColor="DodgerBlue" 
-				TextColor="White"/>
+                        <!-- Mot de passe -->
+                        <StackLayout Spacing="8">
+                            <Label Text="🔒 Mot de passe *" 
+                                   Style="{StaticResource BodySmall}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                    Padding="12,10">
+                                <Entry x:Name="passwordEntry" 
+                                       Placeholder="Créez un mot de passe sécurisé"
+                                       IsPassword="True"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                            </Border>
+                        </StackLayout>
 
-        </StackLayout>
-	</ScrollView>
+                        <!-- Téléphone et Date de naissance -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <StackLayout Grid.Column="0" Spacing="8">
+                                <Label Text="📱 Téléphone" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Entry x:Name="phoneEntry" 
+                                           Placeholder="+33 6 12 34 56 78"
+                                           Keyboard="Telephone"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                                </Border>
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Column="1" Spacing="8">
+                                <Label Text="🎂 Date de naissance" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <DatePicker x:Name="birthdatePicker" 
+                                                Date="{x:Static sys:DateTime.Today}"
+                                                BackgroundColor="Transparent"
+                                                TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                </Border>
+                            </StackLayout>
+                        </Grid>
+
+                        <!-- Genre et Pays -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <StackLayout Grid.Column="0" Spacing="8">
+                                <Label Text="👥 Genre" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Picker x:Name="genderPicker" 
+                                            Title="Sélectionner votre genre"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                </Border>
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Column="1" Spacing="8">
+                                <Label Text="🌍 Pays" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Picker x:Name="countryPicker" 
+                                            Title="Sélectionner votre pays"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                </Border>
+                            </StackLayout>
+                        </Grid>
+
+                    </StackLayout>
+                </Frame>
+
+                <!-- Adresse -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                       Padding="20">
+                    <StackLayout Spacing="16">
+                        
+                        <Label Text="🏠 Adresse" 
+                               Style="{StaticResource TitleSmall}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+
+                        <!-- Ville -->
+                        <StackLayout Spacing="8">
+                            <Label Text="🏙️ Ville" 
+                                   Style="{StaticResource BodySmall}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                    Padding="12,10">
+                                <Entry x:Name="cityEntry" 
+                                       Placeholder="Votre ville"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                            </Border>
+                        </StackLayout>
+
+                        <!-- Rue et Numéro -->
+                        <Grid ColumnDefinitions="*,100" ColumnSpacing="12">
+                            <StackLayout Grid.Column="0" Spacing="8">
+                                <Label Text="🛣️ Rue" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Entry x:Name="streetEntry" 
+                                           Placeholder="Nom de la rue"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                                </Border>
+                            </StackLayout>
+                            
+                            <StackLayout Grid.Column="1" Spacing="8">
+                                <Label Text="🔢 N°" 
+                                       Style="{StaticResource BodySmall}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Border StrokeShape="RoundRectangle 12"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                        Padding="12,10">
+                                    <Entry x:Name="numberEntry" 
+                                           Placeholder="123"
+                                           Keyboard="Numeric"
+                                           BackgroundColor="Transparent"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                                </Border>
+                            </StackLayout>
+                        </Grid>
+
+                        <!-- Code postal -->
+                        <StackLayout Spacing="8" MaximumWidthRequest="200">
+                            <Label Text="📮 Code postal" 
+                                   Style="{StaticResource BodySmall}"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                    Padding="12,10">
+                                <Entry x:Name="postalCodeEntry" 
+                                       Placeholder="75001"
+                                       Keyboard="Numeric"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                       PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                            </Border>
+                        </StackLayout>
+
+                    </StackLayout>
+                </Frame>
+
+                <!-- Actions -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                       Padding="20">
+                    <StackLayout Spacing="16">
+                        
+                        <!-- Information de sécurité -->
+                        <Frame BackgroundColor="{StaticResource Success}" 
+                               Padding="12"
+                               CornerRadius="8">
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="🔒" FontSize="16" TextColor="White"/>
+                                <Label Text="Vos données sont protégées et sécurisées" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="White"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                        </Frame>
+
+                        <!-- Boutons d'action -->
+                        <StackLayout Spacing="12">
+                            <Button Text="🚀 CRÉER MON COMPTE" 
+                                    Clicked="OnRegisterClicked"
+                                    BackgroundColor="{StaticResource Success}"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    CornerRadius="12"
+                                    HeightRequest="56"/>
+
+                            <Button Text="👤 J'ai déjà un compte"
+                                    Clicked="OnGoToLoginClicked"
+                                    Style="{StaticResource SecondaryButton}" />
+                        </StackLayout>
+
+                    </StackLayout>
+                </Frame>
+
+                <!-- Information importante -->
+                <Frame Style="{StaticResource CardFrame}" 
+                       BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray800}}" 
+                       Padding="16">
+                    <StackLayout Spacing="8">
+                        <Label Text="✨ Pourquoi nous rejoindre ?" 
+                               Style="{StaticResource BodyMedium}"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                        
+                        <StackLayout Spacing="4">
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="•" TextColor="{StaticResource Primary}" FontSize="16" FontAttributes="Bold"/>
+                                <Label Text="Accès à tous nos équipements modernes" 
+                                       Style="{StaticResource Caption}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="•" TextColor="{StaticResource Primary}" FontSize="16" FontAttributes="Bold"/>
+                                <Label Text="Coaching personnalisé avec nos experts" 
+                                       Style="{StaticResource Caption}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" Spacing="8">
+                                <Label Text="•" TextColor="{StaticResource Primary}" FontSize="16" FontAttributes="Bold"/>
+                                <Label Text="Cours collectifs variés et motivants" 
+                                       Style="{StaticResource Caption}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"
+                                       VerticalOptions="Center"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 
 </ContentPage>

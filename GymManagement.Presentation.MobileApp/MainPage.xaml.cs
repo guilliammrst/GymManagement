@@ -11,6 +11,7 @@ namespace GymManagement.Presentation.MobileApp
         private readonly GymApiClient _gymApiClient;
         private readonly AuthenticatedUser _authenticatedUser;
         private IDispatcherTimer _timer;
+        private bool _qrCodeLoaded = false;
 
         public MainPage(IPreferencesService preferencesService, IAuthManager authManager, AuthenticatedUser authenticatedUser, GymApiClient gymApiClient)
         {
@@ -49,9 +50,6 @@ namespace GymManagement.Presentation.MobileApp
         {
             base.OnAppearing();
 
-            if (QrCodeWebView.Source == null)
-                QrCodeLabel.IsVisible = false;
-
             _timer.Tick += Timer_Tick;
             _timer.Start();
 
@@ -70,40 +68,91 @@ namespace GymManagement.Presentation.MobileApp
         {
             await LoadQrCodeAsync();
         }
+        
         private async Task LoadQrCodeAsync()
         {
             if (_authenticatedUser.IsTokenExpired)
                 return;
+                
             try
             {
                 var svgContentResult = await _gymApiClient.GetQrCodeSvgAsync();
                 if (!svgContentResult.Success)
+                {
+                    // Si pas de QR code disponible, masquer la section
+                    QrCodeFrame.IsVisible = false;
+                    _qrCodeLoaded = false;
                     return;
+                }
 
                 string svgContent = svgContentResult.Results;
+
+                // Vérifier que le contenu SVG n'est pas vide
+                if (string.IsNullOrWhiteSpace(svgContent))
+                {
+                    QrCodeFrame.IsVisible = false;
+                    _qrCodeLoaded = false;
+                    return;
+                }
 
                 string html = $@"
                 <html>
                 <head>
                     <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+                    <style>
+                        body {{
+                            margin: 0;
+                            padding: 20px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: transparent;
+                            font-family: 'OpenSans', sans-serif;
+                        }}
+                        svg {{
+                            max-width: 100%;
+                            height: auto;
+                            border-radius: 12px;
+                            background-color: white;
+                            padding: 8px;
+                        }}
+                    </style>
                 </head>
-                <body style=""margin:0; padding:0; display:flex; justify-content:center; align-items:center;"">
+                <body>
                     {svgContent}
                 </body>
                 </html>";
 
-                QrCodeLabel.IsVisible = true;
                 QrCodeWebView.Source = new HtmlWebViewSource { Html = html };
+                
+                // Afficher la section QR code maintenant qu'il est chargé
+                if (!_qrCodeLoaded)
+                {
+                    QrCodeFrame.IsVisible = true;
+                    _qrCodeLoaded = true;
+                }
             }
             catch (Exception ex)
             {
+                // En cas d'erreur, masquer la section QR code
+                QrCodeFrame.IsVisible = false;
+                _qrCodeLoaded = false;
+                
+                // Optionnel: afficher l'erreur seulement en debug
+                #if DEBUG
                 await DisplayAlert("Erreur", $"Impossible de charger le QR code: {ex.Message}", "OK");
+                #endif
             }
         }
 
         private async void OnSubscriptionClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync(PageNames.MembershipsPage);
+        }
+
+        private async void OnCoachingClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync(PageNames.CoachingsPage);
         }
 
         private async void OnProfileClicked(object sender, EventArgs e)

@@ -9,13 +9,13 @@ namespace GymManagement.Presentation.MobileApp.Pages
     {
         public MembershipDto Subscription { get; set; }
         public int UserId { get; set; }
+        
         private readonly GymApiClient _gymApiClient;
-        private MembershipDetailsDto _membershipDetails;
+        private MembershipDetailsDto? _membershipDetails;
 
         private MembershipDetailsPage(GymApiClient gymApiClient)
         {
             _gymApiClient = gymApiClient;
-
             InitializeComponent();
         }
 
@@ -31,25 +31,51 @@ namespace GymManagement.Presentation.MobileApp.Pages
 
         private async Task LoadSubscriptionDetails()
         {
-            var subscriptionDetailsResult = await _gymApiClient.GetMembershipByIdAsync(UserId, Subscription.Id);
-            if (subscriptionDetailsResult.Success)
+            try
             {
-                _membershipDetails = subscriptionDetailsResult.Results;
-                BindingContext = _membershipDetails;
+                var subscriptionDetailsResult = await _gymApiClient.GetMembershipByIdAsync(UserId, Subscription.Id);
+                if (subscriptionDetailsResult.Success)
+                {
+                    _membershipDetails = subscriptionDetailsResult.Results;
+                    BindingContext = _membershipDetails;
+                }
+                else
+                {
+                    await DisplayAlert("❌ Erreur", 
+                        $"Impossible de charger les détails de l'abonnement :\n{subscriptionDetailsResult.ErrorMessage}", 
+                        "OK");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await DisplayAlert("Erreur", "Impossible de charger les détails de l'abonnement.", "OK");
+                await DisplayAlert("❌ Erreur", 
+                    $"Une erreur inattendue s'est produite :\n{ex.Message}", 
+                    "OK");
             }
         }
 
         private async void OnPayClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync(PageNames.PaymentPage, new Dictionary<string, object>
+            try
             {
-                { "MembershipId", Subscription.Id },
-                { "UserId", UserId }
-            });
+                if (_membershipDetails == null)
+                {
+                    await DisplayAlert("⚠️ Attention", "Les détails de l'abonnement ne sont pas encore chargés.", "OK");
+                    return;
+                }
+
+                await Shell.Current.GoToAsync(PageNames.PaymentPage, new Dictionary<string, object>
+                {
+                    { "MembershipId", Subscription.Id },
+                    { "UserId", UserId }
+                });
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("❌ Erreur", 
+                    $"Impossible d'accéder au paiement :\n{ex.Message}", 
+                    "OK");
+            }
         }
     }
 }

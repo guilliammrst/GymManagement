@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GymManagement.Presentation.MobileApp.Pages.MembershipsPage"
-             Title="💳 Mes Abonnements">
+             x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingsPage"
+             Title="🏋️ Mes Coachings">
 
     <Grid>
         <ScrollView>
             <StackLayout Padding="20" Spacing="20">
                 
                 <!-- Header avec titre -->
-                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="24,20">
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Accent}" Padding="24,20">
                     <StackLayout Spacing="8">
-                        <Label Text="Mes Abonnements" 
+                        <Label Text="Mes Coachings" 
                                Style="{StaticResource TitleMedium}" 
                                TextColor="White" 
                                FontAttributes="Bold"
                                HorizontalOptions="Center"/>
-                        <Label Text="Gérez vos abonnements et découvrez nos offres" 
+                        <Label Text="Suivez vos séances d'entraînement personnalisées" 
                                Style="{StaticResource BodyMedium}" 
                                TextColor="White" 
                                Opacity="0.9"
@@ -25,44 +25,44 @@
                     </StackLayout>
                 </Frame>
 
-                <!-- Bouton S'abonner mis en évidence -->
-                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Success}" Padding="20">
+                <!-- Section appel à l'action -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Secondary}" Padding="20">
                     <StackLayout Spacing="12">
-                        <Label Text="🌟 Nouveau membre ?" 
+                        <Label Text="💪 Prêt à vous dépasser ?" 
                                Style="{StaticResource TitleSmall}" 
                                TextColor="White"
                                FontAttributes="Bold"
                                HorizontalOptions="Center"/>
                         
-                        <Label Text="Découvrez nos offres d'abonnement adaptées à vos besoins" 
+                        <Label Text="Inscrivez-vous à un coaching personnalisé avec nos experts" 
                                Style="{StaticResource BodyMedium}" 
                                TextColor="White"
                                Opacity="0.9"
                                HorizontalOptions="Center"
                                HorizontalTextAlignment="Center"/>
                                
-                        <Button Text="🎯 S'ABONNER MAINTENANT"
+                        <Button Text="🎯 S'INSCRIRE À UN COACHING"
                                 BackgroundColor="White"
-                                TextColor="{StaticResource Success}"
+                                TextColor="{StaticResource Secondary}"
                                 FontAttributes="Bold"
                                 FontSize="16"
                                 CornerRadius="12"
-                                Clicked="OnSubscribeClicked"
+                                Clicked="OnCoachingClicked"
                                 HorizontalOptions="Fill"
                                 Margin="0,8,0,0" />
                     </StackLayout>
                 </Frame>
 
-                <!-- Liste des abonnements -->
+                <!-- Liste des coachings -->
                 <StackLayout Spacing="16">
-                    <Label Text="📋 Vos Abonnements Actifs" 
+                    <Label Text="📅 Vos Séances Programmées" 
                            Style="{StaticResource TitleSmall}"
                            FontAttributes="Bold"
                            Margin="0,8,0,0"/>
 
-                    <CollectionView x:Name="subscriptionsView"
-                        SelectionMode="Single"
-                        SelectionChanged="OnSubscriptionSelected">
+                    <CollectionView x:Name="coachingsView"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnCoachingSelected">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
                                 <Frame Style="{StaticResource CardFrame}" Margin="0,4">
@@ -73,32 +73,34 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         
-                                        <!-- Icône d'abonnement -->
+                                        <!-- Icône de coaching -->
                                         <Frame Grid.Column="0" 
-                                               BackgroundColor="{StaticResource Primary}"
+                                               BackgroundColor="{StaticResource Accent}"
                                                CornerRadius="30"
                                                HeightRequest="60"
                                                WidthRequest="60"
                                                HasShadow="False"
                                                Padding="0">
-                                            <Label Text="💳" 
+                                            <Label Text="🏋️" 
                                                    FontSize="24" 
                                                    VerticalOptions="Center"
                                                    HorizontalOptions="Center"/>
                                         </Frame>
                                         
-                                        <!-- Informations de l'abonnement -->
+                                        <!-- Informations du coaching -->
                                         <StackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                            <Label Text="{Binding StartDate, StringFormat='📅 Début : {0:dd/MM/yyyy}'}"
+                                            <Label Text="{Binding WeekDay, StringFormat='📅 {0}'}"
                                                    Style="{StaticResource BodyLarge}"
                                                    FontAttributes="Bold"/>
-                                            <Label Text="{Binding EndDate, StringFormat='📅 Fin : {0:dd/MM/yyyy}'}"
+                                            <Label Text="{Binding Hour, StringFormat='🕐 {0}:00'}"
                                                    Style="{StaticResource BodyMedium}"/>
-                                            <Label Text="{Binding RenewWhenExpiry, StringFormat='🔄 Renouvellement : {0}'}"
+                                            <Label Text="{Binding StartDate, StringFormat='Du {0:dd/MM/yyyy}'}"
+                                                   Style="{StaticResource Caption}"/>
+                                            <Label Text="{Binding EndDate, StringFormat='Au {0:dd/MM/yyyy}'}"
                                                    Style="{StaticResource Caption}"/>
                                         </StackLayout>
                                         
-                                        <!-- Badge de statut simplifié -->
+                                        <!-- Badges de statut -->
                                         <StackLayout Grid.Column="2" VerticalOptions="Center" Spacing="4">
                                             <Frame Style="{StaticResource Badge}" 
                                                    HorizontalOptions="End">
@@ -122,10 +124,11 @@
                                                 </Label>
                                             </Frame>
                                             
-                                            <Frame Style="{StaticResource BadgeDanger}" 
-                                                   IsVisible="{Binding IsExpired}"
+                                            <Frame Style="{StaticResource Badge}" 
+                                                   BackgroundColor="{StaticResource Info}"
+                                                   IsVisible="{Binding RenewWhenExpiry}"
                                                    HorizontalOptions="End">
-                                                <Label Text="⏰ Expiré" 
+                                                <Label Text="🔄 Auto" 
                                                        TextColor="White" 
                                                        FontSize="12" 
                                                        FontAttributes="Bold"/>
@@ -145,15 +148,15 @@
                        BackgroundColor="{StaticResource Gray50}"
                        Padding="40,60">
                     <StackLayout Spacing="16">
-                        <Label Text="📋" 
+                        <Label Text="🏋️" 
                                FontSize="48" 
                                HorizontalOptions="Center"
                                Opacity="0.6"/>
-                        <Label Text="Aucun abonnement trouvé"
+                        <Label Text="Aucun coaching trouvé"
                                Style="{StaticResource TitleSmall}"
                                HorizontalOptions="Center"
                                TextColor="{StaticResource Gray600}"/>
-                        <Label Text="Commencez votre parcours fitness en souscrivant à un abonnement !"
+                        <Label Text="Commencez votre transformation avec un coaching personnalisé !"
                                Style="{StaticResource BodyMedium}"
                                HorizontalOptions="Center"
                                HorizontalTextAlignment="Center"

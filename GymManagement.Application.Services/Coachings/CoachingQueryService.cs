@@ -1,19 +1,23 @@
 ﻿using GymManagement.Application.Interfaces.Repositories.Coachings;
 using GymManagement.Application.Interfaces.Services.Coachings;
 using GymManagement.Application.Services.Converters;
+using GymManagement.Shared.Core.Enums;
 using GymManagement.Shared.Core.Results;
 
 namespace GymManagement.Application.Services.Coachings
 {
     public class CoachingQueryService(ICoachingQueryRepository _coachingQueryRepository) : ICoachingQueryService
     {
-        public async Task<ModelActionResult<CoachingDetailsDto>> GetCoachingByIdAsync(int id)
+        public async Task<ModelActionResult<CoachingDetailsDto>> GetCoachingByIdAsync(int id, int? memberId = null)
         { 
             var coachingResult = await _coachingQueryRepository.GetCoachingByIdAsync(id);
             if (!coachingResult.Success)
                 return ModelActionResult<CoachingDetailsDto>.Fail(coachingResult);
 
             var coaching = coachingResult.Results;
+
+            if (memberId.HasValue && coaching.Member.Id != memberId.Value)
+                return ModelActionResult<CoachingDetailsDto>.Fail(GymFaultType.UserNotAuthorized);
 
             return ModelActionResult<CoachingDetailsDto>.Ok(coaching.ToDetailsDto());
         }

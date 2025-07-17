@@ -11,7 +11,7 @@ namespace GymManagement.Infrastructure.Repositories.Users
 {
     public class UserCoachingRepository(GymDbContext _context) : IUserCoachingRepository
     {
-        public async Task<ModelActionResult<UserDetailsDao>> AddUserCoachingAsync(UserCoachingDao userCoachingDao)
+        public async Task<ModelActionResult<CoachingDetailsDao>> AddUserCoachingAsync(UserCoachingDao userCoachingDao)
         {
             try
             {
@@ -20,13 +20,13 @@ namespace GymManagement.Infrastructure.Repositories.Users
                 var userModel = await _context.Users.Include(u => u.Memberships)
                     .FirstOrDefaultAsync(u => u.Id == userCoachingDao.MemberId);
                 if (userModel == null)
-                    return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserNotFound, "User add coaching failed: user not found.");
+                    return ModelActionResult<CoachingDetailsDao>.Fail(GymFaultType.UserNotFound, "User add coaching failed: user not found.");
 
                 var coachingPlanModel = await _context.CoachingPlans
                     .Include(cp => cp.Coachings)
                     .FirstOrDefaultAsync(cp => cp.Id == userCoachingDao.CoachingPlanId);
                 if (coachingPlanModel == null)
-                    return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.CoachingPlanNotFound, "User add coaching failed: coaching plan not found.");
+                    return ModelActionResult<CoachingDetailsDao>.Fail(GymFaultType.CoachingPlanNotFound, "User add coaching failed: coaching plan not found.");
 
                 coachingModel.CoachingPlan = coachingPlanModel;
                 coachingModel.Member = userModel;
@@ -35,17 +35,17 @@ namespace GymManagement.Infrastructure.Repositories.Users
 
                 var result = await _context.SaveChangesAsync();
                 if (result == 0)
-                    return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserAddCoachingFailed, "User add coaching failed: no rows affected.");
+                    return ModelActionResult<CoachingDetailsDao>.Fail(GymFaultType.UserAddCoachingFailed, "User add coaching failed: no rows affected.");
 
-                return ModelActionResult<UserDetailsDao>.Ok(userModel.ToDetailsDao());
+                return ModelActionResult<CoachingDetailsDao>.Ok(coachingModel.ToDetailsDao());
             }
             catch (DbUpdateException ex)
             {
-                return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.DatabaseUnavailable, ex.InnerException != null ? ex.InnerException.Message : ex.Message);
+                return ModelActionResult<CoachingDetailsDao>.Fail(GymFaultType.DatabaseUnavailable, ex.InnerException != null ? ex.InnerException.Message : ex.Message);
             }
             catch (Exception ex)
             {
-                return ModelActionResult<UserDetailsDao>.Fail(GymFaultType.UserAddCoachingFailed, ex.Message);
+                return ModelActionResult<CoachingDetailsDao>.Fail(GymFaultType.UserAddCoachingFailed, ex.Message);
             }
         }
 

@@ -1,20 +1,21 @@
 ﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
-using GymManagement.Application.Interfaces.Services.Memberships;
+using GymManagement.Application.Interfaces.Services.Coachings;
 using GymManagement.Presentation.MobileApp.ApiClients;
+using GymManagement.Presentation.MobileApp.Services;
 using GymManagement.Shared.Core.Enums;
 using System.Globalization;
 
-namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
+namespace GymManagement.Presentation.MobileApp.Pages.CoachingFlow
 {
     [QueryProperty(nameof(UserId), "UserId")]
-    [QueryProperty(nameof(MembershipId), "MembershipId")]
-    public partial class PaymentPage : ContentPage
+    [QueryProperty(nameof(CoachingId), "CoachingId")]
+    public partial class CoachingPaymentPage : ContentPage
     {
         private readonly GymApiClient _gymApiClient;
-        private MembershipDetailsDto? _membershipDetails;
+        private CoachingDetailsDto? _coachingDetails;
 
         public int UserId { get; set; }
-        public int MembershipId { get; set; }
+        public int CoachingId { get; set; }
 
         public List<string> PaymentMethods { get; } = new List<string>
         {
@@ -25,7 +26,7 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
             "💳 Autre méthode"
         };
 
-        public PaymentPage()
+        public CoachingPaymentPage()
         {
             InitializeComponent();
             _gymApiClient = App.Services.GetRequiredService<GymApiClient>();
@@ -42,24 +43,24 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
                 paymentMethodPicker.SelectedIndex = 0;
             }
 
-            // Charger les détails du membership
-            await LoadMembershipDetails();
+            // Charger les détails du coaching
+            await LoadCoachingDetails();
         }
 
-        private async Task LoadMembershipDetails()
+        private async Task LoadCoachingDetails()
         {
             try
             {
-                var membershipDetailsResult = await _gymApiClient.GetMembershipByIdAsync(UserId, MembershipId);
-                if (membershipDetailsResult.Success)
+                var coachingDetailsResult = await _gymApiClient.GetCoachingByIdAsync(UserId, CoachingId);
+                if (coachingDetailsResult.Success)
                 {
-                    _membershipDetails = membershipDetailsResult.Results;
+                    _coachingDetails = coachingDetailsResult.Results;
                     LoadSummaryData();
                 }
                 else
                 {
                     await DisplayAlert("❌ Erreur", 
-                        $"Impossible de charger les détails de l'abonnement :\n{membershipDetailsResult.ErrorMessage}", 
+                        $"Impossible de charger les détails du coaching :\n{coachingDetailsResult.ErrorMessage}", 
                         "OK");
                 }
             }
@@ -73,48 +74,51 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
 
         private void LoadSummaryData()
         {
-            if (_membershipDetails == null) return;
+            if (_coachingDetails == null) return;
 
             try
             {
-                // Plan d'abonnement
-                planTypeLabel.Text = _membershipDetails.MembershipPlan?.MembershipPlanType.ToString() ?? "Non défini";
-                planDescriptionLabel.Text = _membershipDetails.MembershipPlan?.Description ?? "Description non disponible";
+                // Nom du plan de coaching
+                planNameLabel.Text = _coachingDetails.CoachingPlan?.Description ?? "Coaching Personnalisé";
+                
+                // Prix du coaching
+                var price = _coachingDetails.CoachingPlan?.Price ?? 0;
+                totalPriceLabel.Text = price.ToString("C", CultureInfo.GetCultureInfo("fr-FR"));
 
-                // Club
-                clubNameLabel.Text = _membershipDetails.HomeClub?.Name ?? "Non défini";
+                // Date de début
+                startDateLabel.Text = _coachingDetails.StartDate.ToString("dd MMMM yyyy", CultureInfo.GetCultureInfo("fr-FR"));
 
-                // Dates
-                startDateLabel.Text = _membershipDetails.StartDate.ToString("dd MMMM yyyy", CultureInfo.GetCultureInfo("fr-FR"));
-                endDateLabel.Text = _membershipDetails.EndDate.ToString("dd MMMM yyyy", CultureInfo.GetCultureInfo("fr-FR"));
-
-                // Renouvellement
-                renewalLabel.Text = _membershipDetails.RenewWhenExpiry ? "Automatique" : "Manuel";
-
-                // Prix - Utiliser le montant réel du PaymentDetail
-                var basePrice = _membershipDetails.MembershipPlan?.BasePrice ?? 0;
-                var registrationFees = _membershipDetails.MembershipPlan?.RegistrationFees ?? 0;
-                var totalAmount = _membershipDetails.PaymentDetail?.Amount ?? 0; // Montant réel calculé
-
-                basePriceLabel.Text = basePrice.ToString("C", CultureInfo.GetCultureInfo("fr-FR"));
-                registrationFeesLabel.Text = registrationFees.ToString("C", CultureInfo.GetCultureInfo("fr-FR"));
-                totalPriceLabel.Text = totalAmount.ToString("C", CultureInfo.GetCultureInfo("fr-FR"));
+                // Jour et heure
+                var dayName = GetDayName(_coachingDetails.WeekDay);
+                var hour = _coachingDetails.Hour;
+                
+                scheduleLabel.Text = $"{dayName} à {hour:00}h00";
             }
             catch (Exception ex)
             {
                 // En cas d'erreur, afficher des valeurs par défaut
                 System.Diagnostics.Debug.WriteLine($"Erreur lors du chargement des données : {ex.Message}");
                 
-                planTypeLabel.Text = "Plan Standard";
-                planDescriptionLabel.Text = "Abonnement fitness";
-                clubNameLabel.Text = "Non défini";
-                startDateLabel.Text = "Non défini";
-                endDateLabel.Text = "Non défini";
-                renewalLabel.Text = "Non défini";
-                basePriceLabel.Text = "0,00 €";
-                registrationFeesLabel.Text = "0,00 €";
+                planNameLabel.Text = "Coaching Personnalisé";
                 totalPriceLabel.Text = "0,00 €";
+                startDateLabel.Text = "Non défini";
+                scheduleLabel.Text = "Non défini";
             }
+        }
+
+        private string GetDayName(WeekDays weekDay)
+        {
+            return weekDay switch
+            {
+                WeekDays.Monday => "Lundi",
+                WeekDays.Tuesday => "Mardi",
+                WeekDays.Wednesday => "Mercredi", 
+                WeekDays.Thursday => "Jeudi",
+                WeekDays.Friday => "Vendredi",
+                WeekDays.Saturday => "Samedi",
+                WeekDays.Sunday => "Dimanche",
+                _ => "Non défini"
+            };
         }
 
         private async void OnPayClicked(object sender, EventArgs e)
@@ -152,7 +156,7 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
                 // Simulation d'un délai de traitement (optionnel)
                 await Task.Delay(1500);
 
-                var result = await _gymApiClient.PayMembershipAsync(UserId, MembershipId, paymentDto);
+                var result = await _gymApiClient.PayCoachingAsync(UserId, CoachingId, paymentDto);
 
                 if (result.Success)
                 {
@@ -162,11 +166,11 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
                     await payButton.ScaleTo(1.1, 200);
                     await payButton.ScaleTo(1.0, 200);
 
-                    var totalPaid = GetTotalPrice();
+                    var totalPaid = _coachingDetails?.CoachingPlan?.Price.ToString("C", CultureInfo.GetCultureInfo("fr-FR")) ?? "N/A";
                     
                     await DisplayAlert("🎉 Félicitations !", 
                         $"Votre paiement de {totalPaid} a été effectué avec succès !\n\n" +
-                        "Votre abonnement est maintenant actif. Bienvenue chez GymFit !", 
+                        "Votre coaching est maintenant confirmé. Votre coach vous contactera bientôt pour planifier votre première séance.", 
                         "Formidable !");
 
                     // Retour à la page principale
@@ -202,16 +206,6 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
                 payButton.BackgroundColor = Color.FromArgb("#4CAF50"); // Success color
                 payButton.IsEnabled = true;
             }
-        }
-
-        private string GetTotalPrice()
-        {
-            // Utiliser le montant réel du PaymentDetail au lieu de calculer manuellement
-            if (_membershipDetails?.PaymentDetail != null)
-            {
-                return _membershipDetails.PaymentDetail.Amount.ToString("C", CultureInfo.GetCultureInfo("fr-FR"));
-            }
-            return "N/A";
         }
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow.PaymentPage"
-             Title="💳 Paiement Abonnement"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingFlow.CoachingPaymentPage"
+             Title="💳 Paiement Coaching"
              BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray900}}">
 
     <ScrollView>
@@ -15,7 +15,7 @@
             </Grid.RowDefinitions>
 
             <!-- Header avec progression -->
-            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="20">
+            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Accent}" Padding="20">
                 <StackLayout Spacing="12">
                     <Label Text="💳 Paiement Sécurisé" 
                            Style="{StaticResource TitleMedium}"
@@ -31,8 +31,6 @@
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="8"/>
                             <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="8"/>
-                            <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
                         
                         <Ellipse Grid.Column="0" Fill="White" WidthRequest="8" HeightRequest="8"/>
@@ -40,11 +38,9 @@
                         <Ellipse Grid.Column="2" Fill="White" WidthRequest="8" HeightRequest="8"/>
                         <Rectangle Grid.Column="3" Fill="White" HeightRequest="2" VerticalOptions="Center"/>
                         <Ellipse Grid.Column="4" Fill="White" WidthRequest="8" HeightRequest="8"/>
-                        <Rectangle Grid.Column="5" Fill="White" HeightRequest="2" VerticalOptions="Center"/>
-                        <Ellipse Grid.Column="6" Fill="White" WidthRequest="8" HeightRequest="8"/>
                     </Grid>
                     
-                    <Label Text="Étape 4 sur 4 - Finalisation" 
+                    <Label Text="Étape 3 sur 3 - Finalisation" 
                            Style="{StaticResource Caption}"
                            TextColor="White"
                            Opacity="0.9"
@@ -72,7 +68,7 @@
             <!-- Section contenu principal -->
             <StackLayout Grid.Row="2" Spacing="20">
                 
-                <!-- Récapitulatif de l'abonnement -->
+                <!-- Récapitulatif du coaching -->
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
                     <StackLayout Spacing="16">
                         <Label Text="📋 Récapitulatif de votre commande" 
@@ -81,69 +77,46 @@
                                TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
                         
                         <Grid ColumnDefinitions="*,Auto" 
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                              RowDefinitions="Auto,Auto,Auto,Auto"
                               RowSpacing="12">
                             <Label Grid.Column="0" Grid.Row="0"
-                                   Text="Plan d'abonnement :"
+                                   Text="Programme sélectionné :"
                                    Style="{StaticResource BodyMedium}"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             <Label Grid.Column="1" Grid.Row="0"
-                                   x:Name="planTypeLabel"
-                                   Text="Formule Premium"
+                                   x:Name="planNameLabel"
+                                   Text="Coaching Personnalisé"
                                    Style="{StaticResource BodyMedium}"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
                             
                             <Label Grid.Column="0" Grid.Row="1"
-                                   Text="Description :"
+                                   Text="Type de coaching :"
                                    Style="{StaticResource BodyMedium}"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             <Label Grid.Column="1" Grid.Row="1"
-                                   x:Name="planDescriptionLabel"
-                                   Text="Accès illimité"
+                                   Text="1-on-1 avec coach"
                                    Style="{StaticResource BodyMedium}"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
                             
                             <Label Grid.Column="0" Grid.Row="2"
-                                   Text="Club sélectionné :"
-                                   Style="{StaticResource BodyMedium}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
-                            <Label Grid.Column="1" Grid.Row="2"
-                                   x:Name="clubNameLabel"
-                                   Text="À définir"
-                                   Style="{StaticResource BodyMedium}"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                            
-                            <Label Grid.Column="0" Grid.Row="3"
                                    Text="Date de début :"
                                    Style="{StaticResource BodyMedium}"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
-                            <Label Grid.Column="1" Grid.Row="3"
+                            <Label Grid.Column="1" Grid.Row="2"
                                    x:Name="startDateLabel"
                                    Text="À définir"
                                    Style="{StaticResource BodyMedium}"
                                    FontAttributes="Bold"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
                             
-                            <Label Grid.Column="0" Grid.Row="4"
-                                   Text="Date de fin :"
+                            <Label Grid.Column="0" Grid.Row="3"
+                                   Text="Jour et heure :"
                                    Style="{StaticResource BodyMedium}"
                                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
-                            <Label Grid.Column="1" Grid.Row="4"
-                                   x:Name="endDateLabel"
-                                   Text="À définir"
-                                   Style="{StaticResource BodyMedium}"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                            
-                            <Label Grid.Column="0" Grid.Row="5"
-                                   Text="Renouvellement :"
-                                   Style="{StaticResource BodyMedium}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
-                            <Label Grid.Column="1" Grid.Row="5"
-                                   x:Name="renewalLabel"
+                            <Label Grid.Column="1" Grid.Row="3"
+                                   x:Name="scheduleLabel"
                                    Text="À définir"
                                    Style="{StaticResource BodyMedium}"
                                    FontAttributes="Bold"
@@ -153,36 +126,6 @@
                         <!-- Ligne de séparation -->
                         <BoxView HeightRequest="1" 
                                  BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" 
-                                 Margin="0,8"/>
-
-                        <!-- Détails de facturation -->
-                        <Grid ColumnDefinitions="*,Auto" 
-                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-                              RowSpacing="8">
-                            <Label Grid.Column="0" Grid.Row="0"
-                                   Text="Prix mensuel :"
-                                   Style="{StaticResource BodyMedium}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
-                            <Label Grid.Column="1" Grid.Row="0"
-                                   x:Name="basePriceLabel"
-                                   Text="0,00 €"
-                                   Style="{StaticResource BodyMedium}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                            
-                            <Label Grid.Column="0" Grid.Row="1"
-                                   Text="Frais d'inscription :"
-                                   Style="{StaticResource BodyMedium}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
-                            <Label Grid.Column="1" Grid.Row="1"
-                                   x:Name="registrationFeesLabel"
-                                   Text="0,00 €"
-                                   Style="{StaticResource BodyMedium}"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                        </Grid>
-
-                        <!-- Ligne de séparation -->
-                        <BoxView HeightRequest="2" 
-                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" 
                                  Margin="0,8"/>
 
                         <!-- Prix total -->
@@ -197,7 +140,7 @@
                                    Text="0,00 €"
                                    Style="{StaticResource TitleMedium}"
                                    FontAttributes="Bold"
-                                   TextColor="{StaticResource Primary}"/>
+                                   TextColor="{StaticResource Accent}"/>
                         </Grid>
                     </StackLayout>
                 </Frame>
@@ -206,7 +149,7 @@
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
                     <StackLayout Spacing="16">
                         <StackLayout Orientation="Horizontal" Spacing="12">
-                            <Border BackgroundColor="{StaticResource Secondary}" 
+                            <Border BackgroundColor="{StaticResource Accent}" 
                                     StrokeShape="RoundRectangle 20"
                                     WidthRequest="40" 
                                     HeightRequest="40">
@@ -263,7 +206,7 @@
                     </StackLayout>
                 </Frame>
 
-                <!-- Avantages de l'abonnement -->
+                <!-- Avantages du coaching -->
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray800}}">
                     <StackLayout Spacing="12">
                         <StackLayout Orientation="Horizontal" Spacing="8">
@@ -277,25 +220,25 @@
                         <StackLayout Spacing="6">
                             <StackLayout Orientation="Horizontal" Spacing="8">
                                 <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
-                                <Label Text="Accès illimité aux équipements" 
+                                <Label Text="Coaching personnalisé adapté à vos objectifs" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>
                             <StackLayout Orientation="Horizontal" Spacing="8">
                                 <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
-                                <Label Text="Cours collectifs inclus" 
+                                <Label Text="Suivi professionnel de vos performances" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>
                             <StackLayout Orientation="Horizontal" Spacing="8">
                                 <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
-                                <Label Text="Vestiaires et douches" 
+                                <Label Text="Conseils nutritionnels et lifestyle" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>
                             <StackLayout Orientation="Horizontal" Spacing="8">
                                 <Label Text="✓" FontSize="14" TextColor="{StaticResource Success}"/>
-                                <Label Text="Application mobile gratuite" 
+                                <Label Text="Accès prioritaire aux équipements" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>

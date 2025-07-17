@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
-             x:Class="GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow.SubscriptionDetailsPage"
-             Title="📋 Détails de l'abonnement"
+             x:Class="GymManagement.Presentation.MobileApp.Pages.CoachingFlow.CoachingFlowDetailsPage"
+             Title="📋 Détails du Coaching"
              BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray900}}">
 
     <ScrollView>
@@ -16,9 +16,9 @@
             </Grid.RowDefinitions>
 
             <!-- Header avec progression -->
-            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="20">
+            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Accent}" Padding="20">
                 <StackLayout Spacing="12">
-                    <Label Text="📋 Configuration Finale" 
+                    <Label Text="📋 Configuration du Coaching" 
                            Style="{StaticResource TitleMedium}"
                            TextColor="White"
                            FontAttributes="Bold"
@@ -32,20 +32,16 @@
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="8"/>
                             <ColumnDefinition Width="30"/>
-                            <ColumnDefinition Width="8"/>
-                            <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
                         
                         <Ellipse Grid.Column="0" Fill="White" WidthRequest="8" HeightRequest="8"/>
                         <Rectangle Grid.Column="1" Fill="White" HeightRequest="2" VerticalOptions="Center"/>
                         <Ellipse Grid.Column="2" Fill="White" WidthRequest="8" HeightRequest="8"/>
-                        <Rectangle Grid.Column="3" Fill="White" HeightRequest="2" VerticalOptions="Center"/>
-                        <Ellipse Grid.Column="4" Fill="White" WidthRequest="8" HeightRequest="8"/>
-                        <Rectangle Grid.Column="5" Fill="{StaticResource Gray300}" HeightRequest="2" VerticalOptions="Center"/>
-                        <Ellipse Grid.Column="6" Fill="{StaticResource Gray300}" WidthRequest="8" HeightRequest="8"/>
+                        <Rectangle Grid.Column="3" Fill="{StaticResource Gray300}" HeightRequest="2" VerticalOptions="Center"/>
+                        <Ellipse Grid.Column="4" Fill="{StaticResource Gray300}" WidthRequest="8" HeightRequest="8"/>
                     </Grid>
                     
-                    <Label Text="Étape 3 sur 4" 
+                    <Label Text="Étape 2 sur 3" 
                            Style="{StaticResource Caption}"
                            TextColor="White"
                            Opacity="0.9"
@@ -56,11 +52,11 @@
             <!-- Instructions -->
             <Frame Grid.Row="1" Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
                 <StackLayout Spacing="8">
-                    <Label Text="🎯 Finalisez votre abonnement" 
+                    <Label Text="🎯 Planifiez vos séances" 
                            Style="{StaticResource BodyLarge}"
                            FontAttributes="Bold"
                            TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                    <Label Text="Configurez les derniers détails de votre abonnement pour une expérience personnalisée." 
+                    <Label Text="Configurez votre planning d'entraînement selon vos disponibilités et préférences." 
                            Style="{StaticResource BodyMedium}"
                            TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                 </StackLayout>
@@ -73,7 +69,7 @@
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
                     <StackLayout Spacing="16">
                         <StackLayout Orientation="Horizontal" Spacing="12">
-                            <Border BackgroundColor="{StaticResource Secondary}" 
+                            <Border BackgroundColor="{StaticResource Success}" 
                                     StrokeShape="RoundRectangle 20"
                                     WidthRequest="40" 
                                     HeightRequest="40">
@@ -87,7 +83,7 @@
                                        Style="{StaticResource BodyLarge}"
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                                <Label Text="Quand souhaitez-vous commencer ?" 
+                                <Label Text="Quand commencer votre coaching ?" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>
@@ -106,25 +102,25 @@
                     </StackLayout>
                 </Frame>
 
-                <!-- Durée de l'abonnement -->
+                <!-- Jour de la semaine -->
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
                     <StackLayout Spacing="16">
                         <StackLayout Orientation="Horizontal" Spacing="12">
-                            <Border BackgroundColor="{StaticResource Accent}" 
+                            <Border BackgroundColor="{StaticResource Warning}" 
                                     StrokeShape="RoundRectangle 20"
                                     WidthRequest="40" 
                                     HeightRequest="40">
-                                <Label Text="⏱️" 
+                                <Label Text="📆" 
                                        FontSize="20" 
                                        HorizontalOptions="Center" 
                                        VerticalOptions="Center"/>
                             </Border>
                             <StackLayout VerticalOptions="Center">
-                                <Label Text="Durée de l'abonnement" 
+                                <Label Text="Jour de coaching" 
                                        Style="{StaticResource BodyLarge}"
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                                <Label Text="Choisissez la période qui vous convient" 
+                                <Label Text="Sélectionnez votre jour préféré" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>
@@ -134,19 +130,58 @@
                                 Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
                                 Padding="16,12">
-                            <Picker x:Name="periodPicker" 
-                                    Title="Sélectionner une durée"
+                            <Picker x:Name="weekDayPicker"
+                                    Title="Sélectionner un jour"
                                     BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}">
-                                <Picker.ItemsSource>
-                                    <x:Array Type="{x:Type x:String}">
-                                        <x:String>📅 Aucune (flexible)</x:String>
-                                        <x:String>🗓️ 4 semaines</x:String>
-                                        <x:String>📆 1 an (-15% de réduction !)</x:String>
-                                    </x:Array>
-                                </Picker.ItemsSource>
-                            </Picker>
+                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
                         </Border>
+                    </StackLayout>
+                </Frame>
+
+                <!-- Heure de coaching -->
+                <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                    <StackLayout Spacing="16">
+                        <StackLayout Orientation="Horizontal" Spacing="12">
+                            <Border BackgroundColor="{StaticResource Info}" 
+                                    StrokeShape="RoundRectangle 20"
+                                    WidthRequest="40" 
+                                    HeightRequest="40">
+                                <Label Text="⏰" 
+                                       FontSize="20" 
+                                       HorizontalOptions="Center" 
+                                       VerticalOptions="Center"/>
+                            </Border>
+                            <StackLayout VerticalOptions="Center">
+                                <Label Text="Heure de coaching" 
+                                       Style="{StaticResource BodyLarge}"
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Label Text="Entre 8h et 20h (format 24h)" 
+                                       Style="{StaticResource BodySmall}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                            </StackLayout>
+                        </StackLayout>
+                        
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                                Padding="16,12">
+                            <Entry x:Name="hourEntry"
+                                   Keyboard="Numeric"
+                                   Placeholder="Ex: 14 (pour 14h00)"
+                                   MaxLength="2"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"
+                                   TextChanged="HourEntry_TextChanged"/>
+                        </Border>
+                        
+                        <!-- Aide pour l'heure -->
+                        <StackLayout Orientation="Horizontal" Spacing="8">
+                            <Label Text="💡" FontSize="16"/>
+                            <Label Text="Exemples : 9 (9h00), 14 (14h00), 18 (18h00)" 
+                                   Style="{StaticResource BodySmall}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource TextSecondaryDark}}"/>
+                        </StackLayout>
                     </StackLayout>
                 </Frame>
 
@@ -154,7 +189,7 @@
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
                     <StackLayout Spacing="16">
                         <StackLayout Orientation="Horizontal" Spacing="12">
-                            <Border BackgroundColor="{StaticResource Success}" 
+                            <Border BackgroundColor="{StaticResource Primary}" 
                                     StrokeShape="RoundRectangle 20"
                                     WidthRequest="40" 
                                     HeightRequest="40">
@@ -168,24 +203,24 @@
                                        Style="{StaticResource BodyLarge}"
                                        FontAttributes="Bold"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
-                                <Label Text="Renouvelez automatiquement votre abonnement" 
+                                <Label Text="Renouveler automatiquement vos séances" 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
                             </StackLayout>
                             <Switch x:Name="renewSwitch" 
                                     IsToggled="True"
-                                    OnColor="{StaticResource Success}"
+                                    OnColor="{StaticResource Primary}"
                                     ThumbColor="White"/>
                         </StackLayout>
                         
                         <!-- Info sur le renouvellement -->
-                        <Border BackgroundColor="{StaticResource Success}"
+                        <Border BackgroundColor="{StaticResource Primary}"
                                 StrokeShape="RoundRectangle 8"
                                 Padding="12,8"
                                 IsVisible="{Binding Source={x:Reference renewSwitch}, Path=IsToggled}">
                             <StackLayout Orientation="Horizontal" Spacing="8">
                                 <Label Text="ℹ️" FontSize="16"/>
-                                <Label Text="Votre abonnement sera renouvelé automatiquement. Vous pouvez annuler à tout moment." 
+                                <Label Text="Vos séances seront automatiquement programmées chaque semaine. Vous pouvez modifier cela à tout moment." 
                                        Style="{StaticResource BodySmall}"
                                        TextColor="White"
                                        HorizontalOptions="FillAndExpand"/>
@@ -199,7 +234,7 @@
             <!-- Bouton Créer -->
             <Button Grid.Row="3"
                     x:Name="finishButton"
-                    Text="✨ CRÉER MON ABONNEMENT"
+                    Text="✨ CRÉER MON COACHING"
                     IsEnabled="False"
                     Clicked="OnFinishClicked"
                     Style="{StaticResource PrimaryButton}"

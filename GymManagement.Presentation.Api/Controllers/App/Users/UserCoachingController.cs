@@ -1,6 +1,5 @@
 ﻿using GymManagement.Application.Interfaces.Controllers.DTOs;
 using GymManagement.Application.Interfaces.Services.Users;
-using GymManagement.Application.Services.Users;
 using GymManagement.Shared.Core.Constants;
 using GymManagement.Shared.Web.Core.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -33,9 +32,9 @@ namespace GymManagement.Presentation.Api.Controllers.App.Users
             if (!addCoachingResult.Success)
                 return ConvertActionResult(addCoachingResult);
 
-            var userDetails = addCoachingResult.Results;
+            var coachingDetails = addCoachingResult.Results;
 
-            return Ok(userDetails);
+            return Ok(coachingDetails);
         }
 
 

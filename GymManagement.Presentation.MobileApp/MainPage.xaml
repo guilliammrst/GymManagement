@@ -1,33 +1,171 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="GymManagement.Presentation.MobileApp.MainPage">
+             x:Class="GymManagement.Presentation.MobileApp.MainPage"
+             Title="GymFit">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <Grid Padding="20" RowSpacing="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <Label x:Name="QrCodeLabel" Text="Votre QR Code" FontAttributes="Bold" HorizontalOptions="Center" />
+            <!-- Header avec salutation -->
+            <Frame Grid.Row="0" Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="24,20">
+                <StackLayout Spacing="8">
+                    <Label Text="Bienvenue !" 
+                           Style="{StaticResource TitleMedium}" 
+                           TextColor="White" 
+                           FontAttributes="Bold"/>
+                    <Label Text="Prêt pour votre entraînement aujourd'hui ?" 
+                           Style="{StaticResource BodyMedium}" 
+                           TextColor="White" 
+                           Opacity="0.9"/>
+                </StackLayout>
+            </Frame>
 
-        <WebView x:Name="QrCodeWebView"
-                 HeightRequest="350"
-                 WidthRequest="350"
-                 HorizontalOptions="Center" />
-        
-        <Button 
-            Text="Mes abonnements" 
-            Clicked="OnSubscriptionClicked"
-            BackgroundColor="DodgerBlue"
-            TextColor="White"
-            FontSize="12"
-            HeightRequest="32"
-            Padding="10,4"
-            CornerRadius="6"
-            HorizontalOptions="Center" />
+            <!-- Section QR Code - Initialement masquée -->
+            <Frame Grid.Row="1" 
+                   x:Name="QrCodeFrame"
+                   Style="{StaticResource CardFrame}"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                   IsVisible="False">
+                <StackLayout Spacing="16">
+                    <Label Text="🎫 Votre Pass Gym" 
+                           Style="{StaticResource TitleSmall}" 
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                    
+                    <Label Text="Présentez ce QR code à l'accueil" 
+                           Style="{StaticResource BodyMedium}" 
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
 
-    </VerticalStackLayout>
+                    <Border StrokeShape="RoundRectangle 16" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray700}}"
+                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                            StrokeThickness="1"
+                            Padding="16"
+                            HorizontalOptions="Center">
+                        <WebView x:Name="QrCodeWebView"
+                                 HeightRequest="350"
+                                 WidthRequest="350"
+                                 HorizontalOptions="Center" />
+                    </Border>
+                </StackLayout>
+            </Frame>
+
+            <!-- Section Actions rapides -->
+            <Frame Grid.Row="2" 
+                   Style="{StaticResource CardFrame}"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}">
+                <StackLayout Spacing="16">
+                    <Label Text="⚡ Actions Rapides" 
+                           Style="{StaticResource TitleSmall}"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                    
+                    <Grid ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Bouton Abonnements -->
+                        <Border Grid.Column="0" 
+                                StrokeShape="RoundRectangle 16"
+                                BackgroundColor="{StaticResource Secondary}"
+                                HeightRequest="120">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSubscriptionClicked"/>
+                            </Border.GestureRecognizers>
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource Secondary}"
+                                        Offset="0,4"
+                                        Radius="12"
+                                        Opacity="0.25"/>
+                            </Border.Shadow>
+                            <StackLayout VerticalOptions="Center" Spacing="8">
+                                <Label Text="💳" 
+                                       FontSize="32" 
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Mes Abonnements" 
+                                       Style="{StaticResource BodyLarge}"
+                                       TextColor="White"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                            </StackLayout>
+                        </Border>
+                        
+                        <!-- Bouton Coachings -->
+                        <Border Grid.Column="1" 
+                                StrokeShape="RoundRectangle 16"
+                                BackgroundColor="{StaticResource Accent}"
+                                HeightRequest="120">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnCoachingClicked"/>
+                            </Border.GestureRecognizers>
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource Accent}"
+                                        Offset="0,4"
+                                        Radius="12"
+                                        Opacity="0.25"/>
+                            </Border.Shadow>
+                            <StackLayout VerticalOptions="Center" Spacing="8">
+                                <Label Text="🏋️" 
+                                       FontSize="32" 
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Mes Coachings" 
+                                       Style="{StaticResource BodyLarge}"
+                                       TextColor="White"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                            </StackLayout>
+                        </Border>
+                    </Grid>
+                </StackLayout>
+            </Frame>
+
+            <!-- Section Motivation / Tips -->
+            <Frame Grid.Row="3" 
+                   Style="{StaticResource CardFrame}" 
+                   BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray800}}">
+                <StackLayout Spacing="12">
+                    <Label Text="💪 Conseil du Jour" 
+                           Style="{StaticResource TitleSmall}"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource TextPrimaryDark}}"/>
+                    
+                    <Label Text="L'hydratation est clé ! Pensez à boire de l'eau régulièrement pendant votre entraînement pour maintenir vos performances." 
+                           Style="{StaticResource BodyMedium}"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondaryDark}}"/>
+                           
+                    <Frame Style="{StaticResource Badge}" 
+                           BackgroundColor="{StaticResource Success}"
+                           HorizontalOptions="Start">
+                        <Label Text="Astuce Fitness" 
+                               TextColor="White" 
+                               FontSize="12" 
+                               FontAttributes="Bold"/>
+                    </Frame>
+                </StackLayout>
+            </Frame>
+
+        </Grid>
+    </ScrollView>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Profil" Clicked="OnProfileClicked"/>
-        <ToolbarItem Text="Se déconnecter" Clicked="OnLogoutClicked"/>
+        <ToolbarItem Text="👤 Profil" Clicked="OnProfileClicked"/>
+        <ToolbarItem Text="🚪 Déconnexion" Clicked="OnLogoutClicked"/>
     </ContentPage.ToolbarItems>
 
 </ContentPage>
