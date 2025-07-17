@@ -4,53 +4,71 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Coaching plan</PageTitle>
+<PageTitle>Détails du plan de coaching - GymManagement</PageTitle>
 
-@if (_authenticatedUser.Role == Role.Coach)
-{
-	<NavLink class="btn btn-primary nav-link" href="my-coaching-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-	</NavLink>
-}
-else
-{
-	<NavLink class="btn btn-primary nav-link" href="coaching-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-	</NavLink>
-}
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            @if (_authenticatedUser.Role == Role.Coach)
+            {
+                <BackButton ReturnUrl="my-coaching-plans" Text="Retour à mes plans" Subtitle="Mes plans de coaching" />
+            }
+            else
+            {
+                <BackButton ReturnUrl="coaching-plans" Text="Retour aux plans" Subtitle="Plans de coaching" />
+            }
+            <h1 class="page-title">🎯 Détails du plan de coaching</h1>
+            @if (coachingPlan != null)
+            {
+                <p class="page-description">@coachingPlan.Description • ID: #@coachingPlan.Id</p>
+            }
+        </div>
+    </div>
+</div>
 
-<h3>Coaching plan Details</h3>
-
-@if (coachingPlan == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<div>
-		<CoachingPlanComponent CoachingPlan="coachingPlan"></CoachingPlanComponent>
-		<ul>
-			<li><strong>Coach</strong></li>
-			<UserComponent User="coachingPlan.Coach"></UserComponent>
-			<li><strong>Club</strong></li>
-			<ClubComponent Club="coachingPlan.Club"></ClubComponent>
-		</ul>
-	</div>
-}
+<div class="coaching-plan-details-section">
+    @if (coachingPlan == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des détails...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="coaching-plan-details-content">
+            <div class="coaching-plan-info-card">
+                <CoachingPlanComponent CoachingPlan="coachingPlan"></CoachingPlanComponent>
+            </div>
+            
+            <div class="coaching-plan-coach-card">
+                <h3 class="card-title">👨‍💼 Coach responsable</h3>
+                <UserComponent User="coachingPlan.Coach"></UserComponent>
+            </div>
+            
+            <div class="coaching-plan-club-card">
+                <h3 class="card-title">🏢 Club associé</h3>
+                <ClubComponent Club="coachingPlan.Club"></ClubComponent>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
-	[Parameter]
-	public int CoachingPlanId { get; set; }
+    [Parameter]
+    public int CoachingPlanId { get; set; }
 
-	private CoachingPlanDetailsDto? coachingPlan;
+    private CoachingPlanDetailsDto? coachingPlan;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadCoachingPlan();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoachingPlan();
+    }
 
-	private async Task LoadCoachingPlan()
-	{
-		coachingPlan = await _gymApiClient.GetCoachingPlanByIdAsync(CoachingPlanId);
-	}
+    private async Task LoadCoachingPlan()
+    {
+        coachingPlan = await _gymApiClient.GetCoachingPlanByIdAsync(CoachingPlanId);
+    }
 }

@@ -1,20 +1,82 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
-<ul>
-    @if (Club == null)
-    {
-        <ul>
-            <li>No club.</li>
-        </ul>
-    }
-    else
-    {
-        <li><strong>ID:</strong> @Club.Id</li>
-        <li><strong>Created At:</strong> @Club.CreatedAt.ToString("g")</li>
-        <li><strong>Updated At:</strong> @Club.UpdatedAt?.ToString("g")</li>
-        <li><strong>Name:</strong> @Club.Name</li>
-        <AddressComponent Address="Club.Address"></AddressComponent>
-    }
-</ul>
+
+@if (Club == null || Club.Id == 0)
+{
+    <div class="club-component-empty">
+        <div class="empty-icon">🏢</div>
+        <p class="empty-message">Aucune information de club disponible</p>
+    </div>
+}
+else
+{
+    <div class="club-component">
+        <!-- Header avec icône et nom -->
+        <div class="club-header">
+            <div class="club-icon-large">
+                <span class="club-icon-text">🏢</span>
+            </div>
+            <div class="club-main-info">
+                <h3 class="club-name">@Club.Name</h3>
+                <div class="club-meta">
+                    <span class="club-id">ID: #@Club.Id</span>
+                    <span class="club-status-badge active">✅ Actif</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations détaillées -->
+        <div class="club-details-grid">
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Informations générales
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">🏢 Nom du club</span>
+                        <span class="detail-value">@Club.Name</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">🆔 Identifiant</span>
+                        <span class="detail-value">#@Club.Id</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">ℹ️</span>
+                    Informations système
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">📅 Créé le</span>
+                        <span class="detail-value">@Club.CreatedAt.ToString("dd/MM/yyyy à HH:mm")</span>
+                    </div>
+                    @if (Club.UpdatedAt.HasValue)
+                    {
+                        <div class="detail-item">
+                            <span class="detail-label">🔄 Modifié le</span>
+                            <span class="detail-value">@Club.UpdatedAt.Value.ToString("dd/MM/yyyy à HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Adresse -->
+        @if (Club.Address != null)
+        {
+            <div class="address-section">
+                <h4 class="section-title">
+                    <span class="section-icon">📍</span>
+                    Localisation
+                </h4>
+                <AddressComponent Address="Club.Address" />
+            </div>
+        }
+    </div>
+}
 
 @code {
     [Parameter]

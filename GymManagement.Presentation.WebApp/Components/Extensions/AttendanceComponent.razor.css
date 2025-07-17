@@ -1,0 +1,303 @@
+/* AttendanceComponent - Styles modernes */
+
+.attendance-component {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+.attendance-header {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.attendance-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.section-icon {
+    font-size: 1.5rem;
+}
+
+.attendance-empty {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--gray-50);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-message {
+    color: var(--gray-600);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Statistiques des présences */
+.attendance-stats {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: var(--white);
+}
+
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--white);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Liste des présences */
+.attendance-list {
+    padding: 2rem;
+}
+
+.list-header {
+    margin-bottom: 1.5rem;
+}
+
+.list-header h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.attendance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.attendance-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+}
+
+.attendance-card:hover {
+    background: var(--white);
+    border-color: var(--gray-300);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.attendance-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.check-in-icon {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.attendance-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.attendance-date {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    line-height: 1.2;
+}
+
+.attendance-time {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    line-height: 1.2;
+}
+
+.attendance-day {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+}
+
+.attendance-badge {
+    flex-shrink: 0;
+}
+
+.badge-text {
+    padding: 0.375rem 0.75rem;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* Footer */
+.attendance-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+    text-align: center;
+}
+
+.footer-text {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Design responsive */
+@media (max-width: 768px) {
+    .attendance-stats {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .stats-summary {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+    }
+    
+    .attendance-list {
+        padding: 1.5rem;
+    }
+    
+    .attendance-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .attendance-card {
+        padding: 0.875rem;
+    }
+    
+    .attendance-icon {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .check-in-icon {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .attendance-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .attendance-stats {
+        padding: 1rem 1.5rem;
+    }
+    
+    .stats-summary {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .attendance-list {
+        padding: 1rem;
+    }
+    
+    .attendance-card {
+        padding: 0.75rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .attendance-info {
+        order: -1;
+    }
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.attendance-card {
+    animation: slideInUp 0.4s ease-out;
+}
+
+.attendance-card:nth-child(1) { animation-delay: 0s; }
+.attendance-card:nth-child(2) { animation-delay: 0.1s; }
+.attendance-card:nth-child(3) { animation-delay: 0.2s; }
+.attendance-card:nth-child(4) { animation-delay: 0.3s; }
+.attendance-card:nth-child(5) { animation-delay: 0.4s; }
+.attendance-card:nth-child(6) { animation-delay: 0.5s; }
+.attendance-card:nth-child(7) { animation-delay: 0.6s; }
+.attendance-card:nth-child(8) { animation-delay: 0.7s; }
+.attendance-card:nth-child(9) { animation-delay: 0.8s; }
+.attendance-card:nth-child(10) { animation-delay: 0.9s; }
+
+.stat-item {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.2s; }
+.stat-item:nth-child(2) { animation-delay: 0.4s; }
+.stat-item:nth-child(3) { animation-delay: 0.6s; }

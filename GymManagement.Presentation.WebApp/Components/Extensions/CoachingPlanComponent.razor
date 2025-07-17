@@ -1,37 +1,156 @@
-﻿<ul>
-    @if (CoachingPlan == null)
-    {
-        <ul>
-            <li>No coaching plan.</li>
-        </ul>
-    }
-    else
-    {
-        <li><strong>ID:</strong> @CoachingPlan.Id</li>
-        <li><strong>Created At:</strong> @CoachingPlan.CreatedAt.ToString("g")</li>
-        <li><strong>Updated At:</strong> @CoachingPlan.UpdatedAt?.ToString("g")</li>
-        <li><strong>Description:</strong> @CoachingPlan.Description</li>
-        <li><strong>Base price:</strong> @CoachingPlan.Price.ToString("C")</li>
-        <li><strong>Is valid:</strong> @CoachingPlan.IsValid</li>
-            <li><strong>Coachings</strong></li>
-            @foreach (var coaching in CoachingPlan.Coachings)
-            {
-                <ul>
-                    <li><strong>Id:</strong> @coaching.Id</li>
-                    <li><strong>Created At:</strong> @CoachingPlan.CreatedAt.ToString("g")</li>
-                    <li><strong>Updated At:</strong> @CoachingPlan.UpdatedAt?.ToString("g")</li>
-                    <li><strong>Start Date:</strong> @coaching.StartDate.ToString("g")</li>
-                    <li><strong>End Date:</strong> @coaching.EndDate.ToString("g")</li>
-                    <li><strong>Is Active:</strong> @coaching.IsActive</li>
-                    <li><strong>Renew When Expiry:</strong> @coaching.RenewWhenExpiry</li>
-                    <li><strong>Week Day:</strong> @coaching.WeekDay</li>
-                    <li><strong>Hour:</strong> @coaching.Hour</li>
-                </ul>
-            }
-    }
-</ul>
+﻿@using GymManagement.Presentation.WebApp.ApiClients
+
+@if (CoachingPlan == null || CoachingPlan.Id == 0)
+{
+    <div class="coaching-plan-component-empty">
+        <div class="empty-icon">🎯</div>
+        <p class="empty-message">Aucune information de plan de coaching disponible</p>
+    </div>
+}
+else
+{
+    <div class="coaching-plan-component">
+        <!-- Header avec informations principales -->
+        <div class="coaching-plan-header">
+            <div class="coaching-plan-icon-large">
+                <span class="coaching-plan-icon-text">🎯</span>
+            </div>
+            <div class="coaching-plan-main-info">
+                <h3 class="coaching-plan-name">@CoachingPlan.Description</h3>
+                <div class="coaching-plan-meta">
+                    <span class="coaching-plan-id">ID: #@CoachingPlan.Id</span>
+                    <span class="coaching-plan-price">@CoachingPlan.Price.ToString("C")</span>
+                    <span class="coaching-plan-status-badge @(CoachingPlan.IsValid ? "valid" : "invalid")">
+                        @(CoachingPlan.IsValid ? "✅ Valide" : "❌ Invalide")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations détaillées -->
+        <div class="coaching-plan-details-grid">
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Informations générales
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">📝 Description</span>
+                        <span class="detail-value">@CoachingPlan.Description</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">💰 Prix</span>
+                        <span class="detail-value">@CoachingPlan.Price.ToString("C")</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">✅ Statut</span>
+                        <span class="detail-value">@(CoachingPlan.IsValid ? "Valide" : "Invalide")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">ℹ️</span>
+                    Informations système
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">🆔 ID Plan</span>
+                        <span class="detail-value">#@CoachingPlan.Id</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">📅 Créé le</span>
+                        <span class="detail-value">@CoachingPlan.CreatedAt.ToString("dd/MM/yyyy à HH:mm")</span>
+                    </div>
+                    @if (CoachingPlan.UpdatedAt.HasValue)
+                    {
+                        <div class="detail-item">
+                            <span class="detail-label">🔄 Modifié le</span>
+                            <span class="detail-value">@CoachingPlan.UpdatedAt.Value.ToString("dd/MM/yyyy à HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions de coaching -->
+        @if (CoachingPlan.Coachings?.Any() == true)
+        {
+            <div class="coachings-section">
+                <h4 class="section-title">
+                    <span class="section-icon">🏃</span>
+                    Sessions de coaching (@CoachingPlan.Coachings.Count)
+                </h4>
+                
+                <div class="coachings-grid">
+                    @foreach (var coaching in CoachingPlan.Coachings.OrderByDescending(c => c.StartDate))
+                    {
+                        <div class="coaching-session-card @(coaching.IsActive ? "active" : "inactive")">
+                            <div class="session-header">
+                                <div class="session-status">
+                                    <span class="status-icon">@(coaching.IsActive ? "🟢" : "🔴")</span>
+                                    <span class="status-text">@(coaching.IsActive ? "Actif" : "Inactif")</span>
+                                </div>
+                                <div class="session-id">#@coaching.Id</div>
+                            </div>
+                            
+                            <div class="session-details">
+                                <div class="session-row">
+                                    <span class="session-label">📅 Début</span>
+                                    <span class="session-value">@coaching.StartDate.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div class="session-row">
+                                    <span class="session-label">📅 Fin</span>
+                                    <span class="session-value">@coaching.EndDate.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div class="session-row">
+                                    <span class="session-label">📅 Jour</span>
+                                    <span class="session-value">@GetWeekDayDisplay(coaching.WeekDay)</span>
+                                </div>
+                                <div class="session-row">
+                                    <span class="session-label">⏰ Heure</span>
+                                    <span class="session-value">@coaching.Hour:00</span>
+                                </div>
+                                <div class="session-row">
+                                    <span class="session-label">🔄 Auto-renouvellement</span>
+                                    <span class="session-value">@(coaching.RenewWhenExpiry ? "✅ Oui" : "❌ Non")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="no-coachings">
+                <div class="no-coachings-content">
+                    <span class="no-coachings-icon">📅</span>
+                    <p class="no-coachings-message">Aucune session de coaching programmée</p>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @code {
     [Parameter]
     public CoachingPlanDetailsDto? CoachingPlan { get; set; }
+
+    private string GetWeekDayDisplay(object weekDay)
+    {
+        return weekDay.ToString() switch
+        {
+            "Monday" => "Lundi",
+            "Tuesday" => "Mardi",
+            "Wednesday" => "Mercredi", 
+            "Thursday" => "Jeudi",
+            "Friday" => "Vendredi",
+            "Saturday" => "Samedi",
+            "Sunday" => "Dimanche",
+            _ => weekDay.ToString()
+        };
+    }
 }

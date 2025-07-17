@@ -1,28 +1,146 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
+
 @if (User == null || User.Id == 0)
 {
-    <ul>
-        <li>No user.</li>
-    </ul>
+    <div class="user-component-empty">
+        <div class="empty-icon">👤</div>
+        <p class="empty-message">Aucune information utilisateur disponible</p>
+    </div>
 }
 else
 {
-    <ul>
-        <li><strong>ID:</strong> @User.Id</li>
-        <li><strong>Created At:</strong> @User.CreatedAt.ToString("g")</li>
-        <li><strong>Updated At:</strong> @User.UpdatedAt?.ToString("g")</li>
-        <li><strong>Surname:</strong> @User.Surname</li>
-        <li><strong>Name:</strong> @User.Name</li>
-        <li><strong>Birthdate:</strong> @User.Birthdate</li>
-        <li><strong>Email:</strong> @User.Email</li>
-        <li><strong>Phone:</strong> @User.PhoneNumber</li>
-        <li><strong>Role:</strong> @User.Role</li>
-        <li><strong>Gender:</strong> @User.Gender</li>
-		<AddressComponent Address="User.Address"></AddressComponent>
-    </ul>
+    <div class="user-component">
+        <!-- Header avec avatar et nom -->
+        <div class="user-header">
+            <div class="user-avatar-large">
+                <span class="avatar-initials-large">@GetUserInitials()</span>
+            </div>
+            <div class="user-main-info">
+                <h3 class="user-full-name">@User.Name @User.Surname</h3>
+                <div class="user-meta">
+                    <span class="user-email">@User.Email</span>
+                    <span class="user-role-badge role-@User.Role.ToString().ToLower()">@GetRoleDisplay()</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations personnelles -->
+        <div class="user-details-grid">
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Informations personnelles
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">📧 Email</span>
+                        <span class="detail-value">@User.Email</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">📱 Téléphone</span>
+                        <span class="detail-value">@(string.IsNullOrEmpty(User.PhoneNumber) ? "Non renseigné" : User.PhoneNumber)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">🎂 Date de naissance</span>
+                        <span class="detail-value">@User.Birthdate.ToString("dd/MM/yyyy") (@CalculateAge() ans)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">⚧ Genre</span>
+                        <span class="detail-value">@GetGenderDisplay()</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">👤 Rôle</span>
+                        <span class="detail-value">@GetRoleDisplay()</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">ℹ️</span>
+                    Informations système
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">🆔 ID Utilisateur</span>
+                        <span class="detail-value">#@User.Id</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">📅 Créé le</span>
+                        <span class="detail-value">@User.CreatedAt.ToString("dd/MM/yyyy à HH:mm")</span>
+                    </div>
+                    @if (User.UpdatedAt.HasValue)
+                    {
+                        <div class="detail-item">
+                            <span class="detail-label">🔄 Modifié le</span>
+                            <span class="detail-value">@User.UpdatedAt.Value.ToString("dd/MM/yyyy à HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Adresse -->
+        @if (User.Address != null)
+        {
+            <div class="address-section">
+                <h4 class="section-title">
+                    <span class="section-icon">📍</span>
+                    Adresse
+                </h4>
+                <AddressComponent Address="User.Address" />
+            </div>
+        }
+    </div>
 }
 
 @code {
     [Parameter]
     public UserDto? User { get; set; }
+    
+    private string GetUserInitials()
+    {
+        if (User == null) return "U";
+        
+        var firstName = !string.IsNullOrEmpty(User.Name) ? User.Name[0].ToString() : "";
+        var lastName = !string.IsNullOrEmpty(User.Surname) ? User.Surname[0].ToString() : "";
+        return (firstName + lastName).ToUpper();
+    }
+    
+    private int CalculateAge()
+    {
+        if (User == null) return 0;
+        
+        var today = DateTime.Today;
+        var age = today.Year - User.Birthdate.Year;
+        if (User.Birthdate.Date > today.AddYears(-age)) age--;
+        return age;
+    }
+    
+    private string GetGenderDisplay()
+    {
+        if (User == null) return "Non spécifié";
+        
+        return User.Gender.ToString() switch
+        {
+            "Male" => "Masculin",
+            "Female" => "Féminin",
+            "Other" => "Autre",
+            _ => "Non spécifié"
+        };
+    }
+    
+    private string GetRoleDisplay()
+    {
+        if (User == null) return "Utilisateur";
+        
+        return User.Role.ToString() switch
+        {
+            "Coach" => "Coach",
+            "Manager" => "Manager",
+            "Staff" => "Staff",
+            "Member" => "Membre",
+            _ => "Utilisateur"
+        };
+    }
 }

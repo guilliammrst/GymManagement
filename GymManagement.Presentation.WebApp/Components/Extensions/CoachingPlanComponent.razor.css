@@ -1,0 +1,462 @@
+/* CoachingPlanComponent - Styles modernes */
+
+.coaching-plan-component {
+    padding: 2rem;
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-100);
+}
+
+.coaching-plan-component-empty {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    border: 2px dashed var(--gray-300);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-message {
+    color: var(--gray-600);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Header plan de coaching */
+.coaching-plan-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 2rem;
+}
+
+.coaching-plan-icon-large {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--border-radius-lg);
+    background: linear-gradient(135deg, #059669, #047857);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-lg);
+    border: 4px solid var(--white);
+}
+
+.coaching-plan-icon-text {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.coaching-plan-main-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.coaching-plan-name {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.coaching-plan-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.coaching-plan-id {
+    font-size: 1rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.coaching-plan-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.coaching-plan-status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.coaching-plan-status-badge.valid {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.coaching-plan-status-badge.invalid {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* Grille des détails */
+.coaching-plan-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.detail-section {
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--gray-100);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0 0 1.25rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.section-icon {
+    font-size: 1.25rem;
+}
+
+.details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    padding: 0.75rem;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s ease;
+}
+
+.detail-item:hover {
+    background: var(--gray-25);
+    border-color: var(--gray-300);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    flex-shrink: 0;
+    min-width: 120px;
+}
+
+.detail-value {
+    font-size: 0.875rem;
+    color: var(--gray-900);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+}
+
+/* Section des coachings */
+.coachings-section {
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--gray-100);
+}
+
+.coachings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.coaching-session-card {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.coaching-session-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--gray-300);
+}
+
+.coaching-session-card.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.coaching-session-card.inactive::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.session-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-icon {
+    font-size: 1rem;
+}
+
+.status-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.coaching-session-card.active .status-text {
+    color: #22c55e;
+}
+
+.coaching-session-card.inactive .status-text {
+    color: #ef4444;
+}
+
+.session-id {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.session-details {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.session-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.session-row:last-child {
+    border-bottom: none;
+}
+
+.session-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.session-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+/* Pas de coachings */
+.no-coachings {
+    padding: 2rem;
+    text-align: center;
+    background: var(--gray-50);
+    border-radius: var(--border-radius-lg);
+    border: 2px dashed var(--gray-300);
+}
+
+.no-coachings-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.no-coachings-icon {
+    font-size: 2.5rem;
+    opacity: 0.5;
+}
+
+.no-coachings-message {
+    color: var(--gray-600);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Design responsive */
+@media (max-width: 768px) {
+    .coaching-plan-component {
+        padding: 1.5rem;
+    }
+    
+    .coaching-plan-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .coaching-plan-icon-large {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .coaching-plan-icon-text {
+        font-size: 2rem;
+    }
+    
+    .coaching-plan-name {
+        font-size: 1.5rem;
+    }
+    
+    .coaching-plan-details-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .coachings-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .detail-section {
+        padding: 1.25rem;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .detail-label {
+        min-width: auto;
+    }
+    
+    .detail-value {
+        text-align: left;
+    }
+    
+    .session-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .session-value {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .coaching-plan-component {
+        padding: 1rem;
+    }
+    
+    .coaching-plan-icon-large {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .coaching-plan-icon-text {
+        font-size: 1.75rem;
+    }
+    
+    .coaching-plan-name {
+        font-size: 1.25rem;
+    }
+    
+    .coaching-plan-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .detail-section,
+    .coachings-section {
+        padding: 1rem;
+    }
+    
+    .session-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .session-details {
+        padding: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.coaching-plan-component {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.coaching-session-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.coaching-session-card:nth-child(1) { animation-delay: 0s; }
+.coaching-session-card:nth-child(2) { animation-delay: 0.1s; }
+.coaching-session-card:nth-child(3) { animation-delay: 0.2s; }
+.coaching-session-card:nth-child(4) { animation-delay: 0.3s; }
+.coaching-session-card:nth-child(5) { animation-delay: 0.4s; }

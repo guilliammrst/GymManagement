@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Components
+
+<NavLink href="@ReturnUrl" class="back-button">
+    <div class="back-button-icon">
+        <span class="arrow-icon">?</span>
+    </div>
+    <div class="back-button-content">
+        <span class="back-button-text">@Text</span>
+        @if (!string.IsNullOrEmpty(Subtitle))
+        {
+            <span class="back-button-subtitle">@Subtitle</span>
+        }
+    </div>
+</NavLink>
+
+@code {
+    [Parameter, EditorRequired]
+    public string ReturnUrl { get; set; } = string.Empty;
+    
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+    
+    [Parameter]
+    public string? Subtitle { get; set; }
+}

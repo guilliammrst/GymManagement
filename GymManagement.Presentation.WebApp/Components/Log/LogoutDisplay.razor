@@ -1,7 +1,64 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
+@using GymManagement.Shared.Core.AuthManager
+@using GymManagement.Shared.Core.Enums
+@inject AuthenticatedUser _authenticatedUser
+@inject IAuthManager _authManager
 @rendermode InteractiveServer
 
 @if (_authenticatedUser.IsAuthenticated)
 {
-    <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="_authManager.Logout">Log out</RadzenButton>
+    <div class="user-profile-section">
+        <div class="user-info">
+            <div class="user-avatar-small">
+                <span class="avatar-initials">@GetUserInitials()</span>
+            </div>
+            <div class="user-details">
+                <span class="user-name-display">@GetUserDisplayName()</span>
+                <span class="user-role">@GetUserRole()</span>
+            </div>
+        </div>
+        
+        <div class="user-actions">
+            <RadzenButton 
+                Icon="logout" 
+                ButtonStyle="ButtonStyle.Light" 
+                Click="_authManager.Logout"
+                class="logout-btn"
+                Size="ButtonSize.Small"
+                Text="Déconnexion" />
+        </div>
+    </div>
+}
+
+@code {
+    private string GetUserDisplayName()
+    {
+        return _authenticatedUser.Email ?? "Utilisateur";
+    }
+    
+    private string GetUserInitials()
+    {
+        if (!string.IsNullOrEmpty(_authenticatedUser.Email))
+        {
+            var email = _authenticatedUser.Email;
+            if (email.Length >= 2)
+            {
+                return email.Substring(0, 2).ToUpper();
+            }
+            return email.Substring(0, 1).ToUpper();
+        }
+        return "U";
+    }
+    
+    private string GetUserRole()
+    {
+        return _authenticatedUser.Role switch
+        {
+            Role.Coach => "Coach",
+            Role.Manager => "Manager",
+            Role.Staff => "Staff",
+            Role.Member => "Membre",
+            _ => "Utilisateur"
+        };
+    }
 }

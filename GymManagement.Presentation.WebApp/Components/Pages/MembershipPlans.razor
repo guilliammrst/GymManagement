@@ -4,76 +4,121 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Memberships plans</PageTitle>
+<PageTitle>Plans d'adhésion - GymManagement</PageTitle>
 
-<h3>Memberships plans</h3>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">📋 Plans d'adhésion</h1>
+            <p class="page-description">Gérez tous les plans d'abonnement de votre plateforme</p>
+        </div>
+        <br />
+        <div class="page-actions">
+            <RadzenButton Text="Nouveau plan" 
+                         Icon="add" 
+                         ButtonStyle="ButtonStyle.Primary"
+                         Click="OpenCreateMembershipPlanDialog" 
+                         class="btn-create" />
+        </div>
+    </div>
+</div>
 
-<RadzenButton Text="Créer un plan d'abonnement" Click="OpenCreateMembershipPlanDialog" Style="margin-bottom: 20px;" />
-
-@if (membershipPlans == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (membershipPlans.Count == 0)
-{
-	<p>Aucun plan d'abonnement trouvé.</p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Description</th>
-				<th>MembershipPlanType</th>
-				<th>IsValid</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var membershipPlan in membershipPlans)
-			{
-				var href = $"membership-plan/{membershipPlan.Id}";
-				<tr>
-					<td>@membershipPlan.Id</td>
-					<td>@membershipPlan.Description</td>
-					<td>@membershipPlan.MembershipPlanType.ToString()</td>
-					<td>@membershipPlan.IsValid</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div class="results-section">
+    @if (membershipPlans == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des plans...</p>
+            </div>
+        </div>
+    }
+    else if (membershipPlans.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-content">
+                <span class="empty-state-icon">📋</span>
+                <h3>Aucun plan d'adhésion trouvé</h3>
+                <p>Créez votre premier plan d'abonnement pour commencer.</p>
+                <RadzenButton Text="Créer un plan" 
+                             Icon="add" 
+                             ButtonStyle="ButtonStyle.Primary"
+                             Click="OpenCreateMembershipPlanDialog" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count">@membershipPlans.Count plans trouvés</span>
+            </div>
+        </div>
+        
+        <div class="plans-grid">
+            @foreach (var plan in membershipPlans)
+            {
+                <div class="plan-card">
+                    <div class="plan-card-header">
+                        <div class="plan-icon">
+                            <span class="plan-icon-text">📋</span>
+                        </div>
+                        <div class="plan-basic-info">
+                            <h4 class="plan-name">@plan.Description</h4>
+                            <p class="plan-id">ID: #@plan.Id</p>
+                        </div>
+                    </div>
+                    
+                    <div class="plan-card-body">
+                        <div class="plan-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Type:</span>
+                                <span class="detail-value">@plan.MembershipPlanType.ToString()</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Statut:</span>
+                                <span class="detail-value status @(plan.IsValid ? "active" : "inactive")">
+                                    @(plan.IsValid ? "✅ Actif" : "❌ Inactif")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="plan-card-footer">
+                        <NavLink href="@($"membership-plan/{plan.Id}")" class="btn btn-primary btn-sm">
+                            <span>📋</span> Détails
+                        </NavLink>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-	private List<MembershipPlanDto>? membershipPlans;
+    private List<MembershipPlanDto>? membershipPlans;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadMembershipPlans();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMembershipPlans();
+    }
 
-	private async Task LoadMembershipPlans()
-	{
-		membershipPlans = await _gymApiClient.GetMembershipPlansAsync();
-	}
+    private async Task LoadMembershipPlans()
+    {
+        membershipPlans = await _gymApiClient.GetMembershipPlansAsync();
+    }
 
-	private async Task OpenCreateMembershipPlanDialog()
-	{
-		var result = await _dialogService.OpenAsync<CreateMembershipPlanPopup>("Créer un plan d'abonnement",
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+    private async Task OpenCreateMembershipPlanDialog()
+    {
+        var result = await _dialogService.OpenAsync<CreateMembershipPlanPopup>("Créer un plan d'abonnement",
+            options: new DialogOptions
+            {
+                Width = "600px",
+                Height = "500px",
+                Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+            });
 
-		if (result is true)
-			await LoadMembershipPlans();
-	}
+        if (result is true)
+            await LoadMembershipPlans();
+    }
 }

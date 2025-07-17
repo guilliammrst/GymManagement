@@ -3,56 +3,80 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Coaching plans</PageTitle>
+<PageTitle>Plans de coaching - GymManagement</PageTitle>
 
-<h3>Coaching plans</h3>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">📝 Plans de coaching</h1>
+            <p class="page-description">Explorez tous les programmes d'entraînement disponibles</p>
+        </div>
+    </div>
+</div>
 
-@if (coachingPlans == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (coachingPlans.Count == 0)
-{
-	<p>Aucun coaching plan trouvé.</p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Description</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var coachingPlan in coachingPlans)
-			{
-				var href = $"coaching-plan/{coachingPlan.Id}";
-				<tr>
-					<td>@coachingPlan.Id</td>
-					<td>@coachingPlan.Description</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div class="results-section">
+    @if (coachingPlans == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des plans...</p>
+            </div>
+        </div>
+    }
+    else if (coachingPlans.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-content">
+                <span class="empty-state-icon">📝</span>
+                <h3>Aucun plan de coaching trouvé</h3>
+                <p>Aucun programme d'entraînement n'est disponible pour le moment.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count">@coachingPlans.Count plans disponibles</span>
+            </div>
+        </div>
+        
+        <div class="coaching-plans-grid">
+            @foreach (var plan in coachingPlans)
+            {
+                <div class="coaching-plan-card">
+                    <div class="coaching-plan-card-header">
+                        <div class="coaching-plan-icon">
+                            <span class="coaching-plan-icon-text">📝</span>
+                        </div>
+                        <div class="coaching-plan-basic-info">
+                            <h4 class="coaching-plan-name">@plan.Description</h4>
+                            <p class="coaching-plan-id">ID: #@plan.Id</p>
+                        </div>
+                    </div>
+                    
+                    <div class="coaching-plan-card-footer">
+                        <NavLink href="@($"coaching-plan/{plan.Id}")" class="btn btn-primary btn-sm">
+                            <span>📋</span> Détails
+                        </NavLink>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-	private List<CoachingPlanDto>? coachingPlans;
+    private List<CoachingPlanDto>? coachingPlans;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadCoachingPlans();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoachingPlans();
+    }
 
-	private async Task LoadCoachingPlans()
-	{
-		coachingPlans = await _gymApiClient.GetCoachingPlansAsync();
-	}
+    private async Task LoadCoachingPlans()
+    {
+        coachingPlans = await _gymApiClient.GetCoachingPlansAsync();
+    }
 }

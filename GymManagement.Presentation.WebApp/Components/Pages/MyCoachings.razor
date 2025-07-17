@@ -3,58 +3,93 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>My coachings</PageTitle>
+<PageTitle>Mes coachings - GymManagement</PageTitle>
 
-<h3>My coachings</h3>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">🎯 Mes coachings</h1>
+            <p class="page-description">Consultez tous vos programmes de coaching en cours</p>
+        </div>
+    </div>
+</div>
 
-@if (coachings == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (coachings.Count == 0)
-{
-	<p>Aucun coaching trouvé.</p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Start date</th>
-				<th>End date</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var coaching in coachings)
-			{
-				var href = $"coaching/{coaching.Id}";
-				<tr>
-					<td>@coaching.Id</td>
-					<td>@coaching.StartDate</td>
-					<td>@coaching.EndDate</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div class="results-section">
+    @if (coachings == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement de vos coachings...</p>
+            </div>
+        </div>
+    }
+    else if (coachings.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-content">
+                <span class="empty-state-icon">🎯</span>
+                <h3>Aucun coaching trouvé</h3>
+                <p>Vous n'avez aucun programme de coaching actuel.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count">@coachings.Count coachings actifs</span>
+            </div>
+        </div>
+        
+        <div class="my-coachings-grid">
+            @foreach (var coaching in coachings)
+            {
+                <div class="my-coaching-card">
+                    <div class="my-coaching-card-header">
+                        <div class="my-coaching-icon">
+                            <span class="my-coaching-icon-text">🎯</span>
+                        </div>
+                        <div class="my-coaching-basic-info">
+                            <h4 class="my-coaching-name">Mon Coaching #@coaching.Id</h4>
+                            <p class="my-coaching-period">@coaching.StartDate.ToString("dd/MM/yyyy") - @coaching.EndDate.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+                    
+                    <div class="my-coaching-card-body">
+                        <div class="my-coaching-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Début:</span>
+                                <span class="detail-value">@coaching.StartDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Fin:</span>
+                                <span class="detail-value">@coaching.EndDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="my-coaching-card-footer">
+                        <NavLink href="@($"coaching/{coaching.Id}")" class="btn btn-primary btn-sm">
+                            <span>📋</span> Détails
+                        </NavLink>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-	private List<CoachingDto>? coachings;
+    private List<CoachingDto>? coachings;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadCoachings();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoachings();
+    }
 
-	private async Task LoadCoachings()
-	{
-		coachings = await _gymApiClient.GetCoachingsAsync(true);
-	}
+    private async Task LoadCoachings()
+    {
+        coachings = await _gymApiClient.GetCoachingsAsync(true);
+    }
 }
