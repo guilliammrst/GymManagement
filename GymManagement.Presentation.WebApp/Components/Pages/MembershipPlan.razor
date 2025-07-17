@@ -4,60 +4,88 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Membership plan</PageTitle>
+<PageTitle>Détails du plan d'adhésion - GymManagement</PageTitle>
 
-<NavLink class="btn btn-primary nav-link" href="membership-plans" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-	<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-</NavLink>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <BackButton ReturnUrl="membership-plans" Text="Retour aux plans" Subtitle="Plans d'adhésion" />
+            <h1 class="page-title">📋 Détails du plan d'adhésion</h1>
+            @if (membershipPlan != null)
+            {
+                <p class="page-description">@membershipPlan.Description • ID: #@membershipPlan.Id</p>
+            }
+        </div>
+        @if (membershipPlan != null)
+        {
+            <div class="page-actions">
+                <RadzenButton Text="Modifier" 
+                             Icon="edit" 
+                             ButtonStyle="ButtonStyle.Primary"
+                             Click="OpenUpdateMembershipPlanDialog" 
+                             class="btn-action" />
+            </div>
+        }
+    </div>
+</div>
 
-<h3>Membership plan Details</h3>
-
-@if (membershipPlan == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<div>
-		<MembershipPlanComponent MembershipPlan="membershipPlan"></MembershipPlanComponent>
-		<MembershipComponent Memberships="membershipPlan.Memberships"></MembershipComponent>
-		<RadzenButton Text="Update" Click="OpenUpdateMembershipPlanDialog" Style="margin-bottom: 20px;" />
-	</div>
-}
+<div class="membership-plan-details-section">
+    @if (membershipPlan == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des détails...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="membership-plan-details-content">
+            <div class="membership-plan-info-card">
+                <MembershipPlanComponent MembershipPlan="membershipPlan"></MembershipPlanComponent>
+            </div>
+            
+            <div class="membership-plan-memberships-card">
+                <MembershipComponent Memberships="membershipPlan.Memberships"></MembershipComponent>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
-	[Parameter]
-	public int MembershipPlanId { get; set; }
+    [Parameter]
+    public int MembershipPlanId { get; set; }
 
-	private MembershipPlanDetailsDto? membershipPlan;
+    private MembershipPlanDetailsDto? membershipPlan;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadMembershipPlan();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMembershipPlan();
+    }
 
-	private async Task LoadMembershipPlan()
-	{
-		membershipPlan = await _gymApiClient.GetMembershipPlanByIdAsync(MembershipPlanId);
-	}
+    private async Task LoadMembershipPlan()
+    {
+        membershipPlan = await _gymApiClient.GetMembershipPlanByIdAsync(MembershipPlanId);
+    }
 
-	private async Task OpenUpdateMembershipPlanDialog()
-	{
-		if (membershipPlan == null)
-			return;
+    private async Task OpenUpdateMembershipPlanDialog()
+    {
+        if (membershipPlan == null)
+            return;
 
-		var result = await _dialogService.OpenAsync<UpdateMembershipPlanPopup>("Modifier le plan d'abonnement", new Dictionary<string, object>()
-			{
-				["MembershipPlan"] = membershipPlan
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+        var result = await _dialogService.OpenAsync<UpdateMembershipPlanPopup>("Modifier le plan d'abonnement", new Dictionary<string, object>()
+        {
+            ["MembershipPlan"] = membershipPlan
+        },
+        options: new DialogOptions
+        {
+            Width = "600px",
+            Height = "500px",
+            Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+        });
 
-		if (result is true)
-			await LoadMembershipPlan();
-	}
+        if (result is true)
+            await LoadMembershipPlan();
+    }
 }

@@ -1,26 +1,55 @@
 ﻿@page "/login"
 @using GymManagement.Presentation.WebApp.ApiClients
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Connexion - GymManagement</PageTitle>
 
-<h3>Connexion</h3>
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p style="color: red">@errorMessage</p>
-}
+<div class="login-div">
+    <div class="login-card">
+        <div class="login-header">
+            <span class="login-logo">💪</span>
+            <h1 class="login-title">GymManagement</h1>
+            <p class="login-subtitle">Connectez-vous à votre espace de gestion</p>
+        </div>
 
-<EditForm Model="_loginDto" OnValidSubmit="HandleLogin" FormName="Login">
-    <DataAnnotationsValidator />
-    <div>
-        <label>Email</label>
-        <InputText @bind-Value="_loginDto!.Email" />
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">
+                @errorMessage
+            </div>
+        }
+
+        <EditForm Model="_loginDto" OnValidSubmit="HandleLogin" FormName="Login" class="login-form">
+            <DataAnnotationsValidator />
+            
+            <div class="form-group">
+                <label for="email">📧 Adresse email</label>
+                <InputText @bind-Value="_loginDto!.Email" 
+                          id="email"
+                          class="form-control" 
+                          placeholder="votre.email@exemple.com"
+                          autocomplete="email" />
+                <ValidationMessage For="() => _loginDto.Email" />
+            </div>
+            
+            <div class="form-group">
+                <label for="password">🔒 Mot de passe</label>
+                <InputText @bind-Value="_loginDto!.Password" 
+                          type="password" 
+                          id="password"
+                          class="form-control" 
+                          placeholder="Saisissez votre mot de passe"
+                          autocomplete="current-password" />
+                <ValidationMessage For="() => _loginDto.Password" />
+            </div>
+            
+            <RadzenButton Text="Se connecter" 
+                         Icon="login" 
+                         ButtonStyle="ButtonStyle.Primary" 
+                         type="submit"
+                         class="login-button" />
+        </EditForm>
     </div>
-    <div>
-        <label>Mot de passe</label>
-        <InputText @bind-Value="_loginDto!.Password" type="password" />
-    </div>
-    <RadzenButton ButtonStyle="ButtonStyle.Primary" type="submit">Log in</RadzenButton>
-</EditForm>
+</div>
 
 @code {
     [SupplyParameterFromForm(FormName = "Login")]
@@ -30,14 +59,21 @@
 
     private async Task HandleLogin()
     {
-        var loginResult = await _authManager.Login(_loginDto);
-        if (loginResult.Success)
-				_authManager.RedirectToHome();
-
-		else if (loginResult.Fault == GymFaultType.GetTokenFailed)
-            errorMessage = "Identifiants incorrects.";
+        errorMessage = "";
         
+        var loginResult = await _authManager.Login(_loginDto);
+        
+        if (loginResult.Success)
+        {
+            _authManager.RedirectToHome();
+        }
+        else if (loginResult.Fault == GymFaultType.GetTokenFailed)
+        {
+            errorMessage = "Identifiants incorrects.";
+        }
         else
+        {
             errorMessage = "Vous n'avez pas les permissions.";
+        }
     }
 }

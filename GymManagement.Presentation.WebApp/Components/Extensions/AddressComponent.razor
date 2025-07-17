@@ -1,21 +1,179 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
-<li><strong>Address</strong></li>
-<ul>
-    @if (Address == null)
-    {
-        <li>No address.</li>
-    }
-    else
-    {
-        <li><strong>Country:</strong> @Address.Country</li>
-        <li><strong>City:</strong> @Address.City</li>
-        <li><strong>Street:</strong> @Address.Street</li>
-        <li><strong>Postal Code:</strong> @Address.PostalCode</li>
-        <li><strong>Number:</strong> @Address.Number</li>
-    }
-</ul>
+
+@if (Address == null)
+{
+    <div class="address-component-empty">
+        <div class="empty-icon">📍</div>
+        <p class="empty-message">Aucune adresse renseignée</p>
+    </div>
+}
+else
+{
+    <div class="address-component">
+        <!-- Adresse formatée -->
+        <div class="address-display">
+            <div class="address-icon">
+                <span class="location-icon">📍</span>
+            </div>
+            <div class="address-text">
+                <div class="address-line primary">
+                    @if (!string.IsNullOrEmpty(Address.Number) && !string.IsNullOrEmpty(Address.Street))
+                    {
+                        <span>@Address.Number @Address.Street</span>
+                    }
+                    else if (!string.IsNullOrEmpty(Address.Street))
+                    {
+                        <span>@Address.Street</span>
+                    }
+                    else
+                    {
+                        <span class="no-data">Rue non renseignée</span>
+                    }
+                </div>
+                <div class="address-line secondary">
+                    @if (!string.IsNullOrEmpty(Address.PostalCode) && !string.IsNullOrEmpty(Address.City))
+                    {
+                        <span>@Address.PostalCode @Address.City</span>
+                    }
+                    else if (!string.IsNullOrEmpty(Address.City))
+                    {
+                        <span>@Address.City</span>
+                    }
+                    else
+                    {
+                        <span class="no-data">Ville non renseignée</span>
+                    }
+                </div>
+                <div class="address-line country">
+                    <span class="country-flag">@GetCountryFlag()</span>
+                    <span>@GetCountryDisplay()</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails de l'adresse -->
+        <div class="address-details">
+            <div class="address-detail-item">
+                <span class="detail-label">🏠 Numéro</span>
+                <span class="detail-value">@(string.IsNullOrEmpty(Address.Number) ? "Non renseigné" : Address.Number)</span>
+            </div>
+            <div class="address-detail-item">
+                <span class="detail-label">🛣️ Rue</span>
+                <span class="detail-value">@(string.IsNullOrEmpty(Address.Street) ? "Non renseignée" : Address.Street)</span>
+            </div>
+            <div class="address-detail-item">
+                <span class="detail-label">📮 Code postal</span>
+                <span class="detail-value">@(string.IsNullOrEmpty(Address.PostalCode) ? "Non renseigné" : Address.PostalCode)</span>
+            </div>
+            <div class="address-detail-item">
+                <span class="detail-label">🏙️ Ville</span>
+                <span class="detail-value">@(string.IsNullOrEmpty(Address.City) ? "Non renseignée" : Address.City)</span>
+            </div>
+            <div class="address-detail-item">
+                <span class="detail-label">🌍 Pays</span>
+                <span class="detail-value">
+                    <span class="country-flag">@GetCountryFlag()</span>
+                    @GetCountryDisplay()
+                </span>
+            </div>
+        </div>
+
+        <!-- Adresse complète pour copie -->
+        <div class="address-copy-section">
+            <div class="address-copy-header">
+                <span class="copy-label">📋 Adresse complète</span>
+                <button class="copy-btn" onclick="copyToClipboard('@GetFullAddress()')">
+                    📋 Copier
+                </button>
+            </div>
+            <div class="full-address-text">
+                @GetFullAddress()
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]
     public AddressDto? Address { get; set; }
+
+    private string GetCountryDisplay()
+    {
+        if (Address == null) return "Non renseigné";
+
+        return Address.Country.ToString() switch
+        {
+            "France" => "France",
+            "Belgium" => "Belgique",
+            "Switzerland" => "Suisse",
+            "Canada" => "Canada",
+            "UnitedStates" => "États-Unis",
+            "UnitedKingdom" => "Royaume-Uni",
+            "Germany" => "Allemagne",
+            "Italy" => "Italie",
+            "Spain" => "Espagne",
+            "Netherlands" => "Pays-Bas",
+            _ => Address.Country.ToString()
+        };
+    }
+
+    private string GetCountryFlag()
+    {
+        if (Address == null) return "🏳️";
+
+        return Address.Country.ToString() switch
+        {
+            "France" => "🇫🇷",
+            "Belgium" => "🇧🇪",
+            "Switzerland" => "🇨🇭",
+            "Canada" => "🇨🇦",
+            "UnitedStates" => "🇺🇸",
+            "UnitedKingdom" => "🇬🇧",
+            "Germany" => "🇩🇪",
+            "Italy" => "🇮🇹",
+            "Spain" => "🇪🇸",
+            "Netherlands" => "🇳🇱",
+            _ => "🏳️"
+        };
+    }
+
+    private string GetFullAddress()
+    {
+        if (Address == null) return "";
+
+        var parts = new List<string>();
+
+        if (!string.IsNullOrEmpty(Address.Number) && !string.IsNullOrEmpty(Address.Street))
+        {
+            parts.Add($"{Address.Number} {Address.Street}");
+        }
+        else if (!string.IsNullOrEmpty(Address.Street))
+        {
+            parts.Add(Address.Street);
+        }
+
+        if (!string.IsNullOrEmpty(Address.PostalCode) && !string.IsNullOrEmpty(Address.City))
+        {
+            parts.Add($"{Address.PostalCode} {Address.City}");
+        }
+        else if (!string.IsNullOrEmpty(Address.City))
+        {
+            parts.Add(Address.City);
+        }
+
+        parts.Add(GetCountryDisplay());
+
+        return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
+    }
 }
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            // Vous pouvez ajouter une notification toast ici
+            console.log('Adresse copiée dans le presse-papier');
+        }, function(err) {
+            console.error('Erreur lors de la copie: ', err);
+        });
+    }
+</script>

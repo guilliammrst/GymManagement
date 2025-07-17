@@ -1,64 +1,159 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
-<ul>
-	<li><strong>Memberships</strong></li>
-	@if (Memberships == null || !Memberships.Any())
-	{
-		<ul>
-			<li>No memberships.</li>
-		</ul>
-	}
-	else
-	{
-		@foreach (var membership in Memberships)
-		{
-			<ul>
-				<li><strong>ID:</strong> @membership.Id</li>
-				<li><strong>Created At:</strong> @membership.CreatedAt.ToString("g")</li>
-				<li><strong>Updated At:</strong> @membership.UpdatedAt?.ToString("g")</li>
-				<li><strong>Start date:</strong> @membership.StartDate</li>
-				<li><strong>End date:</strong> @membership.EndDate</li>
-				<li><strong>Is active:</strong> @membership.IsActive</li>
-				<li><strong>Renew when expiry:</strong> @membership.RenewWhenExpiry</li>
-				<li><strong>Is expired:</strong> @membership.IsExpired</li>
-				@if (UserId.HasValue)
-				{
-					<RadzenButton Text="Pay membership" Click="() => OpenPaymentDialog(membership.Id)" Style="margin-bottom: 20px;" />
-				}
-				<p></p>
-			</ul>
-		}
-	}
-</ul>
+
+<div class="membership-component">
+    <div class="membership-header">
+        <h4 class="membership-title">
+            <span class="section-icon">💳</span>
+            Abonnements (@(Memberships?.Count ?? 0))
+        </h4>
+    </div>
+
+    @if (Memberships == null || !Memberships.Any())
+    {
+        <div class="membership-empty">
+            <div class="empty-icon">💳</div>
+            <p class="empty-message">Aucun abonnement trouvé</p>
+        </div>
+    }
+    else
+    {
+        <div class="memberships-grid">
+            @foreach (var membership in Memberships)
+            {
+                <div class="membership-card @GetMembershipStatusClass(membership)">
+                    <!-- Header de la carte -->
+                    <div class="membership-card-header">
+                        <div class="membership-status-indicator @GetMembershipStatusClass(membership)">
+                            <span class="status-icon">@GetStatusIcon(membership)</span>
+                        </div>
+                        <div class="membership-info">
+                            <h5 class="membership-id">Abonnement #@membership.Id</h5>
+                            <span class="membership-status-text">@GetStatusText(membership)</span>
+                        </div>
+                    </div>
+
+                    <!-- Corps de la carte -->
+                    <div class="membership-card-body">
+                        <div class="membership-details">
+                            <div class="detail-row">
+                                <span class="detail-label">📅 Début</span>
+                                <span class="detail-value">@membership.StartDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">📅 Fin</span>
+                                <span class="detail-value">@membership.EndDate.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">🔄 Auto-renouvellement</span>
+                                <span class="detail-value">@(membership.RenewWhenExpiry ? "✅ Activé" : "❌ Désactivé")</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">⏰ Durée restante</span>
+                                <span class="detail-value">@GetRemainingTime(membership)</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        @if (UserId.HasValue && !membership.IsExpired)
+                        {
+                            <div class="membership-actions">
+                                <RadzenButton 
+                                    Text="💳 Payer l'abonnement" 
+                                    Click="() => OpenPaymentDialog(membership.Id)"
+                                    ButtonStyle="ButtonStyle.Primary"
+                                    Size="ButtonSize.Small"
+                                    class="payment-btn" />
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Footer avec dates système -->
+                    <div class="membership-card-footer">
+                        <div class="system-info">
+                            <small class="created-date">Créé le @membership.CreatedAt.ToString("dd/MM/yyyy")</small>
+                            @if (membership.UpdatedAt.HasValue)
+                            {
+                                <small class="updated-date">Modifié le @membership.UpdatedAt.Value.ToString("dd/MM/yyyy")</small>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-	[Parameter]
-	public List<MembershipDto>? Memberships { get; set; }
+    [Parameter]
+    public List<MembershipDto>? Memberships { get; set; }
 
-	[Parameter]
-	public int? UserId { get; set; }
+    [Parameter]
+    public int? UserId { get; set; }
 
-	[Parameter]
-	public EventCallback OnPaymentRequested { get; set; }
+    [Parameter]
+    public EventCallback OnPaymentRequested { get; set; }
 
-	private async Task OpenPaymentDialog(int membershipId)
-	{
-		if (!UserId.HasValue)
-			return;
+    private async Task OpenPaymentDialog(int membershipId)
+    {
+        if (!UserId.HasValue)
+            return;
 
-		var result = await _dialogService.OpenAsync<PaymentPopup>("Payer l'abonnement", new Dictionary<string, object>()
-			{
-				["UserId"] = UserId,
-				["MembershipId"] = membershipId
+        var result = await _dialogService.OpenAsync<PaymentPopup>("Payer l'abonnement", new Dictionary<string, object>()
+        {
+            ["UserId"] = UserId,
+            ["MembershipId"] = membershipId
+        },
+        options: new DialogOptions
+        {
+            Width = "600px",
+            Height = "500px",
+            Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+        });
 
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+        if (result is true)
+            await OnPaymentRequested.InvokeAsync();
+    }
 
-		if (result is true)
-			await OnPaymentRequested.InvokeAsync();
-	}
+    private string GetMembershipStatusClass(MembershipDto membership)
+    {
+        if (membership.IsExpired) return "expired";
+        if (!membership.IsActive) return "inactive";
+        return "active";
+    }
+
+    private string GetStatusIcon(MembershipDto membership)
+    {
+        if (membership.IsExpired) return "❌";
+        if (!membership.IsActive) return "⏸️";
+        return "✅";
+    }
+
+    private string GetStatusText(MembershipDto membership)
+    {
+        if (membership.IsExpired) return "Expiré";
+        if (!membership.IsActive) return "Inactif";
+        return "Actif";
+    }
+
+    private string GetRemainingTime(MembershipDto membership)
+    {
+        if (membership.IsExpired) return "Expiré";
+        
+        var remaining = membership.EndDate - DateTime.Now;
+        if (remaining.TotalDays < 0) return "Expiré";
+        
+        if (remaining.TotalDays >= 30)
+        {
+            var months = (int)(remaining.TotalDays / 30);
+            return $"{months} mois";
+        }
+        else if (remaining.TotalDays >= 1)
+        {
+            return $"{(int)remaining.TotalDays} jours";
+        }
+        else
+        {
+            return "Expire aujourd'hui";
+        }
+    }
 }

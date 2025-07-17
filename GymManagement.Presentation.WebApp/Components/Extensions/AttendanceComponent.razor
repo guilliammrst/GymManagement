@@ -1,24 +1,127 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
-<ul>
-    <li><strong>Attendances</strong></li>
+
+<div class="attendance-component">
+    <div class="attendance-header">
+        <h4 class="attendance-title">
+            <span class="section-icon">📊</span>
+            Présences (@(Attendances?.Count ?? 0))
+        </h4>
+    </div>
+
     @if (Attendances == null || !Attendances.Any())
     {
-        <ul>
-            <li>No attendances.</li>
-        </ul>
+        <div class="attendance-empty">
+            <div class="empty-icon">📊</div>
+            <p class="empty-message">Aucune présence enregistrée</p>
+        </div>
     }
     else
     {
-        @foreach (var attendance in Attendances)
-        {
-            <ul>
-                <li><strong>Check in time:</strong> @attendance.CheckInTime</li>
-            </ul>
-        }
+        <div class="attendance-stats">
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span class="stat-value">@Attendances.Count</span>
+                    <span class="stat-label">Visites totales</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">@GetRecentVisits()</span>
+                    <span class="stat-label">Cette semaine</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">@GetAverageVisitsPerWeek()</span>
+                    <span class="stat-label">Moy/semaine</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="attendance-list">
+            <div class="list-header">
+                <h5>Historique des visites</h5>
+            </div>
+            
+            <div class="attendance-grid">
+                @foreach (var attendance in Attendances.OrderByDescending(a => a.CheckInTime).Take(10))
+                {
+                    <div class="attendance-card">
+                        <div class="attendance-icon">
+                            <span class="check-in-icon">🏃</span>
+                        </div>
+                        <div class="attendance-info">
+                            <div class="attendance-date">
+                                @attendance.CheckInTime.ToString("dd/MM/yyyy")
+                            </div>
+                            <div class="attendance-time">
+                                @attendance.CheckInTime.ToString("HH:mm")
+                            </div>
+                            <div class="attendance-day">
+                                @GetDayOfWeek(attendance.CheckInTime)
+                            </div>
+                        </div>
+                        <div class="attendance-badge">
+                            <span class="badge-text">@GetTimeOfDay(attendance.CheckInTime)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Attendances.Count > 10)
+            {
+                <div class="attendance-footer">
+                    <p class="footer-text">Affichage des 10 dernières visites sur @Attendances.Count au total</p>
+                </div>
+            }
+        </div>
     }
-</ul>
+</div>
 
 @code {
     [Parameter]
     public List<AttendanceDto>? Attendances { get; set; }
+
+    private int GetRecentVisits()
+    {
+        if (Attendances == null) return 0;
+        
+        var weekAgo = DateTime.Now.AddDays(-7);
+        return Attendances.Count(a => a.CheckInTime >= weekAgo);
+    }
+
+    private string GetAverageVisitsPerWeek()
+    {
+        if (Attendances == null || !Attendances.Any()) return "0";
+        
+        var firstVisit = Attendances.Min(a => a.CheckInTime);
+        var totalWeeks = Math.Max(1, (DateTime.Now - firstVisit).TotalDays / 7);
+        var average = Attendances.Count / totalWeeks;
+        
+        return average.ToString("0.1");
+    }
+
+    private string GetDayOfWeek(DateTime date)
+    {
+        return date.DayOfWeek switch
+        {
+            DayOfWeek.Monday => "Lundi",
+            DayOfWeek.Tuesday => "Mardi",
+            DayOfWeek.Wednesday => "Mercredi",
+            DayOfWeek.Thursday => "Jeudi",
+            DayOfWeek.Friday => "Vendredi",
+            DayOfWeek.Saturday => "Samedi",
+            DayOfWeek.Sunday => "Dimanche",
+            _ => "Inconnu"
+        };
+    }
+
+    private string GetTimeOfDay(DateTime dateTime)
+    {
+        var hour = dateTime.Hour;
+        
+        return hour switch
+        {
+            >= 5 and < 12 => "🌅 Matin",
+            >= 12 and < 17 => "☀️ Après-midi",
+            >= 17 and < 21 => "🌆 Soir",
+            _ => "🌙 Nuit"
+        };
+    }
 }

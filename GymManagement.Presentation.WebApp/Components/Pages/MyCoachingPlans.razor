@@ -3,72 +3,106 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>My coaching plans</PageTitle>
+<PageTitle>Mes plans de coaching - GymManagement</PageTitle>
 
-<h3>My coaching plans</h3>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">🎯 Mes plans de coaching</h1>
+            <p class="page-description">Gérez vos programmes d'entraînement personnalisés</p>
+        </div>
+        <br />
+        <div class="page-actions">
+            <RadzenButton Text="Nouveau plan" 
+                         Icon="add" 
+                         ButtonStyle="ButtonStyle.Primary"
+                         Click="OpenCreateCoachingPlanDialog" 
+                         class="btn-create" />
+        </div>
+    </div>
+</div>
 
-<RadzenButton Text="Créer un plan de coaching" Click="OpenCreateCoachingPlanDialog" Style="margin-bottom: 20px;" />
-
-@if (coachingPlans == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (coachingPlans.Count == 0)
-{
-	<p>Aucun coaching plan trouvé.</p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Description</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var coachingPlan in coachingPlans)
-			{
-				var href = $"coaching-plan/{coachingPlan.Id}";
-				<tr>
-					<td>@coachingPlan.Id</td>
-					<td>@coachingPlan.Description</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div class="results-section">
+    @if (coachingPlans == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement de vos plans...</p>
+            </div>
+        </div>
+    }
+    else if (coachingPlans.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-content">
+                <span class="empty-state-icon">🎯</span>
+                <h3>Aucun plan de coaching trouvé</h3>
+                <p>Créez votre premier programme d'entraînement personnalisé.</p>
+                <RadzenButton Text="Créer un plan" 
+                             Icon="add" 
+                             ButtonStyle="ButtonStyle.Primary"
+                             Click="OpenCreateCoachingPlanDialog" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count">@coachingPlans.Count plans créés</span>
+            </div>
+        </div>
+        
+        <div class="coaching-plans-grid">
+            @foreach (var plan in coachingPlans)
+            {
+                <div class="coaching-plan-card">
+                    <div class="coaching-plan-card-header">
+                        <div class="coaching-plan-icon">
+                            <span class="coaching-plan-icon-text">🎯</span>
+                        </div>
+                        <div class="coaching-plan-basic-info">
+                            <h4 class="coaching-plan-name">@plan.Description</h4>
+                            <p class="coaching-plan-id">ID: #@plan.Id</p>
+                        </div>
+                    </div>
+                    
+                    <div class="coaching-plan-card-footer">
+                        <NavLink href="@($"coaching-plan/{plan.Id}")" class="btn btn-primary btn-sm">
+                            <span>📋</span> Détails
+                        </NavLink>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-	private List<CoachingPlanDto>? coachingPlans;
+    private List<CoachingPlanDto>? coachingPlans;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadCoachingPlans();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoachingPlans();
+    }
 
-	private async Task LoadCoachingPlans()
-	{
-		coachingPlans = await _gymApiClient.GetCoachingPlansAsync(true);
-	}
+    private async Task LoadCoachingPlans()
+    {
+        coachingPlans = await _gymApiClient.GetCoachingPlansAsync(true);
+    }
 
-	private async Task OpenCreateCoachingPlanDialog()
-	{
-		var result = await _dialogService.OpenAsync<CreateCoachingPlanPopup>("Créer un plan de coaching",
-			options: new DialogOptions
-			{
-				Width = "600px",
-				Height = "500px",
-				Style = "top: 20vh; left: 12vw;"
-			});
+    private async Task OpenCreateCoachingPlanDialog()
+    {
+        var result = await _dialogService.OpenAsync<CreateCoachingPlanPopup>("Créer un plan de coaching",
+            options: new DialogOptions
+            {
+                Width = "600px",
+                Height = "500px",
+                Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+            });
 
-		if (result is true)
-			await LoadCoachingPlans();
-	}
+        if (result is true)
+            await LoadCoachingPlans();
+    }
 }

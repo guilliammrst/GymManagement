@@ -4,105 +4,144 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>User</PageTitle>
+<PageTitle>Détails utilisateur - GymManagement</PageTitle>
 
-<NavLink class="btn btn-primary nav-link" href="users" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-    <span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-</NavLink>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <BackButton ReturnUrl="users" Text="Retour aux utilisateurs" Subtitle="Gestion des utilisateurs" />
+            <h1 class="page-title">👤 Détails de l'utilisateur</h1>
+            @if (user != null)
+            {
+                <p class="page-description">@user.Name @user.Surname • @user.Email</p>
+            }
+        </div>
+        @if (user != null)
+        {
+            <div class="page-actions">
+                <RadzenButton Text="Modifier" 
+                             Icon="edit" 
+                             ButtonStyle="ButtonStyle.Secondary"
+                             Click="OpenUpdateUserDialog" 
+                             class="btn-action" />
+                <RadzenButton Text="Abonner" 
+                             Icon="add_circle" 
+                             ButtonStyle="ButtonStyle.Primary"
+                             Click="OpenSubscribeUserDialog" 
+                             class="btn-action" />
+                <RadzenButton Text="Supprimer" 
+                             Icon="delete" 
+                             ButtonStyle="ButtonStyle.Danger"
+                             Click="OpenDeleteUserDialog" 
+                             class="btn-action" />
+            </div>
+        }
+    </div>
+</div>
 
-<h3>User Details</h3>
-
-@if (user == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<div>
-		<UserComponent User="user"></UserComponent>
-		<MembershipComponent Memberships="user.Memberships" UserId="user.Id" OnPaymentRequested="LoadUser"></MembershipComponent>
-		<AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
-		<RadzenButton Text="Update" Click="OpenUpdateUserDialog" Style="margin-bottom: 20px;" />
-		<RadzenButton Text="Subscribe" Click="OpenSubscribeUserDialog" Style="margin-bottom: 20px;" />
-		<RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Delete" Click="OpenDeleteUserDialog" Style="margin-bottom: 20px;" />
-	</div>
-}
+<div class="user-details-section">
+    @if (user == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des détails...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="user-details-content">
+            <div class="user-info-card">
+                <UserComponent User="user"></UserComponent>
+            </div>
+            
+            <div class="user-memberships-card">
+                <MembershipComponent Memberships="user.Memberships" UserId="user.Id" OnPaymentRequested="LoadUser"></MembershipComponent>
+            </div>
+            
+            <div class="user-attendance-card">
+                <AttendanceComponent Attendances="user.Attendances"></AttendanceComponent>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
-	[Parameter]
-	public int userId { get; set; }
+    [Parameter]
+    public int userId { get; set; }
 
-	private UserDetailsDto? user;
+    private UserDetailsDto? user;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadUser();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUser();
+    }
 
-	private async Task LoadUser()
-	{
-		user = await _gymApiClient.GetUserByIdAsync(userId);
-	}
+    private async Task LoadUser()
+    {
+        user = await _gymApiClient.GetUserByIdAsync(userId);
+    }
 
-	private async Task OpenUpdateUserDialog()
-	{
-		if (user == null)
-			return;
+    private async Task OpenUpdateUserDialog()
+    {
+        if (user == null)
+            return;
 
-		var result = await _dialogService.OpenAsync<UpdateUserPopup>("Modifier l'utilisateur", new Dictionary<string, object>()
-			{
-				["User"] = user
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+        var result = await _dialogService.OpenAsync<UpdateUserPopup>("Modifier l'utilisateur", new Dictionary<string, object>()
+        {
+            ["User"] = user
+        },
+        options: new DialogOptions
+        {
+            Width = "600px",
+            Height = "500px",
+            Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+        });
 
-		if (result is true)
-			await LoadUser();
-	}
+        if (result is true)
+            await LoadUser();
+    }
 
-	private async Task OpenSubscribeUserDialog()
-	{
-		if (user == null)
-			return;
+    private async Task OpenSubscribeUserDialog()
+    {
+        if (user == null)
+            return;
 
-		var result = await _dialogService.OpenAsync<SubscribeUserPopup>("Abonner l'utilisateur", new Dictionary<string, object>()
-			{
-				["UserId"] = userId
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+        var result = await _dialogService.OpenAsync<SubscribeUserPopup>("Abonner l'utilisateur", new Dictionary<string, object>()
+        {
+            ["UserId"] = userId
+        },
+        options: new DialogOptions
+        {
+            Width = "600px",
+            Height = "500px",
+            Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+        });
 
-		if (result is true)
-			await LoadUser();
-	}
+        if (result is true)
+            await LoadUser();
+    }
 
-	private async Task OpenDeleteUserDialog()
-	{
-		if (user == null)
-			return;
+    private async Task OpenDeleteUserDialog()
+    {
+        if (user == null)
+            return;
 
-		var result = await _dialogService.OpenAsync<DeletePopup>("Supprimer l'utilisateur", new Dictionary<string, object>()
-			{
-				["ItemId"] = userId,
-				["DeleteAction"] = new Func<int, Task<bool>>(async id =>
-				{
-					return await _gymApiClient.DeleteUserAsync(id);
-				}),
-				["RedirectUrl"] = "users"
-			},
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "250px",
-					Style = "top: 20vh; left: 12vw;"
-				});
-	}
+        var result = await _dialogService.OpenAsync<DeletePopup>("Supprimer l'utilisateur", new Dictionary<string, object>()
+        {
+            ["ItemId"] = userId,
+            ["DeleteAction"] = new Func<int, Task<bool>>(async id =>
+            {
+                return await _gymApiClient.DeleteUserAsync(id);
+            }),
+            ["RedirectUrl"] = "users"
+        },
+        options: new DialogOptions
+        {
+            Width = "600px",
+            Height = "250px",
+            Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+        });
+    }
 }

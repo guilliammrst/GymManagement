@@ -1,66 +1,74 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
-<div class="top-row ps-3 navbar navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">GymManagement.Aspire</a>
-    </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" style="background: rgba(0, 0, 0, 0.3)" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
+<div class="nav-menu">
+    <div class="nav-section">
+        <div class="nav-item">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Home
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Accueil</span>
             </NavLink>
         </div>
 
         @if (_authenticatedUser.IsAuthenticated && _authenticatedUser.Role != Role.Coach)
         {
-            <div class="nav-item px-3">
+            <div class="nav-section-header">
+                <span>Gestion</span>
+            </div>
+            
+            <div class="nav-item">
                 <NavLink class="nav-link" href="users">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> Users
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">Utilisateurs</span>
                 </NavLink>
             </div>
 
-            <div class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="clubs">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> Clubs
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-text">Clubs</span>
                 </NavLink>
             </div>
 
-            <div class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="membership-plans">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> Membership plans
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Plans d'adhésion</span>
                 </NavLink>
             </div>
 
-            <div class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="coaching-plans">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> Coaching plans
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">Plans de coaching</span>
                 </NavLink>
             </div>
 
-            <div class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="coachings">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> Coachings
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">Coachings</span>
                 </NavLink>
             </div>
         }
-        else
+        else if (_authenticatedUser.IsAuthenticated && _authenticatedUser.Role == Role.Coach)
         {
-            <div class="nav-item px-3">
+            <div class="nav-section-header">
+                <span>Mon espace coach</span>
+            </div>
+            
+            <div class="nav-item">
                 <NavLink class="nav-link" href="my-coaching-plans">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> My coaching plans
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-text">Mes plans de coaching</span>
                 </NavLink>
             </div>
 
-
-            <div class="nav-item px-3">
+            <div class="nav-item">
                 <NavLink class="nav-link" href="my-coachings">
-                    <span class="bi bi-list-nested" aria-hidden="true"></span> My coachings
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">Mes coachings</span>
                 </NavLink>
             </div>
         }
-    </nav>
+    </div>
 </div>

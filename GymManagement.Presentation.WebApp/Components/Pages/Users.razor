@@ -4,103 +4,201 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Users</PageTitle>
+<PageTitle>Gestion des utilisateurs - GymManagement</PageTitle>
 
-<h1>Users</h1>
-
-<div class="mt-2">
-	<label>Email :</label>
-	<input @bind="emailSearch" class="form-control" placeholder="Entrez un email" style="width: 300px; display: inline-block;" />
-	<label>Page :</label>
-	<input type="number" @bind="pageNumber" min="1" class="form-control" style="width: 100px; display: inline-block;" />
-	<label class="ms-2">Taille :</label>
-	<input type="number" @bind="pageSize" min="1" class="form-control" style="width: 100px; display: inline-block;" />
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">👥 Gestion des utilisateurs</h1>
+            <p class="page-description">Gérez tous les utilisateurs de votre plateforme</p>
+        </div>
+        <br />
+        <div class="page-actions">
+            <RadzenButton Text="Nouvel utilisateur" 
+                         Icon="add" 
+                         ButtonStyle="ButtonStyle.Primary"
+                         Click="OpenCreateUserDialog" 
+                         class="btn-create" />
+        </div>
+    </div>
 </div>
 
-<RadzenButton Text="Rechercher" Icon="search" Style="margin: 10px 0;" Click="OnSearch" />
-<RadzenButton Text="Créer un utilisateur" Click="OpenCreateUserDialog" Style="margin-bottom: 20px;" />
+<!-- Filters Section -->
+<div class="filter-section">
+    <div class="filter-card">
+        <div class="filter-header">
+            <h3>🔍 Filtres de recherche</h3>
+        </div>
+        <div class="filter-content">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Email</label>
+                    <input @bind="emailSearch" 
+                           class="form-control" 
+                           placeholder="Rechercher par email..." />
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Page</label>
+                    <input type="number" 
+                           @bind="pageNumber" 
+                           min="1" 
+                           class="form-control form-control-sm" />
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Taille</label>
+                    <input type="number" 
+                           @bind="pageSize" 
+                           min="1" 
+                           max="100"
+                           class="form-control form-control-sm" />
+                </div>
+                
+                <div class="filter-actions">
+                    <RadzenButton Text="Rechercher" 
+                                 Icon="search" 
+                                 ButtonStyle="ButtonStyle.Primary"
+                                 Click="OnSearch" 
+                                 class="btn-search" />
+                    <RadzenButton Text="Réinitialiser" 
+                                 Icon="refresh" 
+                                 ButtonStyle="ButtonStyle.Secondary"
+                                 Click="ResetFilters" 
+                                 class="btn-reset" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-@if (users == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (users.Count == 0)
-{
-	<p>Aucun utilisateur trouvé.</p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Name</th>
-				<th>Surname</th>
-				<th>Email</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var user in users)
-			{
-				var href = $"user/{user.Id}";
-				<tr>
-					<td>@user.Id</td>
-					<td>@user.Name</td>
-					<td>@user.Surname</td>
-					<td>@user.Email</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-				}
-		</tbody>
-	</table>	
-}
+<!-- Results Section -->
+<div class="results-section">
+    @if (users == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des utilisateurs...</p>
+            </div>
+        </div>
+    }
+    else if (users.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-content">
+                <span class="empty-state-icon">👤</span>
+                <h3>Aucun utilisateur trouvé</h3>
+                <p>Essayez de modifier vos critères de recherche ou créez un nouvel utilisateur.</p>
+                <RadzenButton Text="Créer un utilisateur" 
+                             Icon="add" 
+                             ButtonStyle="ButtonStyle.Primary"
+                             Click="OpenCreateUserDialog" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count">@users.Count utilisateurs trouvés</span>
+            </div>
+        </div>
+        
+        <div class="users-grid">
+            @foreach (var user in users)
+            {
+                <div class="user-card">
+                    <div class="user-card-header">
+                        <div class="user-avatar">
+                            <span class="avatar-initials">@GetUserInitials(user)</span>
+                        </div>
+                        <div class="user-basic-info">
+                            <h4 class="user-name">@user.Name @user.Surname</h4>
+                            <p class="user-email">@user.Email</p>
+                        </div>
+                    </div>
+                    
+                    <div class="user-card-body">
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <span class="detail-label">ID:</span>
+                                <span class="detail-value">#@user.Id</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-card-footer">
+                        <NavLink href="@($"user/{user.Id}")" class="btn btn-primary btn-sm">
+                            <span>📋</span> Détails
+                        </NavLink>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <!-- Pagination Info -->
+        <div class="pagination-info">
+            <p>Page @pageNumber • @pageSize résultats par page</p>
+        </div>
+    }
+</div>
 
 @code {
-	private List<UserDto>? users;
-	private string emailSearch = string.Empty;
-	private int pageNumber = 1;
-	private int pageSize = 20;
+    private List<UserDto>? users;
+    private string emailSearch = string.Empty;
+    private int pageNumber = 1;
+    private int pageSize = 20;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		users = await _gymApiClient.GetUsersAsync(new UserFilter
-			{
-				Email = emailSearch,
-				PageNumber = pageNumber,
-				PageSize = pageSize
-			});
-	}
+    private async Task LoadUsers()
+    {
+        users = await _gymApiClient.GetUsersAsync(new UserFilter
+        {
+            Email = emailSearch,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        });
+    }
 
+    private async Task OnSearch()
+    {
+        pageNumber = 1; // Reset to first page when searching
+        await LoadUsers();
+    }
 
-	private async Task OnSearch()
-	{
-		users = await _gymApiClient.GetUsersAsync(new UserFilter
-			{
-				Email = emailSearch,
-				PageNumber = pageNumber,
-				PageSize = pageSize
-			});
-	}
+    private async Task ResetFilters()
+    {
+        emailSearch = string.Empty;
+        pageNumber = 1;
+        pageSize = 20;
+        await LoadUsers();
+    }
 
-	private async Task OpenCreateUserDialog()
-	{
-		var result = await _dialogService.OpenAsync<CreateUserPopup>("Créer un utilisateur",
-			options: new DialogOptions
-			{
-				Width = "600px",
-				Height = "500px",
-				Style = "top: 20vh; left: 12vw;"
-			});
+    private async Task OpenCreateUserDialog()
+    {
+        var result = await _dialogService.OpenAsync<CreateUserPopup>("Créer un nouvel utilisateur",
+            options: new DialogOptions
+            {
+                Width = "600px",
+                Height = "500px",
+                Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+            });
 
-		if (result is true)
-		{
-			await OnSearch();
-		}
-	}
+        if (result is true)
+        {
+            await LoadUsers();
+        }
+    }
+
+    private string GetUserInitials(UserDto user)
+    {
+        var firstInitial = !string.IsNullOrEmpty(user.Name) ? user.Name[0].ToString().ToUpper() : "";
+        var lastInitial = !string.IsNullOrEmpty(user.Surname) ? user.Surname[0].ToString().ToUpper() : "";
+        return firstInitial + lastInitial;
+    }
 }

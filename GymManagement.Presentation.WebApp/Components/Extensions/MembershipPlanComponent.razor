@@ -1,26 +1,167 @@
 ﻿@using GymManagement.Presentation.WebApp.ApiClients
-<ul>
-    @if (MembershipPlan == null)
-    {
-        <ul>
-            <li>No membership plan.</li>
-        </ul>
-    }
-    else
-    {
-        <li><strong>ID:</strong> @MembershipPlan.Id</li>
-        <li><strong>Created At:</strong> @MembershipPlan.CreatedAt.ToString("g")</li>
-        <li><strong>Updated At:</strong> @MembershipPlan.UpdatedAt?.ToString("g")</li>
-        <li><strong>Description:</strong> @MembershipPlan.Description</li>
-        <li><strong>Base price:</strong> @MembershipPlan.BasePrice.ToString("C")</li>
-        <li><strong>Is valid:</strong> @MembershipPlan.IsValid</li>
-        <li><strong>Membership plan type:</strong> @MembershipPlan.MembershipPlanType.ToString()</li>
-        <li><strong>Yearly discount:</strong> @MembershipPlan.YearlyDiscount</li>
-        <li><strong>Registration fees:</strong> @MembershipPlan.RegistrationFees</li>
-    }
-</ul>
+
+@if (MembershipPlan == null || MembershipPlan.Id == 0)
+{
+    <div class="membership-plan-component-empty">
+        <div class="empty-icon">📋</div>
+        <p class="empty-message">Aucune information de plan d'adhésion disponible</p>
+    </div>
+}
+else
+{
+    <div class="membership-plan-component">
+        <!-- Header avec informations principales -->
+        <div class="membership-plan-header">
+            <div class="membership-plan-icon-large">
+                <span class="membership-plan-icon-text">📋</span>
+            </div>
+            <div class="membership-plan-main-info">
+                <h3 class="membership-plan-name">@MembershipPlan.Description</h3>
+                <div class="membership-plan-meta">
+                    <span class="membership-plan-id">ID: #@MembershipPlan.Id</span>
+                    <span class="membership-plan-type-badge type-@MembershipPlan.MembershipPlanType.ToString().ToLower()">
+                        @GetMembershipTypeDisplay()
+                    </span>
+                    <span class="membership-plan-status-badge @(MembershipPlan.IsValid ? "valid" : "invalid")">
+                        @(MembershipPlan.IsValid ? "✅ Valide" : "❌ Invalide")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations tarifaires -->
+        <div class="membership-plan-details-grid">
+            <div class="detail-section pricing-section">
+                <h4 class="section-title">
+                    <span class="section-icon">💰</span>
+                    Tarification
+                </h4>
+                <div class="pricing-details">
+                    <div class="price-item main-price">
+                        <span class="price-label">💳 Prix de base</span>
+                        <span class="price-value">@MembershipPlan.BasePrice.ToString("C")</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">📝 Frais d'inscription</span>
+                        <span class="price-value">@MembershipPlan.RegistrationFees.ToString("C")</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">🎯 Remise annuelle</span>
+                        <span class="price-value">@GetDiscountDisplay()</span>
+                    </div>
+                    
+                    @if (MembershipPlan.YearlyDiscount > 0)
+                    {
+                        <div class="price-calculation">
+                            <div class="calc-item">
+                                <span class="calc-label">Prix mensuel</span>
+                                <span class="calc-value">@MembershipPlan.BasePrice.ToString("C")</span>
+                            </div>
+                            <div class="calc-item highlight">
+                                <span class="calc-label">Prix annuel (avec remise)</span>
+                                <span class="calc-value">@GetYearlyPrice().ToString("C")</span>
+                            </div>
+                            <div class="calc-savings">
+                                <span class="savings-text">💾 Économie de @GetYearlySavings().ToString("C") par an</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Informations générales
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">📝 Description</span>
+                        <span class="detail-value">@MembershipPlan.Description</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">🏷️ Type de plan</span>
+                        <span class="detail-value">@GetMembershipTypeDisplay()</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">✅ Statut</span>
+                        <span class="detail-value">@(MembershipPlan.IsValid ? "Valide" : "Invalide")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h4 class="section-title">
+                    <span class="section-icon">ℹ️</span>
+                    Informations système
+                </h4>
+                <div class="details-list">
+                    <div class="detail-item">
+                        <span class="detail-label">🆔 ID Plan</span>
+                        <span class="detail-value">#@MembershipPlan.Id</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">📅 Créé le</span>
+                        <span class="detail-value">@MembershipPlan.CreatedAt.ToString("dd/MM/yyyy à HH:mm")</span>
+                    </div>
+                    @if (MembershipPlan.UpdatedAt.HasValue)
+                    {
+                        <div class="detail-item">
+                            <span class="detail-label">🔄 Modifié le</span>
+                            <span class="detail-value">@MembershipPlan.UpdatedAt.Value.ToString("dd/MM/yyyy à HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]
     public MembershipPlanDto? MembershipPlan { get; set; }
+
+    private string GetMembershipTypeDisplay()
+    {
+        if (MembershipPlan == null) return "Non défini";
+        
+        return MembershipPlan.MembershipPlanType.ToString() switch
+        {
+            "Basic" => "Basique",
+            "Premium" => "Premium",
+            "VIP" => "VIP",
+            "Student" => "Étudiant",
+            "Senior" => "Senior",
+            "Family" => "Famille",
+            _ => MembershipPlan.MembershipPlanType.ToString()
+        };
+    }
+    
+    private string GetDiscountDisplay()
+    {
+        if (MembershipPlan == null) return "0%";
+        
+        // YearlyDiscount est déjà en pourcentage (ex: 15 pour 15%)
+        return $"{MembershipPlan.YearlyDiscount:F1}%";
+    }
+    
+    private decimal GetYearlyPrice()
+    {
+        if (MembershipPlan == null) return 0;
+        
+        var yearlyPrice = MembershipPlan.BasePrice * 12;
+        // YearlyDiscount est en pourcentage, donc on divise par 100
+        var discountDecimal = MembershipPlan.YearlyDiscount / 100;
+        var discount = yearlyPrice * discountDecimal;
+        return yearlyPrice - discount + MembershipPlan.RegistrationFees;
+    }
+    
+    private decimal GetYearlySavings()
+    {
+        if (MembershipPlan == null) return 0;
+        
+        var yearlyPriceWithoutDiscount = MembershipPlan.BasePrice * 12;
+        var yearlyPriceWithDiscount = GetYearlyPrice() - MembershipPlan.RegistrationFees;
+        return yearlyPriceWithoutDiscount - yearlyPriceWithDiscount;
+    }
 }

@@ -1,49 +1,64 @@
 ﻿@page "/coaching/{CoachingId:int}"
+@using GymManagement.Presentation.WebApp.ApiClients
 @rendermode InteractiveServer
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Coaching</PageTitle>
+<PageTitle>Détails du coaching - GymManagement</PageTitle>
 
-@if (_authenticatedUser.Role == Role.Coach)
-{
-	<NavLink class="btn btn-primary nav-link" href="my-coachings" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-	</NavLink>
-}
-else
-{
-	<NavLink class="btn btn-primary nav-link" href="coachings" style="margin-bottom: 20px; width: 100px; display: inline-block;">
-		<span class="bi bi-list-nested" aria-hidden="true"></span> Retour
-	</NavLink>
-}
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            @if (_authenticatedUser.Role == Role.Coach)
+            {
+                <BackButton ReturnUrl="my-coachings" Text="Retour à mes coachings" Subtitle="Mes coachings" />
+            }
+            else
+            {
+                <BackButton ReturnUrl="coachings" Text="Retour aux coachings" Subtitle="Coachings actifs" />
+            }
+            <h1 class="page-title">🎯 Détails du coaching</h1>
+            @if (coaching != null)
+            {
+                <p class="page-description">Coaching #@coaching.Id • @coaching.StartDate.ToString("dd/MM/yyyy") - @coaching.EndDate.ToString("dd/MM/yyyy")</p>
+            }
+        </div>
+    </div>
+</div>
 
-<h3>Coaching Details</h3>
-
-@if (coaching == null)
-{
-	<p>Loading...</p>
-}
-else
-{
-	<div>
-		<CoachingComponent Coaching="coaching"></CoachingComponent>
-	</div>
-}
+<div class="coaching-details-section">
+    @if (coaching == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des détails...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="coaching-details-content">
+            <div class="coaching-info-card">
+                <CoachingComponent Coaching="coaching"></CoachingComponent>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
-	[Parameter]
-	public int CoachingId { get; set; }
+    [Parameter]
+    public int CoachingId { get; set; }
 
-	private CoachingDetailsDto? coaching;
+    private CoachingDetailsDto? coaching;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadCoaching();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCoaching();
+    }
 
-	private async Task LoadCoaching()
-	{
-		coaching = await _gymApiClient.GetCoachingByIdAsync(CoachingId);
-	}
+    private async Task LoadCoaching()
+    {
+        coaching = await _gymApiClient.GetCoachingByIdAsync(CoachingId);
+    }
 }

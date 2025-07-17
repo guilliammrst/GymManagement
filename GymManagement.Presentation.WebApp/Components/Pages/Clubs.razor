@@ -4,72 +4,106 @@
 @attribute [StreamRendering(true)]
 @attribute [OutputCache(Duration = 5)]
 
-<PageTitle>Clubs</PageTitle>
+<PageTitle>Gestion des clubs - GymManagement</PageTitle>
 
-<h3>Clubs</h3>
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-title-section">
+            <h1 class="page-title">🏢 Gestion des clubs</h1>
+            <p class="page-description">Gérez tous les clubs partenaires de votre réseau</p>
+        </div>
+        <br />
+        <div class="page-actions">
+            <RadzenButton Text="Nouveau club" 
+                         Icon="add" 
+                         ButtonStyle="ButtonStyle.Primary"
+                         Click="OpenCreateClubDialog" 
+                         class="btn-create" />
+        </div>
+    </div>
+</div>
 
-<RadzenButton Text="Créer un club" Click="OpenCreateClubDialog" Style="margin-bottom: 20px;" />
-
-@if (clubs == null)
-{
-	<p><em>Loading...</em></p>
-}
-else if (clubs.Count == 0)
-{
-	<p>Aucun club trouvé.</p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Id</th>
-				<th>Name</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var club in clubs)
-			{
-				var href = $"club/{club.Id}";
-				<tr>
-					<td>@club.Id</td>
-					<td>@club.Name</td>
-					<td>
-						<NavLink class="btn btn-primary nav-link" href="@href">
-							<span class="bi bi-list-nested" aria-hidden="true"></span> Details
-						</NavLink>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div class="results-section">
+    @if (clubs == null)
+    {
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Chargement des clubs...</p>
+            </div>
+        </div>
+    }
+    else if (clubs.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-state-content">
+                <span class="empty-state-icon">🏢</span>
+                <h3>Aucun club trouvé</h3>
+                <p>Commencez par créer votre premier club partenaire.</p>
+                <RadzenButton Text="Créer un club" 
+                             Icon="add" 
+                             ButtonStyle="ButtonStyle.Primary"
+                             Click="OpenCreateClubDialog" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="results-header">
+            <div class="results-info">
+                <span class="results-count">@clubs.Count clubs trouvés</span>
+            </div>
+        </div>
+        
+        <div class="clubs-grid">
+            @foreach (var club in clubs)
+            {
+                <div class="club-card">
+                    <div class="club-card-header">
+                        <div class="club-icon">
+                            <span class="club-icon-text">🏢</span>
+                        </div>
+                        <div class="club-basic-info">
+                            <h4 class="club-name">@club.Name</h4>
+                            <p class="club-id">ID: #@club.Id</p>
+                        </div>
+                    </div>
+                    
+                    <div class="club-card-footer">
+                        <NavLink href="@($"club/{club.Id}")" class="btn btn-primary btn-sm">
+                            <span>📋</span> Détails
+                        </NavLink>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-	private List<ClubDto>? clubs;
+    private List<ClubDto>? clubs;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadClubs();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClubs();
+    }
 
-	private async Task LoadClubs()
-	{
-		clubs = await _gymApiClient.GetClubsAsync();
-	}
+    private async Task LoadClubs()
+    {
+        clubs = await _gymApiClient.GetClubsAsync();
+    }
 
-	private async Task OpenCreateClubDialog()
-	{
-		var result = await _dialogService.OpenAsync<CreateClubPopup>("Créer un club",
-			options: new DialogOptions
-				{
-					Width = "600px",
-					Height = "500px",
-					Style = "top: 20vh; left: 12vw;"
-				});
+    private async Task OpenCreateClubDialog()
+    {
+        var result = await _dialogService.OpenAsync<CreateClubPopup>("Créer un club",
+            options: new DialogOptions
+            {
+                Width = "600px",
+                Height = "500px",
+                Style = "top: 10vh; left: 50%; transform: translateX(-50%);"
+            });
 
-		if (result is true)
-			await LoadClubs();
-	}
+        if (result is true)
+            await LoadClubs();
+    }
 }
