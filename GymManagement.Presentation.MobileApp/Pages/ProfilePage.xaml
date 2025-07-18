@@ -31,7 +31,7 @@
                                TextColor="{StaticResource Primary}"/>
                     </Border>
                     
-                    <Label Text="Mon Profil GymFit" 
+                    <Label Text="Mon Profil GymManagement" 
                            Style="{StaticResource TitleMedium}"
                            TextColor="White"
                            FontAttributes="Bold"

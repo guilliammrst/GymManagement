@@ -166,7 +166,7 @@ namespace GymManagement.Presentation.MobileApp.Pages.SubscriptionFlow
                     
                     await DisplayAlert("🎉 Félicitations !", 
                         $"Votre paiement de {totalPaid} a été effectué avec succès !\n\n" +
-                        "Votre abonnement est maintenant actif. Bienvenue chez GymFit !", 
+                        "Votre abonnement est maintenant actif. Bienvenue chez GymManagement !", 
                         "Formidable !");
 
                     // Retour à la page principale
