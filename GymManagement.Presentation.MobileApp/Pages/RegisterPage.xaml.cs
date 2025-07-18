@@ -56,7 +56,7 @@ namespace GymManagement.Presentation.MobileApp.Pages
                 {
                     await DisplayAlert("🎉 Félicitations !", 
                         "Votre compte a été créé avec succès !\n\n" +
-                        "Bienvenue dans la communauté GymFit ! Vous pouvez maintenant accéder à tous nos services.", 
+                        "Bienvenue dans la communauté GymManagement ! Vous pouvez maintenant accéder à tous nos services.", 
                         "Commencer !");
                     
                     _authManager.RedirectToHome();

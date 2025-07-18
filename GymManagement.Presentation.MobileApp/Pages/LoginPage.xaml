@@ -11,7 +11,7 @@
                 <!-- Logo/Header -->
                 <Frame Style="{StaticResource CardFrame}" BackgroundColor="{StaticResource Primary}" Padding="30,24" Margin="0,20,0,0">
                     <StackLayout Spacing="12">
-                        <Label Text="🏋️ GymFit" 
+                        <Label Text="🏋️ GymManagement" 
                                Style="{StaticResource TitleLarge}"
                                TextColor="White"
                                FontAttributes="Bold"

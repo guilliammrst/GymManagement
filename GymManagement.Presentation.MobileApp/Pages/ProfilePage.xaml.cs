@@ -224,7 +224,7 @@ namespace GymManagement.Presentation.MobileApp.Pages
                 {
                     await DisplayAlert("✅ Compte supprimé", 
                         "Votre compte a été supprimé avec succès.\n\n" +
-                        "Merci d'avoir utilisé GymFit. Nous espérons vous revoir bientôt !", 
+                        "Merci d'avoir utilisé GymManagement. Nous espérons vous revoir bientôt !", 
                         "Au revoir");
                     
                     _authManager.Logout();
